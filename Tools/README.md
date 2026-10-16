@@ -1,3 +1,3 @@
 # Tools
 
-Reserved for project tools. No custom build or verification scripts are used under the supplied single-script restriction. Use Unity menus for import, scene editing, and builds.
+Reserved for command-line build tooling. Rebuild the playable scene with **Balance with me → Rebuild Playable Scene** and run checks from Unity Test Runner. Platform builds use Unity Build Profiles.

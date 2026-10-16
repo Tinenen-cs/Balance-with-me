@@ -1,13 +1,23 @@
 # Development workflow
 
-Game title: **Balance with me**. Repository: **Tinenen-cs/Balance-with-me**.
+Game: **Balance with me**. Repository: **Tinenen-cs/Balance-with-me**.
 
-The user requires the exact contents of `CharacterController2DP2.bin` and no additional custom scripts. `Assets/Scripts/Players/CharacterController2DP2.cs` is a byte-identical copy. Git text conversion is disabled for both paths so CRLF line endings are preserved.
+## Current authorization
 
-Earlier generated custom gameplay, editor, and test scripts were removed from the project and backed up outside the repository. The Main scene retains a static art preview with those component references removed. No input binding, animation selection, round management, or balance simulation is claimed.
+The user has authorized new and edited scripts to add punching, pushing, and useful gameplay. The earlier single-script restriction is superseded. The original `CharacterController2DP2.bin` remains unchanged; the active controller replaces deprecated `Rigidbody2D.velocity` calls with `linearVelocity`.
 
-Commit each completed change and push it when GitHub authentication is available. Keep asset metadata with assets. Target editor is 6000.3.24f1; the local validation editor is 6000.3.26f1.
+## Implementation
 
-## Desktop display
+- `PlayerActions` reads each player's keyboard bindings and calls the movement controller in FixedUpdate.
+- Punch uses a short active window and a per-attack hit guard: one health point and impulse knockback once per attack. Push applies small impulses throughout its active window without damage.
+- Both actions require the target ahead and within reach. Cooldowns and hit stun prevent attack spam and immediate movement cancellation of knockback.
+- Existing sprites supply idle, walk, jump, and hurt reactions. Orange and cyan pixel hand effects distinguish punch and push; these are simple effects, not new authored combat sprite sheets.
+- Players have Rigidbody2Ds and capsule colliders. Ground checks use the Ground layer. A HingeJoint2D limits plank rotation to ±16°; the ball remains a stationary visual support.
+- `BalanceGame` manages three health points per player, falling/zero-health wins, status, and reset.
+- `PlayableSceneBuilder` rebuilds the scene, creates native Sprite assets from alpha-trimmed source rectangles, and wires component references. Rebuilding resets scene-only Inspector edits.
 
-Main uses a 1920 × 1080 Canvas and DesktopFrame. HUD and footer positions fit the landscape frame. Standalone defaults are a resizable 1920 × 1080 window; browser defaults are 1280 × 720. Select 16:9 in the Editor Game view manually. The original portrait art concept remains in Docs as a design reference. No controller code changed.
+## Display and versions
+
+Desktop 16:9, 1920 × 1080 UI reference and resizable standalone defaults. Select a 16:9 Game view manually. The original portrait art concept remains a reference. Target editor: 6000.3.24f1. Local checks: installed 6000.3.26f1. Restore ProjectVersion to the target before committing newer-editor validation changes.
+
+Commit and push completed changes; keep README controls, feature status, and validation accurate.

@@ -5,4 +5,4 @@
 - `Assets/Art/Props/platform_ball.png`: transparent PNG, 1774 × 887.
 - `Docs/layout_preview.png`: generated composition reference, not a gameplay capture.
 
-Sprite import metadata is included. Use Point filtering, no mipmaps, and uncompressed textures. Inspect generated slices and pivots in Sprite Editor; grid dimensions are uneven. No custom import or animation script is used. Artwork was generated with built-in imagegen; prompts are in `generation_prompts.json`.
+Sprite import metadata is included. Use Point filtering, no mipmaps, and uncompressed textures. Inspect generated slices and pivots in Sprite Editor; grid dimensions are uneven. PlayerActions selects the existing animation frames. PlayableSceneBuilder creates trimmed native Sprite assets plus simple pixel hand effects in Characters/Generated; the source PNGs are unchanged. Dedicated punch/push sprite-sheet frames are not included. Artwork was generated with built-in imagegen; prompts are in `generation_prompts.json`.
