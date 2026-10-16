@@ -6,7 +6,7 @@ A 2D pixel-art project in Unity featuring a chibi boy and girl on opposite ends 
 
 <p align="center"><img src="Assets/Art/Characters/two_players.png" alt="Boy and girl sprite sheet: idle, walking, jumping, and hurt" width="720"></p>
 
-> Images above: generated composition preview and the character animation sheet. Neither is a gameplay screenshot. The current Main scene is a visual setup preview. Only the exact supplied CharacterController2DP2 script is included as custom C# code.
+> Images above: original portrait art concept and the character animation sheet. The Main scene now uses the desktop 16:9 layout described below. Neither is a gameplay screenshot. The current Main scene is a visual setup preview. Only the exact supplied CharacterController2DP2 script is included as custom C# code.
 
 ## Download & play
 
@@ -39,7 +39,7 @@ The unchanged controller provides ground checks and a public `Move(float move, b
 
 Record the current setup accurately; movement and animation transitions are not playable yet.
 
-1. Open **Assets → Scenes → Main** and set the Game view to **Phone 1080 × 1920**.
+1. Open **Assets → Scenes → Main** and set the Game view to **Desktop 1920 × 1080**.
 2. Start a screen recording on your computer. On macOS, use **Cmd + Shift + 5**.
 3. Show the boy, girl, plank, large ball, clouds, and green land in the preview.
 4. Open the character sheet in Sprite Editor and show its idle, walk, jump, and hurt rows.
@@ -52,7 +52,7 @@ Record the current setup accurately; movement and animation transitions are not 
 | --- | --- | --- |
 | 1 | Unity project folders, URP 2D settings, VS Code recommendations | Prepared |
 | 2 | Original boy/girl sprites, background, plank/ball artwork | Created |
-| 3 | Main scene with visual layout | Setup preview |
+| 3 | Main scene with desktop 16:9 layout | Setup preview |
 | 4 | Exact supplied CharacterController2DP2 | Preserved byte-for-byte |
 | 5 | Input, animation, controller/physics scene wiring | Pending |
 | 6 | Audio, balancing rules, game over and polish | Pending |
@@ -62,7 +62,7 @@ Record the current setup accurately; movement and animation transitions are not 
 
 - Original boy and girl chibi characters in a cozy farming RPG pixel aesthetic.
 - Transparent sprite sheet containing 32 frames: idle, walking, jumping, and hurt for each character.
-- Cloud-and-green-land portrait background.
+- Cloud-and-green-land background filling a desktop landscape frame.
 - Transparent plank-and-ball prop and generated composition preview.
 - Original controller file retained as `CharacterController2DP2.bin`, plus its identical `.cs` copy in Assets.
 - No additional custom runtime, editor, or test C# scripts.
@@ -91,7 +91,7 @@ The current visual scene uses Unity UI images; it is not a wired Rigidbody2D gam
 
 ## Screen layout
 
-Portrait 9:16 with a 1080 × 1920 Canvas reference. The boy stands to the left and the girl to the right of the centered plank/ball artwork. Select 9:16 in the Game view. The background fills the Canvas.
+Desktop landscape **16:9**, with a **1920 × 1080** Canvas reference and a centered `DesktopFrame`. The boy and girl stay at opposite ends of the plank, with the ball below. Title and status text sit above the board; setup notes and the preview button sit below it. The background fills the Canvas. Desktop builds use a resizable 1920 × 1080 window; the browser canvas defaults to 1280 × 720. Select **16:9** or **Desktop 1920 × 1080** in Unity’s Game view. Editor Game-view presets are local preferences and must be selected manually.
 
 ## Unity version and packages
 
@@ -166,7 +166,7 @@ README section organization follows the supplied [CSEL Tamagotchi reference](htt
 3. In Hub, select **Projects → Add → Add project from disk**. Choose the folder containing `Assets`, `Packages`, and `ProjectSettings`.
 4. Open the project and allow package restoration and asset import to finish.
 5. Open **Assets → Scenes → Main** manually. No custom scene-opening tool is included.
-6. In the Game view resolution dropdown, add **Phone**, Fixed Resolution **1080 × 1920**, or select a 9:16 aspect.
+6. In the Game view resolution dropdown, add **Desktop**, Fixed Resolution **1920 × 1080**, or select a 16:9 aspect.
 7. Press **Play** to inspect the visual setup. It is not currently an interactive two-player game.
 8. Open the same root folder in **VS Code**. The recommended extensions are listed in `.vscode/extensions.json`. View `CharacterController2DP2.cs` without changing it.
 9. Before claiming runtime behavior, complete the scene wiring and review the Console. See [validation notes](Docs/VALIDATION.md) for the checks already performed.
@@ -179,7 +179,7 @@ README section organization follows the supplied [CSEL Tamagotchi reference](htt
 4. Confirm the editor version is **6000.3.24f1**, then open the project.
 5. Wait for Unity to import assets and restore packages.
 6. In the Project window, open **Assets → Scenes → Main**.
-7. Add a **Phone 1080 × 1920** Game view resolution; reduce the Scale slider if the preview is too large.
+7. Add a **Desktop 1920 × 1080** Game view resolution; reduce the Scale slider if the preview is too large.
 8. Press **Play** and inspect both characters and the background composition.
 9. Open **Window → General → Console** to review messages. The unchanged controller uses obsolete `Rigidbody2D.velocity` APIs that produced warnings in local validation.
 10. Press **Play** again to exit. Keyboard movement, animation changes, and balancing are not configured.

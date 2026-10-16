@@ -8,3 +8,12 @@
 - Prior prototype component references were removed from Main. Local scene object references were checked for dangling IDs.
 - ProjectVersion restored to requested target 6000.3.24f1 after newer-patch validation.
 - Exact-target-version compilation, interactive gameplay, animation playback, and builds remain unverified. Main is a visual setup preview, not wired gameplay.
+
+## Desktop layout update
+
+- Canvas reference and DesktopFrame dimensions checked at 1920 × 1080 (16:9).
+- Title, status, scene message, setup notes, and preview button bounds checked to fit the landscape frame.
+- Desktop defaults checked at 1920 × 1080, windowed and resizable; browser defaults at 1280 × 720.
+- Scene object references checked for dangling local IDs.
+- Original controller bytes and single-custom-script constraint rechecked.
+- This layout update was checked statically; interactive visual review and desktop builds have not been run. Select a 16:9 Game view preset manually in the Editor.
