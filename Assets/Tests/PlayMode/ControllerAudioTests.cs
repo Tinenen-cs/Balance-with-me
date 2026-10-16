@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -89,7 +90,63 @@ namespace BalanceWithMe.Tests
             game.Restart();Assert.That(game.sounds.LastCue,Is.EqualTo("start"));
             game.boy.body.position=new Vector2(0,-4);
             yield return null;
+            Assert.That(game.sounds.LastCue,Is.EqualTo("fail"));
+            yield return new WaitForSeconds(.85f);
             Assert.That(game.sounds.LastCue,Is.EqualTo("win"));
+        }
+        [UnityTest] public IEnumerator HelpAndAudioNoticesExpireWithoutHidingEssentials()
+        {
+            yield return new WaitForSeconds(5.2f);
+            Assert.That(game.helpPopup.alpha,Is.Zero);
+            Assert.That(game.statusPopup.alpha,Is.Zero);
+            Assert.That(game.audioPopup.alpha,Is.Zero);
+            Assert.That(game.boyHud.isActiveAndEnabled && game.girlHud.isActiveAndEnabled && game.timer.isActiveAndEnabled,Is.True);
+            game.PopupDuration=.1f;game.ShowHelp();game.NextMusic();
+            yield return null;
+            Assert.That(game.helpPopup.alpha,Is.EqualTo(1));
+            Assert.That(game.audioPopup.alpha,Is.EqualTo(1));
+            StringAssert.Contains("MUSIC 2",game.audioStatus.text);
+            yield return new WaitForSeconds(2.7f);
+            Assert.That(game.helpPopup.alpha,Is.Zero);
+            Assert.That(game.audioPopup.alpha,Is.Zero);
+        }
+        [UnityTest] public IEnumerator BothPlayersHaveFootstepJumpAndLandingAudio()
+        {
+            var heard=new HashSet<string>();game.sounds.CuePlayed+=cue=>heard.Add(cue);
+            var keyboard=InputSystem.AddDevice<Keyboard>();
+            try
+            {
+                InputSystem.EnableDevice(keyboard);
+                foreach(bool girl in new[]{false,true})
+                {
+                    game.Restart();heard.Clear();
+                    yield return new WaitForSeconds(.25f);
+                    InputSystem.QueueStateEvent(keyboard,new KeyboardState(girl?Key.LeftArrow:Key.D));InputSystem.Update();
+                    yield return new WaitForSeconds(.4f);
+                    Assert.That(heard,Does.Contain("step"));
+                    InputSystem.QueueStateEvent(keyboard,new KeyboardState(girl?Key.UpArrow:Key.W));InputSystem.Update();
+                    (girl?game.girl:game.boy).CaptureKeyboardInput();
+                    yield return new WaitForFixedUpdate();
+                    InputSystem.QueueStateEvent(keyboard,new KeyboardState());InputSystem.Update();
+                    yield return new WaitForSeconds(1.6f);
+                    Assert.That(heard,Does.Contain("jump"));
+                    Assert.That(heard,Does.Contain("land"));
+                }
+            }
+            finally { InputSystem.RemoveDevice(keyboard); }
+        }
+        [UnityTest] public IEnumerator RestartCancelsPendingResultJingle()
+        {
+            game.sounds.PlayResult(false);
+            Assert.That(game.sounds.LastCue,Is.EqualTo("fail"));
+            game.Restart();
+            yield return new WaitForSeconds(.9f);
+            Assert.That(game.sounds.LastCue,Is.EqualTo("start"));
+            game.boy.body.position=new Vector2(0,-4);game.girl.body.position=new Vector2(1,-4);
+            yield return null;
+            Assert.That(game.sounds.LastCue,Is.EqualTo("fail"));
+            yield return new WaitForSeconds(.85f);
+            Assert.That(game.sounds.LastCue,Is.EqualTo("draw"));
         }
         [UnityTest] public IEnumerator GamepadStartRestartsAndNorthButtonEmotes()
         {

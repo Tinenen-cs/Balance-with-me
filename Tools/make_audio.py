@@ -75,6 +75,9 @@ def sweep(name, start, end, duration, noise=.1):
 if __name__ == "__main__":
     music("sky_breeze", [48,53,55,48], [72,76,79,76,74,77,79,77], 100)
     music("playful_balance", [55,60,57,55], [79,83,86,83,81,84,88,84], 120)
+    sweep("step", 180, 80, .07, .5)
+    sweep("land", 110, 55, .12, .3)
+    jingle("fail", [60,55,48], .18)
     sweep("jump", 220, 650, .2)
     sweep("punch", 260, 80, .13, .55)
     sweep("push", 180, 95, .32, .35)

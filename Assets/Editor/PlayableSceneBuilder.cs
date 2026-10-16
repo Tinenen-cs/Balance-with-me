@@ -98,7 +98,7 @@ namespace BalanceWithMe.Editor
             audio.music = root.AddComponent<AudioSource>(); audio.music.playOnAwake = false; audio.music.volume = .18f;
             audio.effects = root.AddComponent<AudioSource>(); audio.effects.playOnAwake = false; audio.effects.volume = .55f;
             audio.tracks = new[] { "sky_breeze", "playful_balance" }.Select(name => AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/"+name+".wav")).ToArray();
-            audio.cues = new[] { "jump", "punch", "push", "hit", "shove", "start", "win", "draw", "emote_happy", "emote_sad" }
+            audio.cues = new[] { "jump", "punch", "push", "hit", "shove", "start", "win", "draw", "emote_happy", "emote_sad", "step", "land", "fail" }
                 .Select(name => new GameAudio.Cue { name=name, clip=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/"+name+".wav") }).ToArray();
             if (audio.tracks.Any(clip => clip == null) || audio.cues.Any(cue => cue.clip == null))
                 throw new InvalidOperationException("Audio missing. Run python3 Tools/make_audio.py before rebuilding.");
@@ -221,31 +221,42 @@ namespace BalanceWithMe.Editor
                 fill.GetComponent<Image>().color=new Color(1,.91f,.70f);fill.GetComponent<Image>().raycastTarget=false;
                 return root;
             }
-            Panel("Village Title Sign",new Vector2(0,440),new Vector2(720,90));
-            Label("Title","BALANCE WITH ME",60,new Vector2(0,440),new Vector2(690,80));
-            Panel("Boy Farm Scorecard",new Vector2(-650,405),new Vector2(410,120));
-            Panel("Girl Farm Scorecard",new Vector2(650,405),new Vector2(410,120));
-            game.boyHud=Label("Boy Name Health and Score","FARMER BOY\nHEALTH 3/3   WINS 0",30,new Vector2(-650,405),new Vector2(390,105));
-            game.girlHud=Label("Girl Name Health and Score","FARMER GIRL\nHEALTH 3/3   WINS 0",30,new Vector2(650,405),new Vector2(390,105));
-            Panel("Round Clock",new Vector2(0,320),new Vector2(230,100));
-            game.timer=Label("Timer","ROUND TIME\n00:00",32,new Vector2(0,320),new Vector2(210,90));
-            Panel("Village Notice",new Vector2(0,230),new Vector2(760,54));
-            game.status=Label("Status","KEEP YOUR FOOTING - FACE YOUR RIVAL",26,new Vector2(0,230),new Vector2(730,44));
+            Text PanelLabel(RectTransform panel,string name,string content,int fontSize,Vector2 position,Vector2 size) {
+                var label=Label(name,content,fontSize,position,size);label.transform.SetParent(panel,false);return label;
+            }
+            CanvasGroup Popup(RectTransform panel) {
+                var group=panel.gameObject.AddComponent<CanvasGroup>();group.alpha=0;group.blocksRaycasts=false;group.interactable=false;return group;
+            }
+            void SignButton(string name,string caption,Vector2 position,UnityEngine.Events.UnityAction action) {
+                var panel=Panel(name,position,new Vector2(260,70));panel.GetComponent<Image>().raycastTarget=true;
+                var button=panel.gameObject.AddComponent<Button>();button.targetGraphic=panel.GetComponent<Image>();
+                var colors=button.colors;colors.highlightedColor=new Color(1,.9f,.72f);colors.pressedColor=new Color(.8f,.65f,.4f);button.colors=colors;
+                UnityEditor.Events.UnityEventTools.AddPersistentListener(button.onClick,action);
+                PanelLabel(panel,name+" Label",caption,30,Vector2.zero,new Vector2(240,58));
+            }
+            Panel("Village Title Sign",new Vector2(0,460),new Vector2(620,72));
+            Label("Title","BALANCE WITH ME",48,new Vector2(0,460),new Vector2(600,64));
+            Panel("Boy Farm Scorecard",new Vector2(-650,435),new Vector2(410,110));
+            Panel("Girl Farm Scorecard",new Vector2(650,435),new Vector2(410,110));
+            game.boyHud=Label("Boy Name Health and Score","FARMER BOY\nHEALTH 3/3   WINS 0",30,new Vector2(-650,435),new Vector2(390,100));
+            game.girlHud=Label("Girl Name Health and Score","FARMER GIRL\nHEALTH 3/3   WINS 0",30,new Vector2(650,435),new Vector2(390,100));
+            Panel("Round Clock",new Vector2(0,365),new Vector2(210,84));
+            game.timer=Label("Timer","ROUND TIME\n00:00",30,new Vector2(0,365),new Vector2(190,78));
+            var notice=Panel("Village Notice",new Vector2(0,260),new Vector2(760,54));
+            game.statusPopup=Popup(notice);
+            game.status=PanelLabel(notice,"Status","",26,Vector2.zero,new Vector2(730,44));
             game.health=Label("Health Data","",1,Vector2.zero,Vector2.one);game.health.gameObject.SetActive(false);
             game.boy.emoteLabel=Label("Boy Emote","",28,Vector2.zero,new Vector2(300,50));
             game.girl.emoteLabel=Label("Girl Emote","",28,Vector2.zero,new Vector2(300,50));
-            Panel("Farm Controls Board",new Vector2(0,-385),new Vector2(1160,170));
-            Label("Boy Controls","FARMER BOY\nA/D MOVE - W JUMP\nF PUNCH - G PUSH - E EMOTE",25,new Vector2(-280,-370),new Vector2(540,100));
-            Label("Girl Controls","FARMER GIRL\nARROWS MOVE - UP JUMP\nK PUNCH - L PUSH - O EMOTE",25,new Vector2(280,-370),new Vector2(540,100));
-            Label("Gamepad Controls","PAD: STICK MOVE - A JUMP - X PUNCH - B PUSH - Y EMOTE",22,new Vector2(0,-443),new Vector2(1110,40));
-            var restart=Panel("Restart Farm Sign",new Vector2(780,-405),new Vector2(280,90));
-            restart.GetComponent<Image>().raycastTarget=true;
-            var button=restart.gameObject.AddComponent<Button>();
-            var colors=button.colors;colors.highlightedColor=new Color(1,.9f,.72f);colors.pressedColor=new Color(.8f,.65f,.4f);button.colors=colors;
-            UnityEditor.Events.UnityEventTools.AddPersistentListener(button.onClick,game.Restart);
-            var label=Label("Restart Label","RESTART [R]",34,Vector2.zero,new Vector2(260,70));label.transform.SetParent(restart,false);
-            Panel("Audio Notice",new Vector2(0,-510),new Vector2(1000,38));
-            game.audioStatus=Label("Audio Status","M MUTE - N MUSIC",22,new Vector2(0,-510),new Vector2(970,30));
+            var help=Panel("Farm Controls Popup",new Vector2(0,-300),new Vector2(1260,220));game.helpPopup=Popup(help);
+            PanelLabel(help,"Boy Controls","BOY: A/D MOVE - W JUMP - F PUNCH - G PUSH - E EMOTE",25,new Vector2(0,75),new Vector2(1220,40));
+            PanelLabel(help,"Girl Controls","GIRL: ARROWS MOVE - UP JUMP - K PUNCH - L PUSH - O EMOTE",25,new Vector2(0,30),new Vector2(1220,40));
+            PanelLabel(help,"Gamepad Controls","PAD: STICK MOVE - SOUTH JUMP - WEST PUNCH - EAST PUSH - NORTH EMOTE",23,new Vector2(0,-15),new Vector2(1220,40));
+            PanelLabel(help,"Shared Controls","M MUTE - N MUSIC - PAD: START RESTART / SELECT MUTE / RB MUSIC / LB HELP",23,new Vector2(0,-65),new Vector2(1220,40));
+            SignButton("Help Farm Sign","HELP [H]",new Vector2(-780,-460),game.ShowHelp);
+            SignButton("Restart Farm Sign","RESTART [R]",new Vector2(780,-460),game.Restart);
+            var audio=Panel("Audio Notice",new Vector2(0,-465),new Vector2(520,48));game.audioPopup=Popup(audio);
+            game.audioStatus=PanelLabel(audio,"Audio Status","",24,Vector2.zero,new Vector2(500,40));
             new GameObject("EventSystem",typeof(EventSystem),typeof(InputSystemUIInputModule));
         }
     }

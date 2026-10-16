@@ -23,7 +23,7 @@ namespace BalanceWithMe
         public float cooldown;
         float actionTime, move, flash, animationTime;
         bool jumpQueued, punchConnected;
-        float emoteTime, reactionCooldown;
+        float emoteTime, reactionCooldown, stepRemaining, airborneTime;
         bool sadEmote;
         string emoteText;
         public float Direction => controller.m_FacingRight ? 1 : -1;
@@ -69,6 +69,19 @@ namespace BalanceWithMe
         void FixedUpdate()
         {
             if (game == null || !game.Running) { jumpQueued = false; return; }
+            float dt = Time.fixedDeltaTime;
+            stepRemaining = Mathf.Max(0, stepRemaining - dt);
+            if (!controller.IsGrounded) airborneTime += dt;
+            else
+            {
+                if (airborneTime > .12f) game.sounds?.Play("land");
+                airborneTime = 0;
+                if (StunRemaining <= 0 && Mathf.Abs(move) > .1f && Mathf.Abs(body.linearVelocity.x) > .25f && stepRemaining <= 0)
+                {
+                    game.sounds?.Play("step");
+                    stepRemaining = .32f;
+                }
+            }
             if (StunRemaining <= 0)
             {
                 bool jumped = jumpQueued && controller.IsGrounded;
@@ -156,6 +169,7 @@ namespace BalanceWithMe
             cooldown = StunRemaining = flash = actionTime = animationTime = move = 0;
             CurrentAction = LastReceivedAction = ActionType.None;
             jumpQueued = punchConnected = false;
+            stepRemaining = .2f; airborneTime = 0;
             emoteTime = reactionCooldown = 0; emoteText = ""; sadEmote = true;
             controller.m_FacingRight = !isGirl;
             transform.localScale = new Vector3(isGirl ? -1 : 1, 1, 1);

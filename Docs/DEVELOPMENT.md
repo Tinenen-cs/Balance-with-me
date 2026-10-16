@@ -53,3 +53,9 @@ The round wooden support is positioned using uniform background overscan (11.6 w
 ## Smaller fulcrum and cleaner HUD
 
 The wooden ball is about 25% smaller, with the background offset adjusted to y=-0.18 so its top remains seated beneath the plank. The BOY/GIRL keyboard/gamepad device-status labels were removed from the scene, scene builder and runtime update. Keyboard and gamepad input mappings remain available; instructions stay in the themed controls panel and README.
+
+## Compact HUD and full action audio
+
+Persistent farm signs now contain only the title, names/health/wins, clock, Help and Restart. Controls appear for five seconds at startup or with H, the Help button or either assigned pad's left bumper. Round-start and audio notices last 2.5 seconds; the final result remains until restart. Popup text and panel art share a CanvasGroup so neither leaves an empty plaque behind. Popup groups do not intercept clicks.
+
+PlayerActions emits throttled footsteps while moving on the plank and a landing cue after meaningful airtime. Existing jump, punch, push, hit, shove and both emote sounds remain. GameAudio sequences a distinct failure cue before win/draw and cancels old result playback on restart. Two looping music tracks and saved mute are retained. Tools/make_audio.py reproduces all 15 WAV assets. No app or APK was built.

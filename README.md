@@ -60,12 +60,12 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 
 - **Local two-player controls** for walking, jumping, punching and pushing, with shared-keyboard, two-gamepad and mixed input.
 - **Gamepad hot-plugging:** the first connected gamepad controls the boy, the second controls the girl. Disconnecting one preserves the other player’s assignment; keyboard controls remain available.
-- **Original audio:** two switchable looping music tracks, action/hit sounds, happy/sad emote jingles and round-result cues. Mute is remembered.
+- **Original audio:** two switchable looping music tracks, footsteps, jump/landing, punch/push and hit/shove sounds, happy/sad emote jingles, and separate fail/win/draw cues. Mute is remembered.
 - **Emotes:** alternate happy/sad speech labels and jingles above each player.
 - **Distinct attacks:** punch damages and knocks back once; push shoves throughout its active window without damage.
 - **Combat feedback:** orange punch fist, cyan push hand, red hit flash and hurt frames.
 - **Farm-themed scorecards** show player names, three health points and match wins. The round timer pauses at the result; restart resets the round while keeping match wins until the scene is reloaded.
-- **Wood-and-parchment UI**, Tiny5 pixel lettering and a matching restart sign fit the farming-village design.
+- **Wood-and-parchment UI** keeps names, health, wins, timer, title, Help and Restart visible. Controls appear for five seconds at startup or on demand; round-start and audio notices disappear after 2.5 seconds. The result stays visible until restart.
 - **Physics scene:** player Rigidbody2Ds and capsule colliders on a hinged plank.
 - **32 original animation frames** used for idle, walk, jump and hurt, plus programmatic combat hand effects.
 - **Desktop 16:9 farming village** with farmhouses, fields, clouds, a windmill and a round wooden fulcrum supporting the plank.
@@ -83,6 +83,7 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 | Restart round | R or RESTART button | R or RESTART button |
 | Mute / unmute | M | M |
 | Next music track | N | N |
+| Show controls briefly | H or HELP button | H or HELP button |
 
 ### Gamepad controls
 
@@ -98,6 +99,7 @@ Connect supported gamepads by USB or Bluetooth before or during play. The first 
 | Restart | Start / Menu | Options |
 | Mute | Select / View | Share / Create |
 | Next music | Right bumper | R1 |
+| Show controls briefly | Left bumper | L1 |
 
 Gamepad input is tested with simulated Input System devices. Physical controller compatibility should be checked on your device.
 
@@ -113,7 +115,7 @@ Click the Game view to give it keyboard focus. Attack while facing the other pla
 
 ## Screen layout
 
-Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Parchment player scorecards, a title sign, a round clock and a notice board sit above gameplay. Controls, audio status and the restart sign sit below it.
+Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Symmetrical parchment player scorecards flank the centered title and round clock. Small Help and Restart signs sit in opposite bottom corners. The controls panel is a five-second popup (H / left bumper / HELP); audio status appears only after M / N or the corresponding gamepad input. Emote and reaction words appear briefly above the players. The winner or draw notice appears at round end and stays until restart.
 
 Desktop defaults are a resizable 1920 × 1080 window; browser defaults are 1280 × 720. Select **16:9** or **Desktop 1920 × 1080** manually in Unity's Game view. The farming-village background uses uniform overscan to fill the view, preserve the round wooden fulcrum’s proportions and align its top with the plank.
 
@@ -137,7 +139,7 @@ Assets/
     UI/pixel_hand.png               native pixel hand effect
     Icon/                          reserved app icon
   Audio/Music/                     two original background loops
-  Audio/SFX/                       ten original action/reaction/emote cues
+  Audio/SFX/                       thirteen original movement/action/reaction/emote/result cues
   Editor/PlayableSceneBuilder.cs   rebuilds the playable scene and wires references
   Editor/LayoutScreenshot.cs       captures the full scene for the README
   Scenes/Main.unity                playable desktop scene
@@ -173,11 +175,13 @@ All included audio is original synthesis generated for this project with `Tools/
 | --- | --- | --- |
 | `Music/sky_breeze.wav` | Default mellow background loop | Original synthesis |
 | `Music/playful_balance.wav` | Alternate upbeat background loop (N / right bumper) | Original synthesis |
+| `SFX/step.wav`, `land.wav` | Grounded walking (throttled) / landing after airtime | Original synthesis |
 | `SFX/jump.wav` | Accepted grounded jump | Original synthesis |
 | `SFX/punch.wav`, `push.wav` | Attack starts | Original synthesis |
 | `SFX/hit.wav`, `shove.wav` | Opponent reacts; repeated shove sounds are throttled | Original synthesis |
 | `SFX/emote_happy.wav`, `emote_sad.wav` | E / O / gamepad north button emote | Original synthesis |
-| `SFX/start.wav`, `win.wav`, `draw.wav` | Round restart / result | Original synthesis |
+| `SFX/fail.wav` | A player falls or loses all health; plays before the result jingle | Original synthesis |
+| `SFX/start.wav`, `win.wav`, `draw.wav` | Round restart / result; restart cancels a pending result jingle | Original synthesis |
 
 Use **M** or the gamepad Select/View button to mute all sound; the setting is saved locally. Use **N** or the right bumper to switch tracks. Music and effects volumes are exposed on the Audio System's AudioSources. Regenerate the WAVs with `python3 Tools/make_audio.py`, then rebuild the scene if clip references need updating.
 
@@ -209,7 +213,7 @@ README section organization follows the supplied [CSEL Tamagotchi reference](htt
 4. Open the project and allow package restoration and asset import to finish.
 5. Open **Assets → Scenes → Main**. To regenerate the playable setup, use **Balance with me → Rebuild Playable Scene**.
 6. In the Game view resolution dropdown, add **Desktop**, Fixed Resolution **1920 × 1080**, or select a 16:9 aspect.
-7. Press **Play**, click the Game view, and use the keyboard or connect gamepads. Move close to the opponent before attacking. Test E/O or the gamepad north button for emotes; M mutes and N changes music.
+7. Press **Play**, click the Game view, and use the keyboard or connect gamepads. Move close to the opponent before attacking. Press H / left bumper / HELP to briefly show controls. Test E/O or the gamepad north button for emotes; M mutes and N changes music. Listen for footsteps, jump/landing, both attacks and hit reactions; losing a round plays a fail cue followed by the result jingle.
 8. Open the same root folder in **VS Code**. The recommended extensions are listed in `.vscode/extensions.json`. Edit the movement, actions, or round scripts as needed; the original `.bin` remains available for comparison.
 9. Run **Window → General → Test Runner → PlayMode → Run All**. See [validation notes](Docs/VALIDATION.md) for results and limits.
 

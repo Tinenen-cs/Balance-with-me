@@ -5,7 +5,7 @@
 Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1**; that exact patch has not been tested here. The project is ready for a Unity Editor playtest using the verified editor.
 
 - C# compilation and scene generation succeeded.
-- **14 PlayMode tests passed, 0 failed**:
+- **17 PlayMode tests passed, 0 failed**:
   1. Punch applies damage only once, respects cooldown and stuns the target.
   2. Push causes forward knockback without reducing health.
   3. Punch rejects targets behind the player or beyond reach.
@@ -16,12 +16,15 @@ Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1*
   8. Both keyboard jump keys lift grounded players.
   9. Two simulated gamepads independently control attacks; disconnecting one preserves the other slot.
   10. Gamepad movement and jump input reach the physics motor.
-  11. Two music loops and ten cues are wired; switching, mute, emote and action cue selection work.
+  11. Two music loops and thirteen cues are wired; switching, mute, emote and action cue selection work.
   12. Gamepad emote and restart buttons work.
   13. Background music actively plays and loops; both happy/sad emote jingles and track switching work.
-  14. Punch-hit, restart and win reactions select their audio cues.
-- All twelve synthesized audio files were checked as nonempty 24 kHz, mono, 16-bit PCM WAVs.
-- A graphical Unity Editor render was inspected at 1920 × 1080: both characters are visible; the rope-bound plank and saddle meet the circular wooden fulcrum; farming-village scenery, parchment scorecards, timer, controls and restart sign render together.
+  14. Punch-hit and restart cues play; falling selects fail followed by win.
+  15. Help and audio notices expire while player status and timer remain active.
+  16. Both players produce footsteps, jump and landing cues through keyboard input and physics.
+  17. Restart cancels a pending result jingle; simultaneous losses play fail followed by draw.
+- All fifteen synthesized audio files were checked as nonempty 24 kHz, mono, 16-bit PCM WAVs.
+- A graphical Unity Editor render was inspected at 1920 × 1080: both characters are visible; the rope-bound plank and saddle meet the circular wooden fulcrum; farming-village scenery, parchment scorecards, timer, Help and Restart signs render together after the introductory popups disappear.
 - Native importer Sprite subassets replaced the earlier serialized generated character sprites after the graphical review revealed missing character rendering.
 - README embeds only the full game layout, and its local links and Markdown fences were checked.
 - Original CharacterController2DP2.bin remains byte-identical to the uploaded original. The active controller has authorized Unity 6 API updates plus a read-only grounding property for jump audio.
@@ -50,3 +53,7 @@ The upright trunk and roots have been replaced by a circular wooden-log support.
 ## Smaller ball and device-label removal
 
 The ball artwork was reduced about 25%, with the background offset adjusted to retain the plank contact point. The keyboard/gamepad device-status text object, scene reference and runtime assignment were removed. Unity 6000.3.26f1 compiled and captured the updated full scene successfully; the image was visually inspected and local scene references checked. No new tests were added for this visual change; the 14-test results above are from the previous gameplay/audio verification.
+
+## Compact HUD and action audio check
+
+The current 17-test suite passed on Unity 6000.3.26f1 after the popup and audio changes. All 15 WAV files were checked for nonzero samples and RMS energy. The full-layout capture waits six seconds so the startup help and notice have expired. Player names, health, wins, timer and corner buttons remain; control instructions and audio notices share timed panel visibility with their text. End-of-round results remain visible until restart. The original user-provided .bin is unchanged. No app/APK was built.

@@ -17,18 +17,37 @@ namespace BalanceWithMe
         public LocalInputRouter inputs;
         public GameAudio sounds;
         public bool Running { get; private set; }
-        float elapsed;
-        void Start() => Restart();
+        public CanvasGroup helpPopup, statusPopup, audioPopup;
+        public float PopupDuration = 5;
+        float elapsed, helpRemaining, statusRemaining, audioRemaining;
+        void TickPopup(CanvasGroup popup, ref float remaining)
+        {
+            remaining = Mathf.Max(0, remaining - Time.unscaledDeltaTime);
+            if (popup != null) { popup.alpha = remaining > 0 ? 1 : 0; popup.blocksRaycasts = false; popup.interactable = false; }
+        }
+        public void ShowHelp() { helpRemaining = PopupDuration; }
+        public void ToggleAudio() { sounds?.ToggleMute(); ShowAudioNotice(); }
+        public void NextMusic() { sounds?.NextTrack(); ShowAudioNotice(); }
+        void ShowAudioNotice()
+        {
+            if (audioStatus != null && sounds != null)
+                audioStatus.text = $"MUSIC {sounds.TrackIndex + 1}  -  {(sounds.Muted ? "SOUND OFF" : "SOUND ON")}";
+            audioRemaining = 2.5f;
+        }
+        void Start() { Restart(); ShowHelp(); }
         void Update()
         {
             if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame) Restart();
-            if (Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame) sounds?.ToggleMute();
-            if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame) sounds?.NextTrack();
+            if (Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame) ToggleAudio();
+            if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame) NextMusic();
+            if (Keyboard.current != null && Keyboard.current.hKey.wasPressedThisFrame) ShowHelp();
             if (inputs != null)
             {
                 HandlePad(inputs.BoyPad); HandlePad(inputs.GirlPad);
             }
-            if (audioStatus != null && sounds != null) audioStatus.text = $"M: {(sounds.Muted ? "UNMUTE" : "MUTE")}  •  N: MUSIC {sounds.TrackIndex+1}";
+            TickPopup(helpPopup, ref helpRemaining);
+            TickPopup(statusPopup, ref statusRemaining);
+            TickPopup(audioPopup, ref audioRemaining);
             if (Running)
             {
                 elapsed += Time.deltaTime;
@@ -39,10 +58,10 @@ namespace BalanceWithMe
                     Running = false;
                     if (boyLost && !girlLost) GirlWins++;
                     if (girlLost && !boyLost) BoyWins++;
-                    sounds?.Play(boyLost && girlLost ? "draw" : "win");
+                    sounds?.PlayResult(boyLost && girlLost);
+                    statusRemaining = float.PositiveInfinity;
                     status.text = boyLost && girlLost ? "DRAW — R to restart" : (boyLost ? "GIRL WINS" : "BOY WINS") + " — R to restart";
                 }
-                else status.text = "KEEP YOUR FOOTING - FACE YOUR RIVAL";
             }
             health.text = $"BOY  {boy.Health}/3     |     GIRL  {girl.Health}/3";
             if (boyHud != null) boyHud.text = $"{boyName}\nHEALTH {boy.Health}/3   WINS {BoyWins}";
@@ -53,8 +72,9 @@ namespace BalanceWithMe
         {
             if (pad == null) return;
             if (pad.startButton.wasPressedThisFrame) Restart();
-            if (pad.selectButton.wasPressedThisFrame) sounds?.ToggleMute();
-            if (pad.rightShoulder.wasPressedThisFrame) sounds?.NextTrack();
+            if (pad.selectButton.wasPressedThisFrame) ToggleAudio();
+            if (pad.rightShoulder.wasPressedThisFrame) NextMusic();
+            if (pad.leftShoulder.wasPressedThisFrame) ShowHelp();
         }
         void FixedUpdate()
         {
@@ -69,7 +89,10 @@ namespace BalanceWithMe
             girl.ResetPlayer(new Vector2(2.6f, board.position.y + .24f));
             elapsed = 0;
             Running = true;
+            sounds?.CancelResult();
             sounds?.Play("start");
+            status.text = "KEEP YOUR FOOTING - FACE YOUR RIVAL";
+            statusRemaining = 2.5f;
             Physics2D.SyncTransforms();
         }
     }

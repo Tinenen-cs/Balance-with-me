@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 namespace BalanceWithMe
@@ -9,6 +10,8 @@ namespace BalanceWithMe
         public AudioSource music, effects;
         public AudioClip[] tracks;
         public Cue[] cues;
+        public event Action<string> CuePlayed;
+        Coroutine resultRoutine;
         public string LastCue { get; private set; }
         public bool Muted { get; private set; }
         public int TrackIndex { get; private set; }
@@ -23,6 +26,26 @@ namespace BalanceWithMe
             if (cue == null || cue.clip == null) return;
             LastCue = name;
             effects.PlayOneShot(cue.clip, cue.volume);
+            CuePlayed?.Invoke(name);
+        }
+        public void CancelResult()
+        {
+            if (resultRoutine != null) StopCoroutine(resultRoutine);
+            resultRoutine = null;
+            effects.Stop();
+        }
+        public void PlayResult(bool draw)
+        {
+            CancelResult();
+            resultRoutine = StartCoroutine(ResultSequence(draw));
+        }
+        IEnumerator ResultSequence(bool draw)
+        {
+            Play("fail");
+            var failure = Array.Find(cues, cue => cue.name == "fail");
+            yield return new WaitForSeconds(failure.clip.length);
+            Play(draw ? "draw" : "win");
+            resultRoutine = null;
         }
         public void SelectTrack(int index)
         {

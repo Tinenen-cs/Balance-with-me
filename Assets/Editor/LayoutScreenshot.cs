@@ -26,7 +26,7 @@ namespace BalanceWithMe.Editor
         {
             if(!EditorApplication.isPlaying)return;
             if(started==0)started=EditorApplication.timeSinceStartup;
-            if(EditorApplication.timeSinceStartup-started<2)return;
+            if(EditorApplication.timeSinceStartup-started<6)return;
             EditorApplication.update-=WaitForPlay;
             try
             {
