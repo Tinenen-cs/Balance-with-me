@@ -46,6 +46,7 @@ namespace BalanceWithMe.Editor
             var background = Render("Farmer Village and Wooden Ball", bg, new Vector2(0,-.18f), -10);
             // Uniform overscan keeps the wooden fulcrum round and seats its top under the plank.
             background.transform.localScale = Vector3.one * (11.6f / bg.bounds.size.y);
+            BuildClouds(cam);
             var plankSprite = ImportPlank();
             var board = new GameObject("Balancing Plank", typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(HingeJoint2D));
             board.transform.position = new Vector3(0,-.2f,0);
@@ -71,6 +72,34 @@ namespace BalanceWithMe.Editor
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene("Assets/Scenes/Main.unity", true) };
             AssetDatabase.SaveAssets();
             Debug.Log("Balance with me: playable push/punch scene generated.");
+        }
+
+        static void BuildClouds(Camera camera)
+        {
+            const string path = "Assets/Art/Backgrounds/moving_cloud.png";
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+            if (importer == null) throw new InvalidOperationException("Moving cloud sprite is missing.");
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.alphaIsTransparency = true;
+            importer.filterMode = FilterMode.Point;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.mipmapEnabled = false;
+            importer.npotScale = TextureImporterNPOTScale.None;
+            importer.SaveAndReimport();
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            var root = new GameObject("Drifting Clouds").transform;
+            Vector2[] positions = { new Vector2(-8,4.1f), new Vector2(7.4f,4.3f), new Vector2(-3.5f,3.5f), new Vector2(3.4f,3.6f), new Vector2(.8f,4.8f) };
+            float[] widths = { 5.6f, 5.2f, 2.8f, 3.2f, 2.1f };
+            for (int i = 0; i < positions.Length; i++)
+            {
+                var cloud = Render("Slow Cloud " + (i+1), sprite, positions[i], -9);
+                cloud.transform.SetParent(root, true);
+                cloud.transform.localScale = Vector3.one * (widths[i] / sprite.bounds.size.x);
+                var drift = cloud.gameObject.AddComponent<CloudDrift>();
+                drift.view = camera;
+                drift.speed = .06f + i * .012f;
+            }
         }
 
         static Sprite ImportPlank()

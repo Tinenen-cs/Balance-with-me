@@ -4,7 +4,7 @@ A local two-player 2D pixel-art game made with Unity and VS Code. A chibi boy an
 
 <p align="center"><img src="Docs/gameplay_layout.png" alt="Full desktop game layout: two players on a balancing plank above a round wooden fulcrum in a farming village" width="960"></p>
 
-> Full 16:9 layout captured from the Unity scene. The plank and circular wooden-log fulcrum share honey-brown timber, matching rope details and visible woodgrain. Grass and moss fringe the fulcrum’s curved rim and base to blend with the land; farmhouses, fields and a windmill frame the central play area. Character sprite sheets are kept in the project assets and are not displayed in this README.
+> Full 16:9 layout captured from the Unity scene. The plank and circular wooden-log fulcrum share honey-brown timber, matching rope details and visible woodgrain. Grass and moss fringe the fulcrum’s curved rim and base to blend with the land; farmhouses, fields and a windmill frame the central play area. Separate cloud sprites drift slowly across the sky. Character sprite sheets are kept in the project assets and are not displayed in this README.
 
 ## Download & play
 
@@ -69,6 +69,7 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 - **Smooth motion:** interpolated player/plank physics, 0.08-second movement smoothing and eased action/emote poses. The weighted plank uses angular damping and progressive resistance before its ±16° hinge limits. Restart clears stored movement smoothing.
 - **Physics scene:** player Rigidbody2Ds and capsule colliders on a hinged plank.
 - **32 original animation frames** used for idle, walk, jump and hurt, plus programmatic combat hand effects.
+- **Slow moving clouds:** five transparent pixel-art clouds drift gently across the sky at different speeds and wrap completely offscreen. They keep moving between rounds.
 - **Desktop 16:9 farming village** with farmhouses, fields, clouds, a windmill and a grass-trimmed round wooden fulcrum supporting the plank.
 - **Original source retained:** `CharacterController2DP2.bin` is unchanged; the active controller uses Unity 6 `linearVelocity` instead of deprecated `velocity`. Companion scripts were added after the user authorized new code.
 
@@ -112,7 +113,8 @@ Click the Game view to give it keyboard focus. Attack while facing the other pla
 2. Tune jump force, movement smoothing (default 0.08 seconds) and air control in **CharacterController2DP2**. Character and plank Rigidbody2Ds use Interpolate to smooth their rendered movement between physics steps.
 3. Combat reach, duration, damage, stun and cooldowns are in `PlayerActions.cs`. Movement speed is passed to the controller there.
 4. Tune the plank's Rigidbody2D mass (7), angular damping (2.5) and HingeJoint2D limits (±16°) in the Inspector. GameManager exposes Centering Torque (0.75), Edge Resistance (4) and Soft Limit Angle (11°) for the progressive swing resistance. Physics runs at 50 Hz; rendering uses interpolation.
-5. Use **Balance with me → Capture Full Layout** to refresh the README screenshot in the Editor; it does not create an app. The scene rebuild menu regenerates references and resets scene-only edits. Put repeatable setup changes in `PlayableSceneBuilder.cs` before using **Balance with me → Rebuild Playable Scene**.
+5. Adjust each **Drifting Clouds → Slow Cloud → Cloud Drift → Speed** in the Inspector (defaults 0.06–0.108 world units per second). Keep Edge Padding positive so clouds wrap beyond the viewport. Put repeatable cloud layout changes in `PlayableSceneBuilder.BuildClouds`.
+6. Use **Balance with me → Capture Full Layout** to refresh the README screenshot in the Editor; it does not create an app. The scene rebuild menu regenerates references and resets scene-only edits. Put repeatable setup changes in `PlayableSceneBuilder.cs` before using **Balance with me → Rebuild Playable Scene**.
 
 ## Screen layout
 
@@ -134,7 +136,8 @@ Assets/
   Art/
     Characters/two_players.png     original character sheet
     Characters/Generated/          shared unlit sprite material
-    Backgrounds/farm_village_wood_ball.png  village and round wooden fulcrum
+    Backgrounds/farm_village_wood_ball.png  cloudless village and round wooden fulcrum
+    Backgrounds/moving_cloud.png          transparent drifting cloud sprite
     Props/farm_balance_plank.png     rustic rope-bound plank and central saddle
     Fonts/Tiny5.ttf                pixel font, with SIL OFL license
     UI/pixel_hand.png               native pixel hand effect
@@ -150,6 +153,7 @@ Assets/
     Players/LocalInputRouter.cs     stable gamepad assignments and hot-plugging
     Audio/GameAudio.cs              looping music, named cues and persistent mute
     World/BalanceGame.cs            health, winner/restart, global input and audio
+    World/CloudDrift.cs             slow cloud movement and offscreen wrapping
     BalanceWithMe.Runtime.asmdef    runtime assembly definition
   Data/                            reserved tuning assets
   Settings/                        URP 2D configuration
@@ -190,7 +194,7 @@ Use **M** or the gamepad Select/View button to mute all sound; the setting is sa
 
 | Asset | Source | License / attribution |
 | --- | --- | --- |
-| Characters, farmer village, wooden fulcrum and farm plank | Original images generated for this project using built-in imagegen | Prompts recorded in `Docs/generation_prompts.json`; no separate asset license assigned |
+| Characters, farmer village, cloud sprite, wooden fulcrum and farm plank | Original images generated for this project using built-in imagegen | Prompts recorded in `Docs/generation_prompts.json`; no separate asset license assigned |
 | Tiny5 pixel font | [Tiny5 via Google Fonts](https://github.com/google/fonts/tree/main/ofl/tiny5), The Tiny5 Project Authors | SIL Open Font License 1.1; `Assets/Art/Fonts/Tiny5-OFL.txt` |
 | Project and URP configuration | Official Unity 2D template from the installed editor | Unity-provided configuration |
 | CharacterController2DP2 | User-supplied original retained as `.bin`; active `.cs` updated for Unity 6 APIs | Redistribution license not provided |

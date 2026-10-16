@@ -73,3 +73,7 @@ The plank now has mass 7 and angular damping 2.5. Centering torque is 0.75 per d
 ## Grass-trimmed wooden fulcrum
 
 Edited the existing village background with built-in imagegen to add grass and moss along the circular wooden support’s rim, sides and ground contact. The exposed woodgrain face and top plank contact remain clear; the canvas remains 1672 × 941. The existing asset path and Unity GUID are retained. The prompt is recorded in Docs/generation_prompts.json.
+
+## Slow cloud movement
+
+Removed painted sky clouds from the village base using built-in imagegen, retaining the grass-covered wooden support, village placement and 1672 × 941 canvas. A new transparent cloud sprite is rendered in five sizes/positions, ahead of the background but above the village and behind gameplay/HUD. CloudDrift advances horizontal position with delta time at 0.06–0.108 world units/second. Viewport width, each sprite’s full extent and padding determine an offscreen wrap; modulo wrapping preserves overshoot even for large time steps. Clouds continue between rounds. Rebuild Playable Scene wires the cloud instances and camera automatically.

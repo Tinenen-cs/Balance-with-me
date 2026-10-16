@@ -5,7 +5,7 @@
 Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1**; that exact patch has not been tested here. The project is ready for a Unity Editor playtest using the verified editor.
 
 - C# compilation and scene generation succeeded.
-- **20 PlayMode tests passed, 0 failed**:
+- **23 PlayMode tests passed, 0 failed**:
   1. Punch applies damage only once, respects cooldown and stuns the target.
   2. Push causes forward knockback without reducing health.
   3. Punch rejects targets behind the player or beyond reach.
@@ -26,6 +26,9 @@ Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1*
   18. Either sole winner celebrates briefly with the victory cue; the popup expires, draws omit it and restart clears it.
   19. Movement accelerates gradually, reverses without speed overshoot, stops and restarts without stored drift.
   20. The interpolated plank swings continuously within its limits and settles after an impulse; uneven player weight still tilts it.
+  21. Cloud displacement follows elapsed time independently of step size and preserves height.
+  22. Clouds wrap completely outside the viewport, preserving overshoot even across multiple cycles.
+  23. Five cloud sprites move slowly during play and continue after the round; their render layers remain behind gameplay.
 - All fifteen synthesized audio files were checked as nonempty 24 kHz, mono, 16-bit PCM WAVs.
 - A graphical Unity Editor render was inspected at 1920 × 1080: both characters are visible; the rope-bound plank and saddle meet the circular wooden fulcrum; farming-village scenery, parchment scorecards, timer, Help and Restart signs render together after the introductory popups disappear.
 - Native importer Sprite subassets replaced the earlier serialized generated character sprites after the graphical review revealed missing character rendering.
@@ -70,3 +73,7 @@ The updated full-layout screenshot includes matching boy/girl icons in the two f
 ## Grass and moss on the round fulcrum
 
 The existing background was edited with built-in imagegen to add a grass/moss fringe and ground tufts around the wooden circle. The 1672 × 941 canvas, asset GUID and scene placement are retained. Unity 6000.3.26f1 imported the image and captured the refreshed 1920 × 1080 layout successfully; the image was visually inspected for round support proportions, exposed plank contact, player icons and clear HUD. This is an artwork-only update; the 20-test gameplay result above is from the preceding gameplay verification and was not rerun. No app/APK was built.
+
+## Slow cloud animation
+
+All 23 PlayMode tests passed on Unity 6000.3.26f1 after adding CloudDrift and the cloud scene objects. The cloudless village base retains the 1672 × 941 canvas and the grass-covered fulcrum. The 1774 × 887 cloud PNG has an alpha channel and uses point-filtered, uncompressed sprite import. Five sprites render at varied scales with speeds 0.06–0.108 world units/second. The updated full-layout image was captured in Unity for visual inspection. No packaged app or APK was created.
