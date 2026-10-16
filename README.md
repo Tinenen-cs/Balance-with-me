@@ -86,7 +86,7 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 
 ### Gamepad controls
 
-Connect supported gamepads by USB or Bluetooth before or during play. The HUD shows assigned devices. The first pad controls the boy and the second controls the girl. With one pad, use it for the boy and the arrow-key controls for the girl. Keyboard bindings stay active for both players.
+Connect supported gamepads by USB or Bluetooth before or during play. The first pad controls the boy and the second controls the girl. With one pad, use it for the boy and the arrow-key controls for the girl. Keyboard bindings stay active for both players.
 
 | Action | Xbox / generic | PlayStation |
 | --- | --- | --- |
@@ -248,7 +248,7 @@ Use the Unity Editor to play the game now. Standalone builds are on hold at the 
 ## Troubleshooting
 
 - **No sound:** press M to unmute, check the computer output volume and Unity’s Game-view audio mute. The Audio System has separate music and effect sources.
-- **Gamepad does nothing:** check the HUD assignment, focus the Game view, and verify the controller appears in Unity’s Input Debugger. The first pad controls the boy.
+- **Gamepad does nothing:** focus the Game view and verify the controller appears in Unity’s Input Debugger. The first connected pad controls the boy.
 - **Keys do nothing:** click the Game view and check that Input System has imported. Open Main or rebuild it with **Balance with me → Rebuild Playable Scene**.
 - **Attack misses:** face the opponent and move within 1.2 world units. Hits also require similar vertical positions.
 - **Cannot immediately attack again:** wait for the punch/push cooldown. Stunned players cannot start attacks.

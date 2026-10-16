@@ -10,3 +10,5 @@
 - `Docs/gameplay_layout.png`: current full scene captured inside Unity; the README displays this image only.
 
 Art was generated or edited with built-in imagegen. Prompts are saved in `Docs/generation_prompts.json`. Source textures retain Point filtering and uncompressed sprite settings. Dedicated punch/push animation-sheet poses remain future polish; current combat uses existing frames and hand effects.
+
+The current wooden ball is reduced about 25% for a more balanced composition. Its grass base blends into the foreground. See the smaller_wooden_ball entry in generation_prompts.json.

@@ -13,7 +13,7 @@ namespace BalanceWithMe
         public string boyName = "FARMER BOY", girlName = "FARMER GIRL";
         public int BoyWins { get; private set; }
         public int GirlWins { get; private set; }
-        public Text devices, audioStatus;
+        public Text audioStatus;
         public LocalInputRouter inputs;
         public GameAudio sounds;
         public bool Running { get; private set; }
@@ -27,7 +27,6 @@ namespace BalanceWithMe
             if (inputs != null)
             {
                 HandlePad(inputs.BoyPad); HandlePad(inputs.GirlPad);
-                devices.text = $"BOY: {(inputs.BoyPad == null ? "keyboard" : "gamepad 1")}   |   GIRL: {(inputs.GirlPad == null ? "keyboard" : "gamepad 2")}";
             }
             if (audioStatus != null && sounds != null) audioStatus.text = $"M: {(sounds.Muted ? "UNMUTE" : "MUTE")}  •  N: MUSIC {sounds.TrackIndex+1}";
             if (Running)

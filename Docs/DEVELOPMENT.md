@@ -49,3 +49,7 @@ The stump material and palette now match the movable farm plank: honey/chestnut 
 The upright trunk and roots are replaced by a circular wooden log/ball silhouette in the village background. The support retains the plank’s warm timber palette, rope detail and woodgrain. It is a stationary visual fulcrum for the existing hinged plank, not a free-rolling physics ball. Earlier trunk notes describe previous artwork revisions. The current background is farm_village_wood_ball.png.
 
 The round wooden support is positioned using uniform background overscan (11.6 world-unit height, y=-0.4) so it retains its circular proportions and meets the existing plank without altering player physics. The scene and scene-builder settings match.
+
+## Smaller fulcrum and cleaner HUD
+
+The wooden ball is about 25% smaller, with the background offset adjusted to y=-0.18 so its top remains seated beneath the plank. The BOY/GIRL keyboard/gamepad device-status labels were removed from the scene, scene builder and runtime update. Keyboard and gamepad input mappings remain available; instructions stay in the themed controls panel and README.

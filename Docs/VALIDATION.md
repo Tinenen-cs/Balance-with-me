@@ -46,3 +46,7 @@ The trunk was refined to match the plank’s honey/chestnut wood, rope bindings 
 ## Current wooden-ball fulcrum
 
 The upright trunk and roots have been replaced by a circular wooden-log support. The background was renamed to farm_village_wood_ball.png with its Unity asset GUID preserved. Uniform overscan aligns the round support with the existing plank and preserves its shape. The refreshed full-scene image was captured in the Unity Editor and visually inspected. Audio sources and gameplay controls are retained; all twelve WAVs were rechecked as nonempty and non-silent.
+
+## Smaller ball and device-label removal
+
+The ball artwork was reduced about 25%, with the background offset adjusted to retain the plank contact point. The keyboard/gamepad device-status text object, scene reference and runtime assignment were removed. Unity 6000.3.26f1 compiled and captured the updated full scene successfully; the image was visually inspected and local scene references checked. No new tests were added for this visual change; the 14-test results above are from the previous gameplay/audio verification.

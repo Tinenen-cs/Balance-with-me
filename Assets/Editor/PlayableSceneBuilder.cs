@@ -43,7 +43,7 @@ namespace BalanceWithMe.Editor
             backgroundImporter.maxTextureSize = 4096;
             backgroundImporter.SaveAndReimport();
             Sprite bg = AssetDatabase.LoadAllAssetsAtPath(backgroundPath).OfType<Sprite>().First();
-            var background = Render("Farmer Village and Wooden Ball", bg, new Vector2(0,-.4f), -10);
+            var background = Render("Farmer Village and Wooden Ball", bg, new Vector2(0,-.18f), -10);
             // Uniform overscan keeps the wooden fulcrum round and seats its top under the plank.
             background.transform.localScale = Vector3.one * (11.6f / bg.bounds.size.y);
             var plankSprite = ImportPlank();
@@ -232,7 +232,6 @@ namespace BalanceWithMe.Editor
             Panel("Village Notice",new Vector2(0,230),new Vector2(760,54));
             game.status=Label("Status","KEEP YOUR FOOTING - FACE YOUR RIVAL",26,new Vector2(0,230),new Vector2(730,44));
             game.health=Label("Health Data","",1,Vector2.zero,Vector2.one);game.health.gameObject.SetActive(false);
-            game.devices=Label("Devices","",24,new Vector2(0,180),new Vector2(1500,38));
             game.boy.emoteLabel=Label("Boy Emote","",28,Vector2.zero,new Vector2(300,50));
             game.girl.emoteLabel=Label("Girl Emote","",28,Vector2.zero,new Vector2(300,50));
             Panel("Farm Controls Board",new Vector2(0,-385),new Vector2(1160,170));

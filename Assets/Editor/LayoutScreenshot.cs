@@ -36,7 +36,10 @@ namespace BalanceWithMe.Editor
                 target.Create();camera.targetTexture=target;camera.aspect=16f/9;
                 canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=5;
                 foreach(var label in Object.FindObjectsByType<UnityEngine.UI.Text>(FindObjectsSortMode.None))
+                {
                     label.font.RequestCharactersInTexture(label.text,label.fontSize,label.fontStyle);
+                    label.font.material.mainTexture.filterMode=FilterMode.Point;
+                }
                 Canvas.ForceUpdateCanvases();
                 RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination=target });
                 Canvas.ForceUpdateCanvases();
