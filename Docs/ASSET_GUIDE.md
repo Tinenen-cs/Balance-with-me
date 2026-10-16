@@ -12,3 +12,7 @@
 Art was generated or edited with built-in imagegen. Prompts are saved in `Docs/generation_prompts.json`. Source textures retain Point filtering and uncompressed sprite settings. Dedicated punch/push animation-sheet poses remain future polish; current combat uses existing frames and hand effects.
 
 The current wooden ball is reduced about 25% for a more balanced composition. Its grass base blends into the foreground. See the smaller_wooden_ball entry in generation_prompts.json.
+
+### Player scorecard icons
+
+The boy and girl scorecards reuse each character’s first idle Sprite subasset from `two_players.png` as a UI Image. Each icon preserves its aspect ratio inside a small timber badge beside the name/health/wins text; no extra texture import or generated portrait file is required.

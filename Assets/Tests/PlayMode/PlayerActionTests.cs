@@ -114,6 +114,62 @@ namespace BalanceWithMe.Tests
             }
             finally { InputSystem.RemoveDevice(keyboard); }
         }
+        [UnityTest] public IEnumerator MovementAcceleratesReversesAndSettlesWithoutOvershoot()
+        {
+            game.Restart();game.board.constraints=RigidbodyConstraints2D.FreezeRotation;
+            yield return new WaitForSeconds(.2f);
+            var keyboard=InputSystem.AddDevice<Keyboard>();InputSystem.EnableDevice(keyboard);
+            try
+            {
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.D));InputSystem.Update();game.boy.CaptureKeyboardInput();
+                yield return new WaitForFixedUpdate();yield return new WaitForFixedUpdate();
+                float initial=game.boy.body.linearVelocity.x;
+                Assert.That(initial,Is.GreaterThan(0).And.LessThan(3.8f));
+                yield return new WaitForSeconds(.2f);
+                Assert.That(game.boy.body.linearVelocity.x,Is.GreaterThan(initial).And.LessThanOrEqualTo(3.9f));
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.A));InputSystem.Update();game.boy.CaptureKeyboardInput();
+                yield return new WaitForSeconds(.3f);
+                Assert.That(game.boy.body.linearVelocity.x,Is.LessThan(-3).And.GreaterThanOrEqualTo(-3.9f));
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState());InputSystem.Update();game.boy.CaptureKeyboardInput();
+                yield return new WaitForSeconds(.3f);
+                Assert.That(Mathf.Abs(game.boy.body.linearVelocity.x),Is.LessThan(.15f));
+                game.Restart();yield return new WaitForFixedUpdate();yield return new WaitForFixedUpdate();
+                Assert.That(Mathf.Abs(game.boy.body.linearVelocity.x),Is.LessThan(.05f));
+            }
+            finally { InputSystem.RemoveDevice(keyboard); }
+        }
+        [UnityTest] public IEnumerator PlankSwingIsContinuousBoundedAndDamped()
+        {
+            game.Restart();
+            Assert.That(game.board.interpolation,Is.EqualTo(RigidbodyInterpolation2D.Interpolate));
+            Assert.That(game.boy.body.interpolation,Is.EqualTo(RigidbodyInterpolation2D.Interpolate));
+            Assert.That(game.girl.body.interpolation,Is.EqualTo(RigidbodyInterpolation2D.Interpolate));
+            // Isolate the plank to measure its response to a repeatable impulse.
+            game.boy.body.simulated=false;game.girl.body.simulated=false;
+            game.board.rotation=10;game.board.AddTorque(12,ForceMode2D.Impulse);
+            float previous=game.board.rotation;
+            for(int step=0;step<150;step++)
+            {
+                yield return new WaitForFixedUpdate();
+                float current=game.board.rotation;
+                Assert.That(Mathf.Abs(current),Is.LessThanOrEqualTo(16.5f));
+                Assert.That(Mathf.Abs(Mathf.DeltaAngle(previous,current)),Is.LessThan(1.5f));
+                previous=current;
+            }
+            Assert.That(Mathf.Abs(game.board.rotation),Is.LessThan(10));
+            Assert.That(Mathf.Abs(game.board.angularVelocity),Is.LessThan(5));
+            game.boy.body.simulated=true;game.girl.body.simulated=true;game.Restart();
+            game.boy.body.position=new Vector2(-3.8f,.04f);game.girl.body.position=new Vector2(.6f,.04f);
+            previous=game.board.rotation;
+            for(int step=0;step<50;step++)
+            {
+                yield return new WaitForFixedUpdate();
+                Assert.That(Mathf.Abs(game.board.rotation),Is.LessThanOrEqualTo(16.5f));
+                Assert.That(Mathf.Abs(Mathf.DeltaAngle(previous,game.board.rotation)),Is.LessThan(1.5f));
+                previous=game.board.rotation;
+            }
+            Assert.That(Mathf.Abs(game.board.rotation),Is.GreaterThan(1),"Uneven player weight should still tilt the plank.");
+        }
         [UnityTest] public IEnumerator BothJumpKeysLiftGroundedPlayers()
         {
             game.Restart();

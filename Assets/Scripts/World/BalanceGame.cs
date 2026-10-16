@@ -19,6 +19,9 @@ namespace BalanceWithMe
         public bool Running { get; private set; }
         public CanvasGroup helpPopup, statusPopup, audioPopup;
         public float PopupDuration = 5;
+        [Min(0)] public float centeringTorque = .75f;
+        [Min(0)] public float edgeResistance = 4;
+        [Range(0, 15)] public float softLimitAngle = 11;
         float elapsed, helpRemaining, statusRemaining, audioRemaining;
         void TickPopup(CanvasGroup popup, ref float remaining)
         {
@@ -59,6 +62,8 @@ namespace BalanceWithMe
                     if (boyLost && !girlLost) GirlWins++;
                     if (girlLost && !boyLost) BoyWins++;
                     sounds?.PlayResult(boyLost && girlLost);
+                    if (boyLost && !girlLost) girl.CelebrateVictory();
+                    if (girlLost && !boyLost) boy.CelebrateVictory();
                     statusRemaining = float.PositiveInfinity;
                     status.text = boyLost && girlLost ? "DRAW — R to restart" : (boyLost ? "GIRL WINS" : "BOY WINS") + " — R to restart";
                 }
@@ -78,8 +83,11 @@ namespace BalanceWithMe
         }
         void FixedUpdate()
         {
-            // Gentle centering prevents the empty plank from remaining tilted forever.
-            if (Running) board.AddTorque(-Mathf.DeltaAngle(0, board.rotation) * .12f);
+            if (!Running) return;
+            float angle = Mathf.DeltaAngle(0, board.rotation);
+            float edge = Mathf.Max(0, Mathf.Abs(angle) - softLimitAngle);
+            // Progressive resistance slows the swing before the hinge's hard limits.
+            board.AddTorque(-angle * centeringTorque - Mathf.Sign(angle) * edge * edge * edgeResistance);
         }
         public void Restart()
         {

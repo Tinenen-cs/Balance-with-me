@@ -5,7 +5,7 @@
 Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1**; that exact patch has not been tested here. The project is ready for a Unity Editor playtest using the verified editor.
 
 - C# compilation and scene generation succeeded.
-- **17 PlayMode tests passed, 0 failed**:
+- **20 PlayMode tests passed, 0 failed**:
   1. Punch applies damage only once, respects cooldown and stuns the target.
   2. Push causes forward knockback without reducing health.
   3. Punch rejects targets behind the player or beyond reach.
@@ -23,6 +23,9 @@ Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1*
   15. Help and audio notices expire while player status and timer remain active.
   16. Both players produce footsteps, jump and landing cues through keyboard input and physics.
   17. Restart cancels a pending result jingle; simultaneous losses play fail followed by draw.
+  18. Either sole winner celebrates briefly with the victory cue; the popup expires, draws omit it and restart clears it.
+  19. Movement accelerates gradually, reverses without speed overshoot, stops and restarts without stored drift.
+  20. The interpolated plank swings continuously within its limits and settles after an impulse; uneven player weight still tilts it.
 - All fifteen synthesized audio files were checked as nonempty 24 kHz, mono, 16-bit PCM WAVs.
 - A graphical Unity Editor render was inspected at 1920 × 1080: both characters are visible; the rope-bound plank and saddle meet the circular wooden fulcrum; farming-village scenery, parchment scorecards, timer, Help and Restart signs render together after the introductory popups disappear.
 - Native importer Sprite subassets replaced the earlier serialized generated character sprites after the graphical review revealed missing character rendering.
@@ -56,4 +59,10 @@ The ball artwork was reduced about 25%, with the background offset adjusted to r
 
 ## Compact HUD and action audio check
 
-The current 17-test suite passed on Unity 6000.3.26f1 after the popup and audio changes. All 15 WAV files were checked for nonzero samples and RMS energy. The full-layout capture waits six seconds so the startup help and notice have expired. Player names, health, wins, timer and corner buttons remain; control instructions and audio notices share timed panel visibility with their text. End-of-round results remain visible until restart. The original user-provided .bin is unchanged. No app/APK was built.
+The earlier 17-test suite passed on Unity 6000.3.26f1 after the popup and audio changes. All 15 WAV files were checked for nonzero samples and RMS energy. The full-layout capture waits six seconds so the startup help and notice have expired. Player names, health, wins, timer and corner buttons remain; control instructions and audio notices share timed panel visibility with their text. End-of-round results remain visible until restart. The original user-provided .bin is unchanged. No app/APK was built.
+
+## Victory, character icons and smooth motion
+
+All 20 PlayMode tests passed on Unity 6000.3.26f1 after these changes. Winner celebrations were checked for both players, including expiry, draw behavior, victory audio and immediate restart cleanup. The movement test exercises acceleration, reversal, stopping and restart drift. The plank test measures per-step angle changes, hinge bounds and angular settling after a repeatable impulse, then confirms it still responds to uneven player weight. Physics interpolation is enabled on both characters and the plank.
+
+The updated full-layout screenshot includes matching boy/girl icons in the two farm scorecards. Frame-rate perception and controller feel should still be checked on the target device; automated physics checks do not measure display performance. Original CharacterController2DP2.bin is unchanged. No app or APK was created.

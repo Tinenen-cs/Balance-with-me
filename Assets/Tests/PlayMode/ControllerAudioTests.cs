@@ -148,6 +148,36 @@ namespace BalanceWithMe.Tests
             yield return new WaitForSeconds(.85f);
             Assert.That(game.sounds.LastCue,Is.EqualTo("draw"));
         }
+        [UnityTest] public IEnumerator WinnerCelebratesBrieflyAndRestartClearsTheEmote()
+        {
+            foreach(bool girlWins in new[]{false,true})
+            {
+                game.Restart();
+                var winner=girlWins?game.girl:game.boy;
+                var loser=girlWins?game.boy:game.girl;
+                loser.body.position=new Vector2(0,-4);
+                yield return null;yield return null;
+                Assert.That(winner.IsCelebrating,Is.True);
+                Assert.That(loser.IsCelebrating,Is.False);
+                StringAssert.Contains("I DID IT!",winner.emoteLabel.text);
+                yield return new WaitForSeconds(.85f);
+                Assert.That(game.sounds.LastCue,Is.EqualTo("win"));
+                yield return new WaitForSeconds(1.7f);
+                Assert.That(winner.IsCelebrating,Is.False);
+                Assert.That(winner.emoteLabel.text,Is.Empty);
+            }
+            game.Restart();
+            Assert.That(game.boy.IsCelebrating || game.girl.IsCelebrating,Is.False);
+            game.boy.body.position=new Vector2(0,-4);game.girl.body.position=new Vector2(1,-4);
+            yield return null;yield return null;
+            Assert.That(game.boy.IsCelebrating || game.girl.IsCelebrating,Is.False);
+            game.Restart();game.girl.body.position=new Vector2(0,-4);
+            yield return null;yield return null;
+            Assert.That(game.boy.IsCelebrating,Is.True);
+            game.Restart();yield return null;
+            Assert.That(game.boy.IsCelebrating,Is.False);
+            Assert.That(game.boy.emoteLabel.text,Is.Empty);
+        }
         [UnityTest] public IEnumerator GamepadStartRestartsAndNorthButtonEmotes()
         {
             var pad=InputSystem.AddDevice<Gamepad>();

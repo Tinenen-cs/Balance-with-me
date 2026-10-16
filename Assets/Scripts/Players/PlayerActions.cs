@@ -22,9 +22,11 @@ namespace BalanceWithMe
         public ActionType LastReceivedAction { get; private set; }
         public float cooldown;
         float actionTime, move, flash, animationTime;
+        float visualLean, leanVelocity, visualBob, bobVelocity;
         bool jumpQueued, punchConnected;
         float emoteTime, reactionCooldown, stepRemaining, airborneTime;
-        bool sadEmote;
+        bool sadEmote, victoryEmote;
+        public bool IsCelebrating => victoryEmote && emoteTime > 0;
         string emoteText;
         public float Direction => controller.m_FacingRight ? 1 : -1;
 
@@ -112,10 +114,22 @@ namespace BalanceWithMe
             game.sounds?.Play(sadEmote ? "emote_sad" : "emote_happy");
         }
 
+        public void CelebrateVictory()
+        {
+            if (game == null || game.Running || Health <= 0) return;
+            CurrentAction = ActionType.None;
+            StunRemaining = flash = move = 0;
+            victoryEmote = true;
+            sadEmote = false;
+            emoteText = "* I DID IT! *";
+            emoteTime = 2.4f;
+        }
+
         void LateUpdate()
         {
             if (emoteLabel == null) return;
             emoteLabel.text = emoteTime > 0 ? emoteText : "";
+            emoteLabel.color = IsCelebrating ? new Color(1, .85f, .3f) : new Color(.25f, .14f, .07f);
             var camera = Camera.main;
             if (camera == null) return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)emoteLabel.transform.parent,
@@ -162,6 +176,7 @@ namespace BalanceWithMe
 
         public void ResetPlayer(Vector2 position)
         {
+            controller.ResetMotion();
             body.position = position;
             body.linearVelocity = Vector2.zero;
             body.angularVelocity = 0;
@@ -170,7 +185,7 @@ namespace BalanceWithMe
             CurrentAction = LastReceivedAction = ActionType.None;
             jumpQueued = punchConnected = false;
             stepRemaining = .2f; airborneTime = 0;
-            emoteTime = reactionCooldown = 0; emoteText = ""; sadEmote = true;
+            emoteTime = reactionCooldown = 0; emoteText = ""; sadEmote = true; victoryEmote = false;
             controller.m_FacingRight = !isGirl;
             transform.localScale = new Vector3(isGirl ? -1 : 1, 1, 1);
             Animate(0);
@@ -179,7 +194,7 @@ namespace BalanceWithMe
         void Animate(float dt)
         {
             animationTime += dt;
-            Sprite[] frames = StunRemaining > 0 ? hurt : Mathf.Abs(body.linearVelocity.y) > .8f ? jump : Mathf.Abs(move) > 0 ? walk : idle;
+            Sprite[] frames = IsCelebrating ? idle : StunRemaining > 0 ? hurt : !controller.IsGrounded ? jump : Mathf.Abs(body.linearVelocity.x) > .15f ? walk : idle;
             if (frames != null && frames.Length > 0) visual.sprite = frames[Mathf.FloorToInt(animationTime * 8) % frames.Length];
             bool punching = CurrentAction == ActionType.Punch;
             bool pushing = CurrentAction == ActionType.Push;
@@ -188,9 +203,17 @@ namespace BalanceWithMe
             float reach = punching ? Mathf.Sin(Mathf.Clamp01(actionTime / .28f) * Mathf.PI) : pushing ? .85f : 0;
             fist.transform.localPosition = new Vector3(.25f + reach * .6f, .85f, 0);
             palm.transform.localPosition = new Vector3(.75f, 1.05f, 0);
-            visual.transform.localRotation = Quaternion.Euler(0, 0, punching ? -reach * 12 : pushing ? -8 : 0);
+            float targetLean = IsCelebrating ? Mathf.Sin(animationTime * 12) * 8 : punching ? -reach * 12 : pushing ? -8 : 0;
+            float targetBob = emoteTime > 0 && !sadEmote ? Mathf.Abs(Mathf.Sin(animationTime * 12)) * (IsCelebrating ? .16f : .07f) : 0;
+            if (dt > 0)
+            {
+                visualLean = Mathf.SmoothDampAngle(visualLean, targetLean, ref leanVelocity, .06f, Mathf.Infinity, dt);
+                visualBob = Mathf.SmoothDamp(visualBob, targetBob, ref bobVelocity, .045f, Mathf.Infinity, dt);
+            }
+            else { visualLean = visualBob = leanVelocity = bobVelocity = 0; }
+            visual.transform.localRotation = Quaternion.Euler(0, 0, visualLean);
             visual.color = flash > 0 ? new Color(1, .45f, .4f) : Color.white;
-            visual.transform.localPosition = new Vector3(0, emoteTime > 0 && !sadEmote ? Mathf.Abs(Mathf.Sin(animationTime * 12)) * .07f : 0, 0);
+            visual.transform.localPosition = new Vector3(0, visualBob, 0);
         }
     }
 }

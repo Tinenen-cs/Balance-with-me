@@ -59,3 +59,13 @@ The wooden ball is about 25% smaller, with the background offset adjusted to y=-
 Persistent farm signs now contain only the title, names/health/wins, clock, Help and Restart. Controls appear for five seconds at startup or with H, the Help button or either assigned pad's left bumper. Round-start and audio notices last 2.5 seconds; the final result remains until restart. Popup text and panel art share a CanvasGroup so neither leaves an empty plaque behind. Popup groups do not intercept clicks.
 
 PlayerActions emits throttled footsteps while moving on the plank and a landing cue after meaningful airtime. Existing jump, punch, push, hit, shove and both emote sounds remain. GameAudio sequences a distinct failure cue before win/draw and cancels old result playback on restart. Two looping music tracks and saved mute are retained. Tools/make_audio.py reproduces all 15 WAV assets. No app or APK was built.
+
+## Victory emote and player icons
+
+A sole winner automatically triggers a 2.4-second gold “I DID IT!” emote and a bounce/rock animation, using the existing win jingle after the failure cue. It replaces any active attack or hurt pose; draws have no winner celebration. Restart clears all celebration state. Each scorecard now contains the matching character’s existing idle sprite as an aspect-preserving UI icon, with the name/health/wins text shifted beside it. No additional raster assets or duplicate sprite imports are needed.
+
+## Smooth character and platform movement
+
+Both player Rigidbody2Ds and the plank render with interpolation. Movement smoothing is 0.08 seconds, uses an explicit fixed physics timestep, and resets its stored velocity on a new round. Locomotion frames follow grounding and actual horizontal speed, while action/victory lean and bob offsets ease toward their target poses. The original .bin remains unchanged.
+
+The plank now has mass 7 and angular damping 2.5. Centering torque is 0.75 per degree; quadratic edge resistance (4) begins at 11 degrees before the existing ±16-degree hinge stops. These settings soften the swing without removing the players’ effect on balance. GameManager exposes the three torque settings for tuning. Tests exercise acceleration/reversal/stopping and the plank’s bounded, continuous, damped response.

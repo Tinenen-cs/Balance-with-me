@@ -50,7 +50,8 @@ namespace BalanceWithMe.Editor
             var board = new GameObject("Balancing Plank", typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(HingeJoint2D));
             board.transform.position = new Vector3(0,-.2f,0);
             board.layer = 8;
-            var boardBody = board.GetComponent<Rigidbody2D>(); boardBody.mass = 5; boardBody.angularDamping = 2;
+            var boardBody = board.GetComponent<Rigidbody2D>(); boardBody.mass = 7; boardBody.angularDamping = 2.5f;
+            boardBody.interpolation = RigidbodyInterpolation2D.Interpolate;
             board.GetComponent<BoxCollider2D>().size = new Vector2(10, .4f);
             var hinge = board.GetComponent<HingeJoint2D>(); hinge.autoConfigureConnectedAnchor = false;
             hinge.connectedAnchor = new Vector2(0,-.2f); hinge.useLimits = true; hinge.limits = new JointAngleLimits2D { min = -16, max = 16 };
@@ -108,7 +109,7 @@ namespace BalanceWithMe.Editor
         static PlayerActions Player(bool girl, BalanceGame game)
         {
             var root = new GameObject(girl ? "Girl" : "Boy", typeof(Rigidbody2D), typeof(CapsuleCollider2D));
-            var body = root.GetComponent<Rigidbody2D>(); body.mass = 1; body.gravityScale = 2;
+            var body = root.GetComponent<Rigidbody2D>(); body.mass = 1; body.gravityScale = 2; body.interpolation = RigidbodyInterpolation2D.Interpolate;
             body.constraints = RigidbodyConstraints2D.FreezeRotation; body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             var collider = root.GetComponent<CapsuleCollider2D>(); collider.size = new Vector2(.55f, 1.25f); collider.offset = new Vector2(0,.65f);
             var controller = root.AddComponent<CharacterController2DP2>();
@@ -120,6 +121,7 @@ namespace BalanceWithMe.Editor
             serialized.FindProperty("m_WhatIsGround").intValue = 1 << 8;
             serialized.FindProperty("m_AirControl").boolValue = true;
             serialized.FindProperty("m_JumpForce").floatValue = 330;
+            serialized.FindProperty("m_MovementSmoothing").floatValue = .08f;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             var actions = root.AddComponent<PlayerActions>(); actions.isGirl = girl; actions.game = game;
             actions.controller = controller; actions.body = body;
@@ -236,10 +238,19 @@ namespace BalanceWithMe.Editor
             }
             Panel("Village Title Sign",new Vector2(0,460),new Vector2(620,72));
             Label("Title","BALANCE WITH ME",48,new Vector2(0,460),new Vector2(600,64));
-            Panel("Boy Farm Scorecard",new Vector2(-650,435),new Vector2(410,110));
-            Panel("Girl Farm Scorecard",new Vector2(650,435),new Vector2(410,110));
-            game.boyHud=Label("Boy Name Health and Score","FARMER BOY\nHEALTH 3/3   WINS 0",30,new Vector2(-650,435),new Vector2(390,100));
-            game.girlHud=Label("Girl Name Health and Score","FARMER GIRL\nHEALTH 3/3   WINS 0",30,new Vector2(650,435),new Vector2(390,100));
+            Text Scorecard(bool girl) {
+                string player=girl?"Girl":"Boy";
+                var panel=Panel(player+" Farm Scorecard",new Vector2(girl?650:-650,435),new Vector2(410,110));
+                var badge=(RectTransform)new GameObject(player+" Icon Frame",typeof(RectTransform),typeof(Image)).transform;
+                badge.SetParent(panel,false);badge.anchoredPosition=new Vector2(-151,0);badge.sizeDelta=new Vector2(88,90);
+                badge.GetComponent<Image>().color=new Color(.69f,.43f,.20f);badge.GetComponent<Image>().raycastTarget=false;
+                var icon=new GameObject(player+" Character Icon",typeof(RectTransform)).AddComponent<Image>();
+                icon.transform.SetParent(badge,false);icon.rectTransform.sizeDelta=new Vector2(76,82);
+                icon.sprite=girl?game.girl.idle[0]:game.boy.idle[0];icon.preserveAspect=true;icon.raycastTarget=false;
+                return PanelLabel(panel,player+" Name Health and Score",girl?"FARMER GIRL\nHEALTH 3/3   WINS 0":"FARMER BOY\nHEALTH 3/3   WINS 0",27,new Vector2(46,0),new Vector2(292,96));
+            }
+            game.boyHud=Scorecard(false);
+            game.girlHud=Scorecard(true);
             Panel("Round Clock",new Vector2(0,365),new Vector2(210,84));
             game.timer=Label("Timer","ROUND TIME\n00:00",30,new Vector2(0,365),new Vector2(190,78));
             var notice=Panel("Village Notice",new Vector2(0,260),new Vector2(760,54));
@@ -248,6 +259,9 @@ namespace BalanceWithMe.Editor
             game.health=Label("Health Data","",1,Vector2.zero,Vector2.one);game.health.gameObject.SetActive(false);
             game.boy.emoteLabel=Label("Boy Emote","",28,Vector2.zero,new Vector2(300,50));
             game.girl.emoteLabel=Label("Girl Emote","",28,Vector2.zero,new Vector2(300,50));
+            foreach (var label in new[] { game.boy.emoteLabel, game.girl.emoteLabel }) {
+                var outline=label.gameObject.AddComponent<Outline>();outline.effectColor=new Color(.18f,.09f,.03f,.9f);outline.effectDistance=new Vector2(1,-1);
+            }
             var help=Panel("Farm Controls Popup",new Vector2(0,-300),new Vector2(1260,220));game.helpPopup=Popup(help);
             PanelLabel(help,"Boy Controls","BOY: A/D MOVE - W JUMP - F PUNCH - G PUSH - E EMOTE",25,new Vector2(0,75),new Vector2(1220,40));
             PanelLabel(help,"Girl Controls","GIRL: ARROWS MOVE - UP JUMP - K PUNCH - L PUSH - O EMOTE",25,new Vector2(0,30),new Vector2(1220,40));
