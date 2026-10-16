@@ -1,0 +1,13 @@
+{
+    "files.exclude": {
+        "**/*.meta": true,
+        "Library": true,
+        "Temp": true,
+        "Logs": true,
+        "obj": true
+    },
+    "files.eol": "\n",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "dotnet.defaultSolution": "TWOCHARACTERGAME_CSEL.slnx"
+}
