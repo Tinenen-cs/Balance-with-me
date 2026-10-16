@@ -4,17 +4,47 @@ A 2D pixel-art project in Unity featuring a chibi boy and girl on opposite ends 
 
 <p align="center"><img src="Docs/layout_preview.png" alt="Art layout preview of Balance with me" width="320"></p>
 
-> Generated art layout preview, not a gameplay screenshot. The current Main scene is a visual setup preview. Only the exact supplied CharacterController2DP2 script is included as custom C# code.
+<p align="center"><img src="Assets/Art/Characters/two_players.png" alt="Boy and girl sprite sheet: idle, walking, jumping, and hurt" width="720"></p>
+
+> Images above: generated composition preview and the character animation sheet. Neither is a gameplay screenshot. The current Main scene is a visual setup preview. Only the exact supplied CharacterController2DP2 script is included as custom C# code.
 
 ## Download & play
 
-Source: [Tinenen-cs/Balance-with-me](https://github.com/Tinenen-cs/Balance-with-me). No downloadable game builds or hosted browser version are available yet.
+Source: **[Tinenen-cs/Balance-with-me](https://github.com/Tinenen-cs/Balance-with-me)**. No downloadable builds are available yet. Publication of the local commits still requires GitHub authentication.
+
+| Device | Planned file / output | How to run |
+| --- | --- | --- |
+| Windows | `Balance-with-me-Windows.zip` | Pending; inspect the source in Unity for now |
+| Android | `Balance-with-me.apk` | Pending; mobile input is not configured |
+| macOS | `Balance-with-me-macOS.zip` | Pending; inspect the source in Unity for now |
+| Browser | WebGL build | Pending; no hosted game link exists |
 
 ## Activity: Two-character balance game
 
 The intended design has two players walking and jumping on a board above a ball, with hurt animations. Input bindings, animation wiring, balancing behavior, and round rules remain pending under the restriction to use only the supplied script.
 
 The unchanged controller provides ground checks and a public `Move(float move, bool crouch, bool jump)` method, horizontal movement, jumping, crouching, and flipping. It does **not** read player input, select animation clips, or implement balancing, damage, or game over. Including the file does not make those features playable.
+
+| Requirement | Current project behavior | Code / asset | Verification |
+| --- | --- | --- | --- |
+| Boy and girl characters | Both appear in the visual scene | `Assets/Scenes/Main.unity` | Visual review pending |
+| Walk, jump, and hurt frames | Four frames per action for each character | `Assets/Art/Characters/two_players.png` | Artwork inspected; transitions not wired |
+| Horizontal movement | Supplied controller can apply smoothed movement when called | `CharacterController2DP2.Move` | Compilation passed; no input caller |
+| Jumping | Supplied controller applies jump force when grounded and requested | `CharacterController2DP2.Move` | Compilation passed; scene wiring pending |
+| Ground detection | Ground mask and Ground Check determine contact | `CharacterController2DP2.FixedUpdate` | Runtime wiring pending |
+| Exact original code | `.bin` and `.cs` contents, including CRLF, match | `CharacterController2DP2.bin` | Byte identity verified |
+| Only one custom C# script | No additional gameplay, editor, or test scripts | `Assets/Scripts/Players/CharacterController2DP2.cs` | File inventory verified |
+
+### Recording the video (about 2 minutes)
+
+Record the current setup accurately; movement and animation transitions are not playable yet.
+
+1. Open **Assets → Scenes → Main** and set the Game view to **Phone 1080 × 1920**.
+2. Start a screen recording on your computer. On macOS, use **Cmd + Shift + 5**.
+3. Show the boy, girl, plank, large ball, clouds, and green land in the preview.
+4. Open the character sheet in Sprite Editor and show its idle, walk, jump, and hurt rows.
+5. Show the unchanged controller file in VS Code and explain that input and physics wiring are pending.
+6. Stop recording. Record a gameplay demonstration only after those features work.
 
 ## Status
 
@@ -39,11 +69,23 @@ The unchanged controller provides ground checks and a public `Move(float move, b
 
 ## Controls
 
-No keyboard or touch bindings are configured. The supplied controller needs an external call to its `Move` method; no input-calling script has been added.
+| Action | Supplied controller support | Current binding |
+| --- | --- | --- |
+| Walk left / right | `Move(move, crouch, jump)` accepts horizontal movement | Not configured |
+| Jump | `Move` accepts a jump request and checks grounding | Not configured |
+| Crouch | `Move` accepts a crouch request | Not configured |
+| Face left / right | `Flip()` changes facing and horizontal scale | Not configured |
+| Hurt animation | Sprite frames exist; controller has no damage/animation logic | Not configured |
+
+The supplied controller needs an external call to its `Move` method; no input-calling script has been added.
 
 ## Tuning the controller
 
-Once the controller is attached to a player with a Rigidbody2D, assign Ground Check and Ceiling Check transforms and the ground layer mask in the Inspector. Jump force, movement smoothing, crouch speed, and air control are exposed by the supplied script. Do not modify the source without explicit permission.
+1. In the Project window, locate **Assets → Scripts → Players → CharacterController2DP2**.
+2. For future gameplay wiring, attach it to a player with a **Rigidbody2D** and suitable colliders.
+3. Assign **Ground Check**, **Ceiling Check**, and **What Is Ground** in its Inspector.
+4. Use the existing fields for **Jump Force**, **Movement Smoothing**, **Crouch Speed**, and **Air Control**.
+5. Check behavior after scene wiring is complete. Keep the supplied source unchanged.
 
 The current visual scene uses Unity UI images; it is not a wired Rigidbody2D gameplay scene.
 
@@ -99,40 +141,67 @@ No music or sound effects are included yet. Store future licensed audio in `Asse
 
 ## Art and font credits
 
-| Asset | Source |
-| --- | --- |
-| Characters, background, plank/ball, layout preview | Original images generated for this project using built-in imagegen |
-| UI text | Unity built-in font |
-| Project and URP configuration | Official Unity 2D template from the installed editor |
-| CharacterController2DP2 | User-supplied file, preserved unchanged; redistribution license not provided |
+| Asset | Source | License / attribution |
+| --- | --- | --- |
+| Characters, background, plank/ball, layout preview | Original images generated for this project using built-in imagegen | Prompts recorded in `Docs/generation_prompts.json`; no separate asset license assigned |
+| UI text | Unity built-in font | Unity-provided resource |
+| Project and URP configuration | Official Unity 2D template from the installed editor | Unity-provided configuration |
+| CharacterController2DP2 | User-supplied file, preserved unchanged | Redistribution license not provided |
 
 README section organization follows the supplied [CSEL Tamagotchi reference](https://github.com/Tinenen-cs/Tinenen-cs-csel-tamagotchi). No Stardew Valley game assets are included. No repository-wide license has been selected.
+
+---
 
 ## How to run
 
 ### A. Mac (Terminal)
 
-```bash
-git clone https://github.com/Tinenen-cs/Balance-with-me.git
-cd Balance-with-me
-```
-
-Install Unity 6000.3.24f1 in Unity Hub, add the root folder as a project, and open `Assets/Scenes/Main.unity`. Select 9:16 and press Play to inspect the visual setup. This is not currently a playable two-player game. Open the root folder in VS Code to view the unchanged script.
+1. After the local commits have been published, get the project:
+   ```bash
+   git clone https://github.com/Tinenen-cs/Balance-with-me.git
+   cd Balance-with-me
+   ```
+   For the existing local copy, use `/Users/imac23/Documents/TWOCHARACTERGAME_CSEL`. Once the remote is populated, update a clean checkout with `git pull origin main`.
+2. Install **Unity Hub**, then editor **6000.3.24f1**. Choose that exact patch to match the reference project's version.
+3. In Hub, select **Projects → Add → Add project from disk**. Choose the folder containing `Assets`, `Packages`, and `ProjectSettings`.
+4. Open the project and allow package restoration and asset import to finish.
+5. Open **Assets → Scenes → Main** manually. No custom scene-opening tool is included.
+6. In the Game view resolution dropdown, add **Phone**, Fixed Resolution **1080 × 1920**, or select a 9:16 aspect.
+7. Press **Play** to inspect the visual setup. It is not currently an interactive two-player game.
+8. Open the same root folder in **VS Code**. The recommended extensions are listed in `.vscode/extensions.json`. View `CharacterController2DP2.cs` without changing it.
+9. Before claiming runtime behavior, complete the scene wiring and review the Console. See [validation notes](Docs/VALIDATION.md) for the checks already performed.
 
 ### Test-run in the Unity Editor (Windows, step by step)
 
-1. Clone the repository and add its root in Unity Hub.
-2. Open it with 6000.3.24f1 and let packages import.
-3. Open Main and choose a portrait Game view.
-4. Inspect the layout and Console. Keyboard controls are not wired.
+1. Clone the repository after publication, or use an existing copy of the source.
+2. Open **Unity Hub** from the Start menu.
+3. Select **Projects → Add → Add project from disk** and choose the root project folder.
+4. Confirm the editor version is **6000.3.24f1**, then open the project.
+5. Wait for Unity to import assets and restore packages.
+6. In the Project window, open **Assets → Scenes → Main**.
+7. Add a **Phone 1080 × 1920** Game view resolution; reduce the Scale slider if the preview is too large.
+8. Press **Play** and inspect both characters and the background composition.
+9. Open **Window → General → Console** to review messages. The unchanged controller uses obsolete `Rigidbody2D.velocity` APIs that produced warnings in local validation.
+10. Press **Play** again to exit. Keyboard movement, animation changes, and balancing are not configured.
+11. No custom test scripts are included under the single-script restriction; do not expect a gameplay test suite in Test Runner.
 
 ### B. Other devices
 
-No Android, WebGL, or desktop builds have been validated. Use Unity Build Profiles after gameplay wiring is completed and the matching build support modules are installed. No custom build script is included.
+#### Browser (any phone or computer)
 
-## Validation
+No hosted browser version is available. After gameplay wiring, install **WebGL Build Support** and use Unity's **File → Build Profiles** to create a WebGL build. Browser and touch behavior remain unverified.
 
-See [validation notes](Docs/VALIDATION.md). File identity checks include the original `.bin`, the `.cs` copy, and the staged Git contents, including line endings. Unity compilation alone does not establish gameplay or input behavior.
+#### Android phone
+
+No APK is available. Future builds require **Android Build Support**, including SDK/NDK and OpenJDK, installed through Unity Hub. Configure an Android build profile after gameplay wiring. No touch controls are implemented.
+
+#### iPhone (needs a Mac with Xcode)
+
+No iOS build is available. Future device testing requires the Unity **iOS Build Support** module and Xcode. iOS input, signing, and device behavior have not been configured or validated.
+
+#### Windows / Linux / macOS
+
+Use the Unity Editor to inspect the project now. Standalone builds are pending. Once gameplay wiring is complete, install the corresponding editor build module and use **File → Build Profiles**. No custom build scripts or additional C# tools are included.
 
 ## Troubleshooting
 
@@ -144,4 +213,17 @@ See [validation notes](Docs/VALIDATION.md). File identity checks include the ori
 
 ## Contributing
 
-Keep the supplied script unchanged. Commit each completed project change with a descriptive message, including Unity `.meta` files. Push commits to GitHub when authenticated. Use feature branches for further development. Do not commit Library, Temp, Logs, UserSettings, build outputs, or credentials.
+Keep the supplied controller unchanged and use no additional custom scripts. For each completed project change:
+
+```bash
+git pull origin main
+git checkout -b feature/short-name
+# Edit approved scene, artwork, or documentation files.
+# Inspect the scene and Console in Unity; retain the original controller bytes.
+git add README.md Docs Assets Packages ProjectSettings
+git commit -m "Describe the completed change"
+git push -u origin feature/short-name
+# Open a pull request on GitHub.
+```
+
+The pull/push steps require a populated remote and authenticated GitHub access. Commit Unity `.meta` files alongside their assets. Exclude `Library`, `Temp`, `Logs`, `UserSettings`, local builds, and credentials. Update the status table and [validation record](Docs/VALIDATION.md) whenever behavior changes.
