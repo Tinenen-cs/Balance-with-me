@@ -63,6 +63,7 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 - **Original audio:** two switchable looping music tracks, footsteps, jump/landing, punch/push and hit/shove sounds, happy/sad emote jingles, and separate fail/win/draw cues. Mute is remembered.
 - **Emotes:** alternate happy/sad speech labels and jingles above each player. The winner automatically celebrates with a golden “I DID IT!” popup, bouncing and rocking for 2.4 seconds, accompanied by the victory jingle. Draws have no winner emote; restart clears it.
 - **Distinct attacks:** punch damages and knocks back once; push shoves throughout its active window without damage.
+- **Action effects:** footstep dust, jump/landing puffs, orange punch arcs, mint push streaks, hit sparks and shove particles. Happy emotes sparkle, sad emotes shed blue droplets, winners burst confetti, and losing/respawning characters get brief puffs/leaves. [See the combat effects preview](Docs/action_effects.png).
 - **Combat feedback:** orange punch fist, cyan push hand, red hit flash and hurt frames.
 - **Farm-themed scorecards** show each character’s matching sprite icon beside their name, three health points and match wins. The round timer pauses at the result; restart resets the round while keeping match wins until the scene is reloaded.
 - **Wood-and-parchment UI** keeps names, health, wins, timer, title, Help and Restart visible. Controls appear for five seconds at startup or on demand; round-start and audio notices disappear after 2.5 seconds. The result stays visible until restart.
@@ -72,6 +73,20 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 - **Slow moving clouds:** five transparent pixel-art clouds drift gently across the sky at different speeds and wrap completely offscreen. They keep moving between rounds.
 - **Desktop 16:9 farming village** with farmhouses, fields, clouds, a windmill and a grass-trimmed round wooden fulcrum supporting the plank.
 - **Original source retained:** `CharacterController2DP2.bin` is unchanged; the active controller uses Unity 6 `linearVelocity` instead of deprecated `velocity`. Companion scripts were added after the user authorized new code.
+
+## Action effects
+
+| Character action | Visual feedback |
+| --- | --- |
+| Walk | Small trailing dust puffs on grounded footsteps |
+| Jump / land | Takeoff dust / a wider landing puff |
+| Punch / hit | Orange swing arc / cream-and-gold impact sparks |
+| Push / shove | Mint speed streaks / short green knockback particles |
+| Happy / sad emote | Gold sparkles / falling blue droplets |
+| Win / fail | Gold, green and coral confetti / a brief earthy puff |
+| Restart / spawn | Old effects clear, followed by small green leaf particles |
+
+Effects are brief, fade out automatically and use a fixed sprite pool per character. Accepted attacks trigger their effect once; blocked cooldown inputs do not spawn extra effects. Sounds remain synchronized with movement, attacks and reactions.
 
 ## Controls
 
@@ -114,7 +129,8 @@ Click the Game view to give it keyboard focus. Attack while facing the other pla
 3. Combat reach, duration, damage, stun and cooldowns are in `PlayerActions.cs`. Movement speed is passed to the controller there.
 4. Tune the plank's Rigidbody2D mass (7), angular damping (2.5) and HingeJoint2D limits (±16°) in the Inspector. GameManager exposes Centering Torque (0.75), Edge Resistance (4) and Soft Limit Angle (11°) for the progressive swing resistance. Physics runs at 50 Hz; rendering uses interpolation.
 5. Adjust each **Drifting Clouds → Slow Cloud → Cloud Drift → Speed** in the Inspector (defaults 0.06–0.108 world units per second). Keep Edge Padding positive so clouds wrap beyond the viewport. Put repeatable cloud layout changes in `PlayableSceneBuilder.BuildClouds`.
-6. Use **Balance with me → Capture Full Layout** to refresh the README screenshot in the Editor; it does not create an app. The scene rebuild menu regenerates references and resets scene-only edits. Put repeatable setup changes in `PlayableSceneBuilder.cs` before using **Balance with me → Rebuild Playable Scene**.
+6. Tune particle colors, sizes and lifetime in `ActionEffects.cs`. Each player has a fixed pool of 64 effect sprites by default; walking and shove effects share existing audio throttles. Restart clears old particles before the spawn effect.
+7. Use **Balance with me → Capture Full Layout** to refresh the README screenshot in the Editor; it does not create an app. The scene rebuild menu regenerates references and resets scene-only edits. Put repeatable setup changes in `PlayableSceneBuilder.cs` before using **Balance with me → Rebuild Playable Scene**. **Capture Action Effects** stages a punch/push exchange and saves `Docs/action_effects.png`; it also runs only inside the Editor.
 
 ## Screen layout
 
@@ -150,6 +166,7 @@ Assets/
   Scripts/
     Players/CharacterController2DP2.cs  movement motor (Unity 6 API update)
     Players/PlayerActions.cs        keyboard/gamepad actions, combat, reactions and emotes
+    Players/ActionEffects.cs        pooled fading pixel effects for all actions
     Players/LocalInputRouter.cs     stable gamepad assignments and hot-plugging
     Audio/GameAudio.cs              looping music, named cues and persistent mute
     World/BalanceGame.cs            health, winner/restart, global input and audio
@@ -256,6 +273,14 @@ Use the Unity Editor to play the game now. Standalone builds are on hold at the 
 
 ## Troubleshooting
 
+If Unity Hub on this Mac reports **Code=-600 / procNotFound** when opening the editor, launch the installed Unity executable directly from Terminal:
+
+```bash
+"/Applications/Unity/Hub/Editor/6000.3.26f1/Unity.app/Contents/MacOS/Unity" -projectPath "/Users/imac23/Documents/TWOCHARACTERGAME_CSEL"
+```
+
+This opens the project in the Editor for testing. Wait for Unity to finish loading, open `Assets/Scenes/Main.unity`, and press Play. Use your actual installation and project paths on another device. The Hub logs are under `~/Library/Application Support/UnityHub/logs`; the project’s batchmode compilation, test runs and graphical capture succeeded with this installed editor executable.
+
 - **No sound:** press M to unmute, check the computer output volume and Unity’s Game-view audio mute. The Audio System has separate music and effect sources.
 - **Gamepad does nothing:** focus the Game view and verify the controller appears in Unity’s Input Debugger. The first connected pad controls the boy.
 - **Keys do nothing:** click the Game view and check that Input System has imported. Open Main or rebuild it with **Balance with me → Rebuild Playable Scene**.
@@ -265,7 +290,7 @@ Use the Unity Editor to play the game now. Standalone builds are on hold at the 
 - **Original `.bin` differs from the active `.cs`:** the original is retained; the active motor received the authorized Unity 6 API update.
 - **Manual scene edits disappear:** the rebuild menu regenerates Main. Store repeatable setup in the builder or avoid rebuilding after Inspector-only edits.
 - **Version prompt:** target is 6000.3.24f1; local verification used 6000.3.26f1.
-- **Character animation needs polish:** existing frames and simple hand effects provide action feedback. Dedicated punch/push artwork remains future work.
+- **Character animation needs polish:** existing frames, hand effects and brief pixel particles provide action feedback. Dedicated punch/push artwork remains future work.
 
 ## Contributing
 

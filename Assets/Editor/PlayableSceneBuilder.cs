@@ -160,6 +160,8 @@ namespace BalanceWithMe.Editor
             actions.fist.transform.localScale = new Vector3(.28f/fistSprite.bounds.size.x,.28f/fistSprite.bounds.size.y,1); actions.fist.color = new Color(1,.65f,.2f);
             actions.palm = Render("Push Palms", fistSprite, Vector2.zero, 8); actions.palm.transform.SetParent(root.transform,false);
             actions.palm.transform.localScale = new Vector3(.16f/fistSprite.bounds.size.x,.4f/fistSprite.bounds.size.y,1); actions.palm.color = new Color(.4f,1,1);
+            actions.effects = root.AddComponent<ActionEffects>();
+            actions.effects.player = actions; actions.effects.pixelSprite = fistSprite; actions.effects.material = material;
             actions.ResetPlayer(new Vector2(girl ? 2.6f : -2.6f,.04f));
             return actions;
         }

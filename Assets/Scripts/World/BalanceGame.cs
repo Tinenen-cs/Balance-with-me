@@ -62,6 +62,8 @@ namespace BalanceWithMe
                     if (boyLost && !girlLost) GirlWins++;
                     if (girlLost && !boyLost) BoyWins++;
                     sounds?.PlayResult(boyLost && girlLost);
+                    if (boyLost) boy.effects?.Play(ActionEffects.Kind.Fail);
+                    if (girlLost) girl.effects?.Play(ActionEffects.Kind.Fail);
                     if (boyLost && !girlLost) girl.CelebrateVictory();
                     if (girlLost && !boyLost) boy.CelebrateVictory();
                     statusRemaining = float.PositiveInfinity;

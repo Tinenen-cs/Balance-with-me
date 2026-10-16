@@ -22,3 +22,7 @@ The grass-trimmed fulcrum edit retains the 1672 × 941 canvas and round support 
 ### Slowly moving clouds
 
 `Assets/Art/Backgrounds/moving_cloud.png` is a transparent pixel-art cloud sprite generated with built-in imagegen. The village background has its painted sky clouds removed; five separate SpriteRenderers display the cloud at varied scales and positions above the village. CloudDrift updates movement per rendered frame and wraps beyond the camera using sprite bounds. The `cloudless_village` and `moving_cloud` entries in generation_prompts.json preserve the exact prompts.
+
+### Action effect sprites
+
+ActionEffects reuses the native `Assets/Art/UI/pixel_hand.png` Sprite as a tiny outlined pixel stamp, tinted, scaled and rotated for dust, arcs, streaks, sparks, droplets, leaves and confetti. There are no new particle textures or art imports. Each player owns a fixed pool of world-space SpriteRenderers, rendered above the character and fading within 0.18–0.9 seconds. `Docs/action_effects.png` is a full-scene combat capture from the Unity Editor.

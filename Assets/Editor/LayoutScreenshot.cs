@@ -8,10 +8,15 @@ namespace BalanceWithMe.Editor
 {
     public static class LayoutScreenshot
     {
-        static double started;
+        static double started, effectStarted;
+        static bool actionPreview, staged;
         [MenuItem("Balance with me/Capture Full Layout")]
-        public static void Capture()
+        public static void Capture() => BeginCapture(false);
+        [MenuItem("Balance with me/Capture Action Effects")]
+        public static void CaptureActionEffects() => BeginCapture(true);
+        static void BeginCapture(bool effects)
         {
+            actionPreview=effects;staged=false;effectStarted=0;
             EditorSceneManager.OpenScene("Assets/Scenes/Main.unity");
             // Disable domain reload for this automated capture, then restore it.
             SessionState.SetBool("BalanceCapture.OptionsEnabled",EditorSettings.enterPlayModeOptionsEnabled);
@@ -27,6 +32,19 @@ namespace BalanceWithMe.Editor
             if(!EditorApplication.isPlaying)return;
             if(started==0)started=EditorApplication.timeSinceStartup;
             if(EditorApplication.timeSinceStartup-started<6)return;
+            if(actionPreview)
+            {
+                if(!staged)
+                {
+                    var game=Object.FindFirstObjectByType<BalanceGame>();
+                    game.boy.body.position=new Vector2(-.4f,.1f);game.girl.body.position=new Vector2(.4f,.1f);
+                    game.boy.body.linearVelocity=game.girl.body.linearVelocity=Vector2.zero;
+                    Physics2D.SyncTransforms();
+                    game.boy.TryAction(PlayerActions.ActionType.Punch);game.girl.TryAction(PlayerActions.ActionType.Push);
+                    staged=true;effectStarted=EditorApplication.timeSinceStartup;return;
+                }
+                if(EditorApplication.timeSinceStartup-effectStarted<.12)return;
+            }
             EditorApplication.update-=WaitForPlay;
             try
             {
@@ -47,9 +65,10 @@ namespace BalanceWithMe.Editor
                 var previous=RenderTexture.active;RenderTexture.active=target;
                 var pixels=new Texture2D(1920,1080,TextureFormat.RGB24,false);
                 pixels.ReadPixels(new Rect(0,0,1920,1080),0,0);pixels.Apply();
-                System.IO.Directory.CreateDirectory("Docs");System.IO.File.WriteAllBytes("Docs/gameplay_layout.png",pixels.EncodeToPNG());
+                string path=actionPreview?"Docs/action_effects.png":"Docs/gameplay_layout.png";
+                System.IO.Directory.CreateDirectory("Docs");System.IO.File.WriteAllBytes(path,pixels.EncodeToPNG());
                 RenderTexture.active=previous;camera.targetTexture=null;target.Release();Object.DestroyImmediate(target);Object.DestroyImmediate(pixels);
-                Debug.Log("Full desktop game layout saved to Docs/gameplay_layout.png.");
+                Debug.Log("Full desktop game layout saved to "+path);
             }
             catch(System.Exception exception) { Debug.LogException(exception);SessionState.SetBool("BalanceCapture.Failed",true); }
             EditorApplication.isPlaying=false;

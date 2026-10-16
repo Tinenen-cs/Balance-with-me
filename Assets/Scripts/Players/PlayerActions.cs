@@ -15,6 +15,7 @@ namespace BalanceWithMe
         public Sprite[] idle, walk, jump, hurt;
         public PlayerActions opponent;
         public BalanceGame game;
+        public ActionEffects effects;
         public Text emoteLabel;
         public int Health { get; private set; } = 3;
         public float StunRemaining { get; private set; }
@@ -76,11 +77,12 @@ namespace BalanceWithMe
             if (!controller.IsGrounded) airborneTime += dt;
             else
             {
-                if (airborneTime > .12f) game.sounds?.Play("land");
+                if (airborneTime > .12f) { game.sounds?.Play("land"); effects?.Play(ActionEffects.Kind.Land); }
                 airborneTime = 0;
                 if (StunRemaining <= 0 && Mathf.Abs(move) > .1f && Mathf.Abs(body.linearVelocity.x) > .25f && stepRemaining <= 0)
                 {
                     game.sounds?.Play("step");
+                    effects?.Play(ActionEffects.Kind.Step);
                     stepRemaining = .32f;
                 }
             }
@@ -88,7 +90,7 @@ namespace BalanceWithMe
             {
                 bool jumped = jumpQueued && controller.IsGrounded;
                 controller.Move(move * .38f * (CurrentAction == ActionType.None ? 1 : .35f), false, jumpQueued);
-                if (jumped) game.sounds?.Play("jump");
+                if (jumped) { game.sounds?.Play("jump"); effects?.Play(ActionEffects.Kind.Jump); }
             }
             jumpQueued = false;
             AdvanceAction(Time.fixedDeltaTime);
@@ -102,6 +104,7 @@ namespace BalanceWithMe
             punchConnected = false;
             cooldown = action == ActionType.Punch ? .65f : .9f;
             game.sounds?.Play(action == ActionType.Punch ? "punch" : "push");
+            effects?.Play(action == ActionType.Punch ? ActionEffects.Kind.Punch : ActionEffects.Kind.Push);
             return true;
         }
 
@@ -112,6 +115,7 @@ namespace BalanceWithMe
             emoteText = sadEmote ? "OH NO!" : "LET'S GO!";
             emoteTime = 1.2f;
             game.sounds?.Play(sadEmote ? "emote_sad" : "emote_happy");
+            effects?.Play(sadEmote ? ActionEffects.Kind.Sad : ActionEffects.Kind.Happy);
         }
 
         public void CelebrateVictory()
@@ -123,6 +127,7 @@ namespace BalanceWithMe
             sadEmote = false;
             emoteText = "* I DID IT! *";
             emoteTime = 2.4f;
+            effects?.Play(ActionEffects.Kind.Victory);
         }
 
         void LateUpdate()
@@ -168,6 +173,7 @@ namespace BalanceWithMe
             if (reactionCooldown <= 0)
             {
                 game.sounds?.Play(action == ActionType.Punch ? "hit" : "shove");
+                effects?.Play(action == ActionType.Punch ? ActionEffects.Kind.Hit : ActionEffects.Kind.Shove, Mathf.Sign(impulse.x));
                 reactionCooldown = .25f;
                 sadEmote = true;
                 emoteText = action == ActionType.Punch ? "OUCH!" : "WHOA!"; emoteTime = .5f;
@@ -176,6 +182,7 @@ namespace BalanceWithMe
 
         public void ResetPlayer(Vector2 position)
         {
+            effects?.Clear();
             controller.ResetMotion();
             body.position = position;
             body.linearVelocity = Vector2.zero;
@@ -189,6 +196,7 @@ namespace BalanceWithMe
             controller.m_FacingRight = !isGirl;
             transform.localScale = new Vector3(isGirl ? -1 : 1, 1, 1);
             Animate(0);
+            effects?.Play(ActionEffects.Kind.Spawn);
         }
 
         void Animate(float dt)

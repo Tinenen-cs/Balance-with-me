@@ -5,7 +5,7 @@
 Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1**; that exact patch has not been tested here. The project is ready for a Unity Editor playtest using the verified editor.
 
 - C# compilation and scene generation succeeded.
-- **23 PlayMode tests passed, 0 failed**:
+- **26 PlayMode tests passed, 0 failed**:
   1. Punch applies damage only once, respects cooldown and stuns the target.
   2. Push causes forward knockback without reducing health.
   3. Punch rejects targets behind the player or beyond reach.
@@ -29,6 +29,9 @@ Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1*
   21. Cloud displacement follows elapsed time independently of step size and preserves height.
   22. Clouds wrap completely outside the viewport, preserving overshoot even across multiple cycles.
   23. Five cloud sprites move slowly during play and continue after the round; their render layers remain behind gameplay.
+  24. Accepted attacks and contact reactions emit distinct effects; cooldown-rejected attacks add no extra particles.
+  25. Happy/sad, victory/fail and spawn effects are selected correctly, expire, reset cleanly and reuse a bounded pool under 100 repeated bursts; disabling effects prevents further emissions.
+  26. Both characters emit footstep, jump and landing effects through actual keyboard input and physics.
 - All fifteen synthesized audio files were checked as nonempty 24 kHz, mono, 16-bit PCM WAVs.
 - A graphical Unity Editor render was inspected at 1920 × 1080: both characters are visible; the rope-bound plank and saddle meet the circular wooden fulcrum; farming-village scenery, parchment scorecards, timer, Help and Restart signs render together after the introductory popups disappear.
 - Native importer Sprite subassets replaced the earlier serialized generated character sprites after the graphical review revealed missing character rendering.
@@ -77,3 +80,13 @@ The existing background was edited with built-in imagegen to add a grass/moss fr
 ## Slow cloud animation
 
 All 23 PlayMode tests passed on Unity 6000.3.26f1 after adding CloudDrift and the cloud scene objects. The cloudless village base retains the 1672 × 941 canvas and the grass-covered fulcrum. The 1774 × 887 cloud PNG has an alpha channel and uses point-filtered, uncompressed sprite import. Five sprites render at varied scales with speeds 0.06–0.108 world units/second. The updated full-layout image was captured in Unity for visual inspection. No packaged app or APK was created.
+
+## Action effects
+
+The full 26-test PlayMode suite passed on Unity 6000.3.26f1. After adding a guard against emitting from a disabled ActionEffects component, all three ActionEffects tests were rerun and passed. Each player uses a fixed pool of 64 world-space SpriteRenderers with the existing hand Sprite and unlit material. Effects fade within 0.18–0.9 seconds, throttle alongside footsteps/shove reactions, and clear on restart or disable. Repeated burst tests confirm renderer counts do not grow. Input, damage, audio and cloud checks remain passing.
+
+Capture Action Effects saved a full 1920 × 1080 Unity scene preview at Docs/action_effects.png after staging a punch/push exchange. The capture was visually inspected: mint streaks and gold impact sparks render around the characters, the target shows hit feedback, and the HUD remains clear. The original .bin is retained, and no app/APK was created.
+
+## Unity Hub launch log check
+
+Reviewed the supplied Unity Hub logs directory. The recent LocalProjectService/ProjectService error is a macOS launch failure: Code=-600, procNotFound, while Hub invokes the Unity executable through `open -a` with an activation URI. Direct invocation of the installed 6000.3.26f1 executable has already completed the project’s batchmode tests and graphical captures successfully. README now includes the direct executable command for an Editor playtest; interactive launch through that workaround still needs to be tried on the user’s device.

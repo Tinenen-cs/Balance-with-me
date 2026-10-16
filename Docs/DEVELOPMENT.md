@@ -77,3 +77,9 @@ Edited the existing village background with built-in imagegen to add grass and m
 ## Slow cloud movement
 
 Removed painted sky clouds from the village base using built-in imagegen, retaining the grass-covered wooden support, village placement and 1672 × 941 canvas. A new transparent cloud sprite is rendered in five sizes/positions, ahead of the background but above the village and behind gameplay/HUD. CloudDrift advances horizontal position with delta time at 0.06–0.108 world units/second. Viewport width, each sprite’s full extent and padding determine an offscreen wrap; modulo wrapping preserves overshoot even for large time steps. Clouds continue between rounds. Rebuild Playable Scene wires the cloud instances and camera automatically.
+
+## Character action effects
+
+ActionEffects adds per-player pools of 64 tiny SpriteRenderers using the existing pixel hand stamp and URP sprite material. Effects emit at fixed world positions, independent of subsequent player movement, with short lifetimes, fading alpha and simple ballistic motion. Walking/landing/jumping, accepted punch/push starts, throttled hit/shove reactions, happy/sad emotes, victory/failure and spawn each have a distinct emission. Restart clears previous particles before emitting spawn leaves; disabling or unloading the player clears/disposes its pool. Effects do not change colliders, damage or input.
+
+Capture Action Effects stages a real punch/push exchange after startup notices expire and saves a full-scene preview. Tests cover action/contact selection, rejected attack inputs, both players’ movement emissions, emote/result effects, expiry, restart cleanup and bounded renderer counts under repeated bursts.
