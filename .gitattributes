@@ -7,3 +7,4 @@
 *.asset text eol=lf
 *.meta text eol=lf
 *.png binary
+Assets/Scripts/Players/CharacterController2DP2.cs -text
