@@ -1,7 +1,7 @@
 # Current asset guide
 
 - `Assets/Art/Characters/two_players.png`: original transparent 1254 × 1254 sheet. Four frames each for boy idle/walk/jump/hurt, then girl idle/walk/jump/hurt. Native importer Sprite subassets are alpha-trimmed by PlayableSceneBuilder.
-- `Assets/Art/Backgrounds/farm_village_wood_ball.png`: farming village with a circular wooden-log fulcrum, warm woodgrain and rope detail. Replaces the former trunk and roots. Uniform overscan preserves the round shape and aligns the support with the plank.
+- `Assets/Art/Backgrounds/farm_village_wood_ball.png`: farming village with a circular wooden-log fulcrum, warm woodgrain, rope detail and a green grass/moss fringe along the curved rim and base. Replaces the former trunk and roots. Uniform overscan preserves the round shape and aligns the support with the plank.
 - `Assets/Art/Props/farm_balance_plank.png`: transparent rustic plank, rope-bound ends and a central wooden saddle.
 - `Assets/Art/UI/pixel_hand.png`: native pixel hand effect used for punch/push feedback.
 - `Assets/Art/Fonts/Tiny5.ttf`: pixel font under SIL OFL 1.1; license alongside the font.
@@ -16,3 +16,5 @@ The current wooden ball is reduced about 25% for a more balanced composition. It
 ### Player scorecard icons
 
 The boy and girl scorecards reuse each character’s first idle Sprite subasset from `two_players.png` as a UI Image. Each icon preserves its aspect ratio inside a small timber badge beside the name/health/wins text; no extra texture import or generated portrait file is required.
+
+The grass-trimmed fulcrum edit retains the 1672 × 941 canvas and round support placement. Its top contact point is clear for the plank. The exact built-in imagegen edit prompt is stored as `grass_wooden_fulcrum` in `generation_prompts.json`.

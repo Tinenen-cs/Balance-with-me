@@ -4,7 +4,7 @@ A local two-player 2D pixel-art game made with Unity and VS Code. A chibi boy an
 
 <p align="center"><img src="Docs/gameplay_layout.png" alt="Full desktop game layout: two players on a balancing plank above a round wooden fulcrum in a farming village" width="960"></p>
 
-> Full 16:9 layout captured from the Unity scene. The plank and circular wooden-log fulcrum share honey-brown timber, matching rope details and visible woodgrain; farmhouses, fields and a windmill frame the central play area. Character sprite sheets are kept in the project assets and are not displayed in this README.
+> Full 16:9 layout captured from the Unity scene. The plank and circular wooden-log fulcrum share honey-brown timber, matching rope details and visible woodgrain. Grass and moss fringe the fulcrum’s curved rim and base to blend with the land; farmhouses, fields and a windmill frame the central play area. Character sprite sheets are kept in the project assets and are not displayed in this README.
 
 ## Download & play
 
@@ -69,7 +69,7 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 - **Smooth motion:** interpolated player/plank physics, 0.08-second movement smoothing and eased action/emote poses. The weighted plank uses angular damping and progressive resistance before its ±16° hinge limits. Restart clears stored movement smoothing.
 - **Physics scene:** player Rigidbody2Ds and capsule colliders on a hinged plank.
 - **32 original animation frames** used for idle, walk, jump and hurt, plus programmatic combat hand effects.
-- **Desktop 16:9 farming village** with farmhouses, fields, clouds, a windmill and a round wooden fulcrum supporting the plank.
+- **Desktop 16:9 farming village** with farmhouses, fields, clouds, a windmill and a grass-trimmed round wooden fulcrum supporting the plank.
 - **Original source retained:** `CharacterController2DP2.bin` is unchanged; the active controller uses Unity 6 `linearVelocity` instead of deprecated `velocity`. Companion scripts were added after the user authorized new code.
 
 ## Controls

@@ -66,3 +66,7 @@ The earlier 17-test suite passed on Unity 6000.3.26f1 after the popup and audio 
 All 20 PlayMode tests passed on Unity 6000.3.26f1 after these changes. Winner celebrations were checked for both players, including expiry, draw behavior, victory audio and immediate restart cleanup. The movement test exercises acceleration, reversal, stopping and restart drift. The plank test measures per-step angle changes, hinge bounds and angular settling after a repeatable impulse, then confirms it still responds to uneven player weight. Physics interpolation is enabled on both characters and the plank.
 
 The updated full-layout screenshot includes matching boy/girl icons in the two farm scorecards. Frame-rate perception and controller feel should still be checked on the target device; automated physics checks do not measure display performance. Original CharacterController2DP2.bin is unchanged. No app or APK was created.
+
+## Grass and moss on the round fulcrum
+
+The existing background was edited with built-in imagegen to add a grass/moss fringe and ground tufts around the wooden circle. The 1672 × 941 canvas, asset GUID and scene placement are retained. Unity 6000.3.26f1 imported the image and captured the refreshed 1920 × 1080 layout successfully; the image was visually inspected for round support proportions, exposed plank contact, player icons and clear HUD. This is an artwork-only update; the 20-test gameplay result above is from the preceding gameplay verification and was not rerun. No app/APK was built.

@@ -69,3 +69,7 @@ A sole winner automatically triggers a 2.4-second gold “I DID IT!” emote and
 Both player Rigidbody2Ds and the plank render with interpolation. Movement smoothing is 0.08 seconds, uses an explicit fixed physics timestep, and resets its stored velocity on a new round. Locomotion frames follow grounding and actual horizontal speed, while action/victory lean and bob offsets ease toward their target poses. The original .bin remains unchanged.
 
 The plank now has mass 7 and angular damping 2.5. Centering torque is 0.75 per degree; quadratic edge resistance (4) begins at 11 degrees before the existing ±16-degree hinge stops. These settings soften the swing without removing the players’ effect on balance. GameManager exposes the three torque settings for tuning. Tests exercise acceleration/reversal/stopping and the plank’s bounded, continuous, damped response.
+
+## Grass-trimmed wooden fulcrum
+
+Edited the existing village background with built-in imagegen to add grass and moss along the circular wooden support’s rim, sides and ground contact. The exposed woodgrain face and top plank contact remain clear; the canvas remains 1672 × 941. The existing asset path and Unity GUID are retained. The prompt is recorded in Docs/generation_prompts.json.
