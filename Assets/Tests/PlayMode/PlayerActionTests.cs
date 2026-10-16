@@ -82,6 +82,17 @@ namespace BalanceWithMe.Tests
             Assert.That(game.girl.TryAction(PlayerActions.ActionType.Punch),Is.False);
             Assert.That(game.status.text,Does.Contain("GIRL WINS"));
         }
+        [UnityTest] public IEnumerator WinUpdatesScoreAndRestartKeepsIt()
+        {
+            game.boy.body.position=new Vector2(0,-4);
+            yield return null;
+            Assert.That(game.GirlWins,Is.EqualTo(1));
+            Assert.That(game.girlHud.text,Does.Contain("WINS 1"));
+            game.Restart();yield return null;
+            Assert.That(game.GirlWins,Is.EqualTo(1));
+            Assert.That(game.timer.text,Does.Contain("00:00"));
+            Assert.That(game.girl.Health,Is.EqualTo(3));
+        }
         [UnityTest] public IEnumerator KeyboardStartsBoyPushAndGirlPunch()
         {
             game.Restart();

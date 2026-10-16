@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: boy_idle_01
+      name: boy_idle_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 1097
-        width: 314
-        height: 157
+        x: 174
+        y: 1095
+        width: 80
+        height: 142
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -112,20 +112,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8507f78f981cd999a4f8e243c8d42e4c
-      internalID: -483566201
+      spriteID: 2ff3f4a6dc5f8f0f423039152b9755c4
+      internalID: -384842175
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_idle_02
+      name: boy_idle_2
       rect:
         serializedVersion: 2
-        x: 314
-        y: 1097
-        width: 313
-        height: 157
+        x: 449
+        y: 1095
+        width: 80
+        height: 142
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,20 +134,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7037d30ea2034d6848355777d1b94b85
-      internalID: 395624056
+      spriteID: 2a76d8bcaa11e7f2e7ff1dffde38ffea
+      internalID: -1875694661
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_idle_03
+      name: boy_idle_3
       rect:
         serializedVersion: 2
-        x: 627
-        y: 1097
-        width: 313
-        height: 157
+        x: 724
+        y: 1095
+        width: 80
+        height: 142
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -156,20 +156,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3a66c8bbc2d5f2725111a8c1db7c49a8
-      internalID: -1801147249
+      spriteID: b899ba1f4c0e8f19cfe794aa873decc5
+      internalID: -108992273
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_idle_04
+      name: boy_idle_4
       rect:
         serializedVersion: 2
-        x: 940
-        y: 1097
-        width: 314
-        height: 157
+        x: 999
+        y: 1095
+        width: 79
+        height: 141
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -178,20 +178,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e77428cba94dd19c9244f3f5cc665265
-      internalID: -1177200147
+      spriteID: 60dead356baa501ed4f387e8714b40c2
+      internalID: -1836994234
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_walk_01
+      name: boy_walk_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 940
-        width: 314
-        height: 157
+        x: 170
+        y: 936
+        width: 85
+        height: 147
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -200,20 +200,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: db1a88aa4a0d8bbfe42252dac17c4db4
-      internalID: -636438281
+      spriteID: ef28d35748597042e1680c7946d6f9f2
+      internalID: 1148220912
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_walk_02
+      name: boy_walk_2
       rect:
         serializedVersion: 2
-        x: 314
-        y: 940
-        width: 313
-        height: 157
+        x: 444
+        y: 936
+        width: 89
+        height: 147
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -222,20 +222,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4e7f114eede2a5ad307cd514065b0476
-      internalID: -4288723
+      spriteID: c327719d3202403282fded1cdfeeb3c3
+      internalID: -587536334
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_walk_03
+      name: boy_walk_3
       rect:
         serializedVersion: 2
-        x: 627
-        y: 940
-        width: 313
-        height: 157
+        x: 721
+        y: 936
+        width: 87
+        height: 147
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -244,20 +244,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ec9bd64ee4ced810edbdffb020ff41b3
-      internalID: -1604053684
+      spriteID: 9566b5698e8287a4b7610c9655066e8b
+      internalID: -1068307425
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_walk_04
+      name: boy_walk_4
       rect:
         serializedVersion: 2
-        x: 940
-        y: 940
-        width: 314
-        height: 157
+        x: 996
+        y: 936
+        width: 85
+        height: 148
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -266,20 +266,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c1018c84a35a1fe03e5f34aeb089a3d
-      internalID: 772231042
+      spriteID: 155fb0c4f6ba9a1c817d226ce8dd7825
+      internalID: -684146780
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_jump_01
+      name: boy_jump_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 784
-        width: 314
-        height: 156
+        x: 158
+        y: 781
+        width: 108
+        height: 124
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -288,20 +288,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 79facdf089fd3779b9aa8b71196b2e3c
-      internalID: -2072849139
+      spriteID: df835359721d4eb3dd80fd0642a96354
+      internalID: -840870949
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_jump_02
+      name: boy_jump_2
       rect:
         serializedVersion: 2
-        x: 314
-        y: 784
-        width: 313
-        height: 156
+        x: 436
+        y: 782
+        width: 108
+        height: 137
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -310,20 +310,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: af5b0dab5368e325b380895fc5576099
-      internalID: 1547812540
+      spriteID: a854bf17c80c8b50d4ddbf2a7d3c565a
+      internalID: -1474784408
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_jump_03
+      name: boy_jump_3
       rect:
         serializedVersion: 2
-        x: 627
-        y: 784
-        width: 313
-        height: 156
+        x: 713
+        y: 790
+        width: 102
+        height: 143
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -332,20 +332,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 47953b32cf4f06aef0fbf83cbf1790cc
-      internalID: -661943632
+      spriteID: e7bc9870de479129bedb9b1a49de96b5
+      internalID: 1440194176
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_jump_04
+      name: boy_jump_4
       rect:
         serializedVersion: 2
-        x: 940
-        y: 784
-        width: 314
-        height: 156
+        x: 993
+        y: 782
+        width: 104
+        height: 115
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -354,20 +354,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 516b3049e1f942882f876bda4d080b61
-      internalID: 655291689
+      spriteID: c522daf1a0274e30c266598612d84a3b
+      internalID: -2056717701
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_hurt_01
+      name: boy_hurt_1
       rect:
         serializedVersion: 2
-        x: 0
+        x: 159
         y: 627
-        width: 314
-        height: 157
+        width: 107
+        height: 144
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -376,20 +376,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ef25c391dcd1c0c109a47f87712179f8
-      internalID: 1119066532
+      spriteID: 0ce01e6a33f3e8ce835edd50a0daf1dc
+      internalID: -1270372695
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_hurt_02
+      name: boy_hurt_2
       rect:
         serializedVersion: 2
-        x: 314
+        x: 422
         y: 627
-        width: 313
-        height: 157
+        width: 121
+        height: 139
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -398,20 +398,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c20d73e9d6f2feb446c37c6d0421fefd
-      internalID: 1473187941
+      spriteID: ca576c2519cbcd3f0ca5927de8fcce1f
+      internalID: -355618693
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_hurt_03
+      name: boy_hurt_3
       rect:
         serializedVersion: 2
-        x: 627
+        x: 721
         y: 627
-        width: 313
-        height: 157
+        width: 84
+        height: 136
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -420,20 +420,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 015b736d31b37a56d8504afcf2d88545
-      internalID: -1749823795
+      spriteID: 68c30565438956812bb2b792021e8550
+      internalID: 241052704
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: boy_hurt_04
+      name: boy_hurt_4
       rect:
         serializedVersion: 2
-        x: 940
+        x: 996
         y: 627
-        width: 314
-        height: 157
+        width: 81
+        height: 142
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -442,20 +442,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e744b35428c0e73f5d406b02924315d7
-      internalID: 722455780
+      spriteID: cefb83ac8077d78493f2bce9be3fe55b
+      internalID: -628612654
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_idle_01
+      name: girl_idle_1
       rect:
         serializedVersion: 2
-        x: 0
+        x: 151
         y: 470
-        width: 314
-        height: 157
+        width: 109
+        height: 149
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -464,20 +464,42 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: efec676214fb055194b083e8a8c247c5
-      internalID: 1815635328
+      spriteID: 5a9e0f79b308723aa84545a762a0588b
+      internalID: -1741205602
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_idle_02
+      name: girl_idle_2
       rect:
         serializedVersion: 2
-        x: 314
+        x: 422
+        y: 469
+        width: 112
+        height: 150
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdb1c5c6a59d2e63e7bf5e319b73460c
+      internalID: -2034201287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_idle_3
+      rect:
+        serializedVersion: 2
+        x: 700
         y: 470
-        width: 313
-        height: 157
+        width: 110
+        height: 149
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -486,20 +508,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 15268d1b339592b83c996d402a7a716a
-      internalID: 181761331
+      spriteID: 951174151d841f27e3e0ac844bf0775e
+      internalID: -1560253690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_idle_03
+      name: girl_idle_4
       rect:
         serializedVersion: 2
-        x: 627
-        y: 470
-        width: 313
-        height: 157
+        x: 975
+        y: 469
+        width: 109
+        height: 150
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -508,42 +530,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 579e08136efbdfd26dd5fb7233e078e9
-      internalID: 460626026
+      spriteID: cc5c7998de79eb939863a7edc25d16c3
+      internalID: 1920614728
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_idle_04
+      name: girl_walk_1
       rect:
         serializedVersion: 2
-        x: 940
-        y: 470
-        width: 314
-        height: 157
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b9b6edf3adea498c086fc08a370d087f
-      internalID: 1375556670
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: girl_walk_01
-      rect:
-        serializedVersion: 2
-        x: 0
+        x: 150
         y: 314
-        width: 314
-        height: 156
+        width: 110
+        height: 150
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -552,20 +552,64 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 26405d6a95d2fe90dac539290ede3452
-      internalID: 412602242
+      spriteID: 38300905f5a785ed6543812b7c8e0069
+      internalID: -1736933839
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_walk_02
+      name: girl_walk_2
       rect:
         serializedVersion: 2
-        x: 314
+        x: 428
+        y: 315
+        width: 110
+        height: 149
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c407ba0ea2fc8909816f16b96defaec1
+      internalID: -1991750152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_walk_3
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 306
+        width: 109
+        height: 158
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 168ed136dd5efecd717291adfd6536ca
+      internalID: 119290084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_walk_4
+      rect:
+        serializedVersion: 2
+        x: 976
         y: 314
-        width: 313
-        height: 156
+        width: 111
+        height: 150
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -574,20 +618,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 729234c4fc408cea736a45239a365dbf
-      internalID: 2057695454
+      spriteID: f32234ec108cc11e5ef83f0d6e356dc0
+      internalID: 1004942661
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_walk_03
+      name: girl_jump_1
       rect:
         serializedVersion: 2
-        x: 627
-        y: 314
-        width: 313
-        height: 156
+        x: 166
+        y: 155
+        width: 113
+        height: 129
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -596,20 +640,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 955b3519c096afbbdfd7fdf3688846d4
-      internalID: -1313061138
+      spriteID: 8d02697bc8a42aaf9216bd36606ae3c7
+      internalID: 565693935
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_walk_04
+      name: girl_jump_2
       rect:
         serializedVersion: 2
-        x: 940
-        y: 314
-        width: 314
-        height: 156
+        x: 437
+        y: 155
+        width: 112
+        height: 142
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -618,20 +662,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a8ed476373fa02407c9bb3cf9bd77574
-      internalID: 351924423
+      spriteID: cde419cd1da23a84261b98600e49d0da
+      internalID: 658398111
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_jump_01
+      name: girl_jump_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 157
-        width: 314
-        height: 157
+        x: 714
+        y: 166
+        width: 111
+        height: 140
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -640,20 +684,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f59b60a83338ff088b97d645056c60a7
-      internalID: -2086343640
+      spriteID: 3766fd47564b6d389743a50d3309c7e4
+      internalID: -687814172
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_jump_02
+      name: girl_jump_4
       rect:
         serializedVersion: 2
-        x: 314
-        y: 157
-        width: 313
-        height: 157
+        x: 993
+        y: 155
+        width: 113
+        height: 122
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -662,20 +706,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 757d296a5001216eafdcafa6412d9653
-      internalID: -1794132248
+      spriteID: 774e5ba8c7393a02d64ab483f8bca4e3
+      internalID: -785066079
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_jump_03
+      name: girl_hurt_1
       rect:
         serializedVersion: 2
-        x: 627
-        y: 157
-        width: 313
-        height: 157
+        x: 149
+        y: 2
+        width: 128
+        height: 143
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -684,20 +728,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d069e584ad26b1df41abb630e62fc923
-      internalID: -209204727
+      spriteID: 48833dcaf3806244bb0df11800c2ef68
+      internalID: 8002468
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_jump_04
+      name: girl_hurt_2
       rect:
         serializedVersion: 2
-        x: 940
-        y: 157
-        width: 314
-        height: 157
+        x: 420
+        y: 2
+        width: 138
+        height: 137
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -706,20 +750,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 74797a17dcb86d030b53406a92c0d19b
-      internalID: -160586049
+      spriteID: 2d8378680afc8606cdcc0e9e22ddaab3
+      internalID: 1732304868
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_hurt_01
+      name: girl_hurt_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 314
-        height: 157
+        x: 707
+        y: 2
+        width: 109
+        height: 143
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -728,20 +772,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ab6678a010d81eefc0be43969bbffa4c
-      internalID: -1866060634
+      spriteID: 80307eca97c49c694925dc3102cc59ac
+      internalID: -337983851
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: girl_hurt_02
+      name: girl_hurt_4
       rect:
         serializedVersion: 2
-        x: 314
-        y: 0
-        width: 313
-        height: 157
+        x: 974
+        y: 2
+        width: 107
+        height: 147
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -750,52 +794,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 67e2ea19ee4e811a356a613bc0bee05f
-      internalID: 87732779
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: girl_hurt_03
-      rect:
-        serializedVersion: 2
-        x: 627
-        y: 0
-        width: 313
-        height: 157
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 900996cb1d99186a16d0d5a812a21638
-      internalID: 875113616
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: girl_hurt_04
-      rect:
-        serializedVersion: 2
-        x: 940
-        y: 0
-        width: 314
-        height: 157
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9ce0b2f33f868dce478efdd0f640b4d1
-      internalID: -2047901475
+      spriteID: 8c067f6819674447ba82c8e2e8c07165
+      internalID: 1596545656
       vertices: []
       indices: 
       edges: []
@@ -814,38 +814,38 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      boy_hurt_01: 1119066532
-      boy_hurt_02: 1473187941
-      boy_hurt_03: -1749823795
-      boy_hurt_04: 722455780
-      boy_idle_01: -483566201
-      boy_idle_02: 395624056
-      boy_idle_03: -1801147249
-      boy_idle_04: -1177200147
-      boy_jump_01: -2072849139
-      boy_jump_02: 1547812540
-      boy_jump_03: -661943632
-      boy_jump_04: 655291689
-      boy_walk_01: -636438281
-      boy_walk_02: -4288723
-      boy_walk_03: -1604053684
-      boy_walk_04: 772231042
-      girl_hurt_01: -1866060634
-      girl_hurt_02: 87732779
-      girl_hurt_03: 875113616
-      girl_hurt_04: -2047901475
-      girl_idle_01: 1815635328
-      girl_idle_02: 181761331
-      girl_idle_03: 460626026
-      girl_idle_04: 1375556670
-      girl_jump_01: -2086343640
-      girl_jump_02: -1794132248
-      girl_jump_03: -209204727
-      girl_jump_04: -160586049
-      girl_walk_01: 412602242
-      girl_walk_02: 2057695454
-      girl_walk_03: -1313061138
-      girl_walk_04: 351924423
+      boy_hurt_1: -1270372695
+      boy_hurt_2: -355618693
+      boy_hurt_3: 241052704
+      boy_hurt_4: -628612654
+      boy_idle_1: -384842175
+      boy_idle_2: -1875694661
+      boy_idle_3: -108992273
+      boy_idle_4: -1836994234
+      boy_jump_1: -840870949
+      boy_jump_2: -1474784408
+      boy_jump_3: 1440194176
+      boy_jump_4: -2056717701
+      boy_walk_1: 1148220912
+      boy_walk_2: -587536334
+      boy_walk_3: -1068307425
+      boy_walk_4: -684146780
+      girl_hurt_1: 8002468
+      girl_hurt_2: 1732304868
+      girl_hurt_3: -337983851
+      girl_hurt_4: 1596545656
+      girl_idle_1: -1741205602
+      girl_idle_2: -2034201287
+      girl_idle_3: -1560253690
+      girl_idle_4: 1920614728
+      girl_jump_1: 565693935
+      girl_jump_2: 658398111
+      girl_jump_3: -687814172
+      girl_jump_4: -785066079
+      girl_walk_1: -1736933839
+      girl_walk_2: -1991750152
+      girl_walk_3: 119290084
+      girl_walk_4: 1004942661
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

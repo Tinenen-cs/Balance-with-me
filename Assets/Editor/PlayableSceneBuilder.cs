@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using UnityEditor.U2D.Sprites;
+using System.Collections.Generic;
 
 namespace BalanceWithMe.Editor
 {
@@ -13,6 +15,7 @@ namespace BalanceWithMe.Editor
     {
         static Material material;
         static Sprite fistSprite;
+        static Sprite[] characterFrames;
         const string Generated = "Assets/Art/Characters/Generated";
 
         [MenuItem("Balance with me/Rebuild Playable Scene")]
@@ -20,6 +23,7 @@ namespace BalanceWithMe.Editor
         {
             System.IO.Directory.CreateDirectory(Generated);
             AssetDatabase.Refresh();
+            PrepareCharacterSprites();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
             if (shader == null) throw new InvalidOperationException("URP 2D sprite shader missing.");
@@ -29,25 +33,33 @@ namespace BalanceWithMe.Editor
             camera.tag = "MainCamera"; camera.transform.position = new Vector3(0, 0, -10);
             var cam = camera.GetComponent<Camera>(); cam.orthographic = true; cam.orthographicSize = 5.4f;
             cam.backgroundColor = new Color(.4f,.7f,1);
-            Sprite bg = AssetDatabase.LoadAllAssetsAtPath("Assets/Art/Backgrounds/clouds_green_land.png").OfType<Sprite>().First();
-            var background = Render("Clouds and Green Land", bg, new Vector2(0,0), -10);
+            const string backgroundPath = "Assets/Art/Backgrounds/farm_village_tree.png";
+            var backgroundImporter = (TextureImporter)AssetImporter.GetAtPath(backgroundPath);
+            backgroundImporter.textureType = TextureImporterType.Sprite;
+            backgroundImporter.spriteImportMode = SpriteImportMode.Single;
+            backgroundImporter.filterMode = FilterMode.Point;
+            backgroundImporter.textureCompression = TextureImporterCompression.Uncompressed;
+            backgroundImporter.mipmapEnabled = false;
+            backgroundImporter.maxTextureSize = 4096;
+            backgroundImporter.SaveAndReimport();
+            Sprite bg = AssetDatabase.LoadAllAssetsAtPath(backgroundPath).OfType<Sprite>().First();
+            var background = Render("Farmer Village and Rooted Tree", bg, new Vector2(0,0), -10);
             background.transform.localScale = new Vector3(19.2f / bg.bounds.size.x, 10.8f / bg.bounds.size.y, 1);
-            var propTexture = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Art/Props/platform_ball.png");
-            var plankSprite = Slice(propTexture, new Rect(225, 522, 1320, 76), "Plank", new Vector2(.5f,.5f));
-            var ballSprite = Slice(propTexture, new Rect(724, 208, 326, 326), "Ball", new Vector2(.5f,.5f));
-            var ball = Render("Large Ball", ballSprite, new Vector2(0, -1.7f), 0);
-            ball.transform.localScale = Vector3.one * (3 / ballSprite.bounds.size.x);
+            var plankSprite = ImportPlank();
             var board = new GameObject("Balancing Plank", typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(HingeJoint2D));
+            board.transform.position = new Vector3(0,-.2f,0);
             board.layer = 8;
             var boardBody = board.GetComponent<Rigidbody2D>(); boardBody.mass = 5; boardBody.angularDamping = 2;
             board.GetComponent<BoxCollider2D>().size = new Vector2(10, .4f);
             var hinge = board.GetComponent<HingeJoint2D>(); hinge.autoConfigureConnectedAnchor = false;
-            hinge.connectedAnchor = Vector2.zero; hinge.useLimits = true; hinge.limits = new JointAngleLimits2D { min = -16, max = 16 };
+            hinge.connectedAnchor = new Vector2(0,-.2f); hinge.useLimits = true; hinge.limits = new JointAngleLimits2D { min = -16, max = 16 };
             var boardArt = Render("Plank Artwork", plankSprite, Vector2.zero, 1);
             boardArt.transform.SetParent(board.transform, false);
             boardArt.transform.localScale = new Vector3(10/plankSprite.bounds.size.x, .4f/plankSprite.bounds.size.y, 1);
             fistSprite = CreateFist();
             var game = new GameObject("GameManager").AddComponent<BalanceGame>(); game.board = boardBody;
+            game.inputs = game.gameObject.AddComponent<LocalInputRouter>();
+            game.sounds = BuildAudio();
             game.boy = Player(false, game); game.girl = Player(true, game);
             game.boy.opponent = game.girl; game.girl.opponent = game.boy;
             BuildUI(game);
@@ -57,6 +69,39 @@ namespace BalanceWithMe.Editor
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene("Assets/Scenes/Main.unity", true) };
             AssetDatabase.SaveAssets();
             Debug.Log("Balance with me: playable push/punch scene generated.");
+        }
+
+        static Sprite ImportPlank()
+        {
+            const string path="Assets/Art/Props/farm_balance_plank.png";
+            var importer=(TextureImporter)AssetImporter.GetAtPath(path);
+            importer.textureType=TextureImporterType.Sprite;importer.spriteImportMode=SpriteImportMode.Multiple;
+            importer.isReadable=true;importer.npotScale=TextureImporterNPOTScale.None;importer.maxTextureSize=4096;
+            importer.filterMode=FilterMode.Point;importer.textureCompression=TextureImporterCompression.Uncompressed;importer.mipmapEnabled=false;
+            importer.SaveAndReimport();
+            var texture=AssetDatabase.LoadAssetAtPath<Texture2D>(path);var pixels=texture.GetPixels32();
+            int minX=texture.width,minY=texture.height,maxX=0,maxY=0;
+            for(int y=0;y<texture.height;y++)for(int x=0;x<texture.width;x++)
+                if(pixels[y*texture.width+x].a>32){minX=Math.Min(minX,x);minY=Math.Min(minY,y);maxX=Math.Max(maxX,x);maxY=Math.Max(maxY,y);}
+            var factory=new SpriteDataProviderFactories();factory.Init();var provider=factory.GetSpriteEditorDataProviderFromObject(importer);provider.InitSpriteEditorDataProvider();
+            var id=new GUID(Hash128.Compute(path).ToString());
+            provider.SetSpriteRects(new[]{new SpriteRect{name="Farm Plank",spriteID=id,rect=new Rect(minX,minY,maxX-minX+1,maxY-minY+1),alignment=SpriteAlignment.Center,pivot=new Vector2(.5f,.5f)}});
+            provider.GetDataProvider<ISpriteNameFileIdDataProvider>().SetNameFileIdPairs(new[]{new SpriteNameFileIdPair("Farm Plank",id)});
+            provider.Apply();importer.SaveAndReimport();return AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().First();
+        }
+
+        static GameAudio BuildAudio()
+        {
+            var root = new GameObject("Audio System");
+            var audio = root.AddComponent<GameAudio>();
+            audio.music = root.AddComponent<AudioSource>(); audio.music.playOnAwake = false; audio.music.volume = .18f;
+            audio.effects = root.AddComponent<AudioSource>(); audio.effects.playOnAwake = false; audio.effects.volume = .55f;
+            audio.tracks = new[] { "sky_breeze", "playful_balance" }.Select(name => AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/"+name+".wav")).ToArray();
+            audio.cues = new[] { "jump", "punch", "push", "hit", "shove", "start", "win", "draw", "emote_happy", "emote_sad" }
+                .Select(name => new GameAudio.Cue { name=name, clip=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/"+name+".wav") }).ToArray();
+            if (audio.tracks.Any(clip => clip == null) || audio.cues.Any(cue => cue.clip == null))
+                throw new InvalidOperationException("Audio missing. Run python3 Tools/make_audio.py before rebuilding.");
+            return audio;
         }
 
         static PlayerActions Player(bool girl, BalanceGame game)
@@ -83,48 +128,66 @@ namespace BalanceWithMe.Editor
             actions.fist.transform.localScale = new Vector3(.28f/fistSprite.bounds.size.x,.28f/fistSprite.bounds.size.y,1); actions.fist.color = new Color(1,.65f,.2f);
             actions.palm = Render("Push Palms", fistSprite, Vector2.zero, 8); actions.palm.transform.SetParent(root.transform,false);
             actions.palm.transform.localScale = new Vector3(.16f/fistSprite.bounds.size.x,.4f/fistSprite.bounds.size.y,1); actions.palm.color = new Color(.4f,1,1);
-            actions.ResetPlayer(new Vector2(girl ? 2.6f : -2.6f,.24f));
+            actions.ResetPlayer(new Vector2(girl ? 2.6f : -2.6f,.04f));
             return actions;
         }
 
         static Sprite[] Frames(bool girl, int action)
         {
+            string[] names = { "idle", "walk", "jump", "hurt" };
+            string prefix=(girl?"girl_":"boy_")+names[action]+"_";
+            return characterFrames.Where(frame=>frame.name.StartsWith(prefix)).OrderBy(frame=>frame.name).ToArray();
+        }
+
+        static void PrepareCharacterSprites()
+        {
             const string path = "Assets/Art/Characters/two_players.png";
             var importer = (TextureImporter)AssetImporter.GetAtPath(path);
-            if (!importer.isReadable) { importer.isReadable = true; importer.SaveAndReimport(); }
+            importer.isReadable=true;importer.npotScale=TextureImporterNPOTScale.None;
+            importer.maxTextureSize=4096;importer.textureCompression=TextureImporterCompression.Uncompressed;
+            importer.filterMode=FilterMode.Point;importer.spriteImportMode=SpriteImportMode.Multiple;
+            importer.SaveAndReimport();
             var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
             int[] rows = {0,164,321,477,634,788,948,1105,1254};
             int[] columns = {0,350,630,910,1254};
-            int row = (girl ? 4 : 0) + action;
             string[] names = { "idle", "walk", "jump", "hurt" };
             var pixels = texture.GetPixels32();
-            return Enumerable.Range(0,4).Select(col => {
+            var rects=new List<SpriteRect>();
+            for(int row=0;row<8;row++)
+            for(int col=0;col<4;col++) {
                 int minX=texture.width, minY=texture.height, maxX=0, maxY=0;
                 for (int y=texture.height-rows[row+1];y<texture.height-rows[row];y++)
                 for (int x=columns[col];x<columns[col+1];x++)
                     if (pixels[y*texture.width+x].a > 32) { minX=Math.Min(minX,x); minY=Math.Min(minY,y); maxX=Math.Max(maxX,x); maxY=Math.Max(maxY,y); }
                 if (minX>maxX) throw new InvalidOperationException("Empty sprite cell.");
-                return Slice(texture,new Rect(minX,minY,maxX-minX+1,maxY-minY+1),(girl?"girl_":"boy_")+names[action]+"_"+(col+1),new Vector2(.5f,0));
-            }).ToArray();
+                string name=(row>=4?"girl_":"boy_")+names[row%4]+"_"+(col+1);
+                rects.Add(new SpriteRect { name=name,spriteID=new GUID(Hash128.Compute(path+name).ToString()),
+                    rect=new Rect(minX,minY,maxX-minX+1,maxY-minY+1),alignment=SpriteAlignment.BottomCenter,pivot=new Vector2(.5f,0) });
+            }
+            var factories=new SpriteDataProviderFactories();factories.Init();
+            var provider=factories.GetSpriteEditorDataProviderFromObject(importer);provider.InitSpriteEditorDataProvider();
+            provider.SetSpriteRects(rects.ToArray());
+            provider.GetDataProvider<ISpriteNameFileIdDataProvider>().SetNameFileIdPairs(rects.Select(rect=>new SpriteNameFileIdPair(rect.name,rect.spriteID)));
+            provider.Apply();importer.SaveAndReimport();
+            characterFrames=AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
         }
 
-        static Sprite Slice(Texture2D texture, Rect rect, string name, Vector2 pivot)
-        {
-            string path = Generated + "/" + name + ".asset";
-            var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            if (existing != null) return existing;
-            var sprite = Sprite.Create(texture,rect,pivot,100,0,SpriteMeshType.FullRect); sprite.name=name;
-            AssetDatabase.CreateAsset(sprite,path); return sprite;
-        }
         static Sprite CreateFist()
         {
-            string path=Generated+"/ActionPixel.asset";
-            var texture=AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-            if(texture==null) {
-                texture=new Texture2D(8,8,TextureFormat.RGBA32,false) { filterMode=FilterMode.Point };
-                var colors=Enumerable.Repeat(Color.white,64).ToArray(); texture.SetPixels(colors); texture.Apply(); AssetDatabase.CreateAsset(texture,path);
+            const string path="Assets/Art/UI/pixel_hand.png";
+            if(!System.IO.File.Exists(path)) {
+                var texture=new Texture2D(8,8,TextureFormat.RGBA32,false);
+                var colors=new Color[64];
+                for(int y=0;y<8;y++)for(int x=0;x<8;x++)
+                    colors[y*8+x]=(x==0||x==7||y==0||y==7)?new Color(.24f,.16f,.1f,1):Color.white;
+                colors[0]=colors[7]=colors[56]=colors[63]=Color.clear;
+                texture.SetPixels(colors);texture.Apply();System.IO.File.WriteAllBytes(path,texture.EncodeToPNG());UnityEngine.Object.DestroyImmediate(texture);
             }
-            return Slice(texture,new Rect(0,0,8,8),"ActionFist",new Vector2(.5f,.5f));
+            AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceSynchronousImport);
+            var importer=(TextureImporter)AssetImporter.GetAtPath(path);importer.textureType=TextureImporterType.Sprite;
+            importer.spriteImportMode=SpriteImportMode.Single;importer.filterMode=FilterMode.Point;importer.spritePixelsPerUnit=8;
+            importer.textureCompression=TextureImporterCompression.Uncompressed;importer.mipmapEnabled=false;importer.SaveAndReimport();
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         }
         static SpriteRenderer Render(string name, Sprite sprite, Vector2 position, int order)
         {
@@ -136,22 +199,53 @@ namespace BalanceWithMe.Editor
             var canvas=new GameObject("Canvas",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));
             canvas.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;
             var scaler=canvas.GetComponent<CanvasScaler>(); scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution=new Vector2(1920,1080); scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;
-            Text Label(string name,string content,int fontSize,float y,Vector2 size) {
-                var text=new GameObject(name,typeof(RectTransform)).AddComponent<Text>(); text.transform.SetParent(canvas.transform,false);
-                var rect=(RectTransform)text.transform; rect.anchoredPosition=new Vector2(0,y); rect.sizeDelta=size;
-                text.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");text.fontSize=fontSize;text.alignment=TextAnchor.MiddleCenter;
-                text.color=new Color(.09f,.15f,.2f);text.text=content;text.raycastTarget=false;return text;
+            scaler.referenceResolution=new Vector2(1920,1080);scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;
+            var font=AssetDatabase.LoadAssetAtPath<Font>("Assets/Art/Fonts/Tiny5.ttf");
+            if(font==null)throw new InvalidOperationException("Tiny5 pixel font is missing.");
+            Text Label(string name,string content,int fontSize,Vector2 position,Vector2 size) {
+                var text=new GameObject(name,typeof(RectTransform)).AddComponent<Text>();text.transform.SetParent(canvas.transform,false);
+                var rect=(RectTransform)text.transform;rect.anchoredPosition=position;rect.sizeDelta=size;
+                text.font=font;text.fontSize=fontSize;text.alignment=TextAnchor.MiddleCenter;
+                text.color=new Color(.25f,.14f,.07f);text.text=content;text.raycastTarget=false;
+                text.horizontalOverflow=HorizontalWrapMode.Wrap;text.verticalOverflow=VerticalWrapMode.Overflow;return text;
             }
-            Label("Title","Balance with me",64,440,new Vector2(1700,90));
-            game.health=Label("Health","BOY 3/3 | GIRL 3/3",36,345,new Vector2(1600,60));
-            game.status=Label("Status","Stay on the plank",30,280,new Vector2(1700,60));
-            Label("Controls","BOY: A/D move • W jump • F punch • G push\nGIRL: ←/→ move • ↑ jump • K punch • L push",30,-365,new Vector2(1800,100));
-            var restart=new GameObject("Restart",typeof(RectTransform),typeof(Image),typeof(Button));restart.transform.SetParent(canvas.transform,false);
-            var rr=(RectTransform)restart.transform;rr.anchoredPosition=new Vector2(0,-470);rr.sizeDelta=new Vector2(300,70);
-            restart.GetComponent<Image>().color=new Color(1,.9f,.65f);
-            UnityEditor.Events.UnityEventTools.AddPersistentListener(restart.GetComponent<Button>().onClick,game.Restart);
-            var label=Label("Restart Label","RESTART (R)",28,0,new Vector2(300,70));label.transform.SetParent(restart.transform,false);
+            RectTransform Panel(string name,Vector2 position,Vector2 size) {
+                var root=(RectTransform)new GameObject(name,typeof(RectTransform),typeof(Image)).transform;root.SetParent(canvas.transform,false);
+                root.anchoredPosition=position;root.sizeDelta=size;root.GetComponent<Image>().color=new Color(.30f,.16f,.08f);root.GetComponent<Image>().raycastTarget=false;
+                var trim=(RectTransform)new GameObject("Golden Timber Rim",typeof(RectTransform),typeof(Image)).transform;trim.SetParent(root,false);
+                trim.anchorMin=Vector2.zero;trim.anchorMax=Vector2.one;trim.offsetMin=Vector2.one*4;trim.offsetMax=-Vector2.one*4;
+                trim.GetComponent<Image>().color=new Color(.69f,.43f,.20f);trim.GetComponent<Image>().raycastTarget=false;
+                var fill=(RectTransform)new GameObject("Parchment",typeof(RectTransform),typeof(Image)).transform;fill.SetParent(trim,false);
+                fill.anchorMin=Vector2.zero;fill.anchorMax=Vector2.one;fill.offsetMin=Vector2.one*4;fill.offsetMax=-Vector2.one*4;
+                fill.GetComponent<Image>().color=new Color(1,.91f,.70f);fill.GetComponent<Image>().raycastTarget=false;
+                return root;
+            }
+            Panel("Village Title Sign",new Vector2(0,440),new Vector2(720,90));
+            Label("Title","BALANCE WITH ME",60,new Vector2(0,440),new Vector2(690,80));
+            Panel("Boy Farm Scorecard",new Vector2(-650,405),new Vector2(410,120));
+            Panel("Girl Farm Scorecard",new Vector2(650,405),new Vector2(410,120));
+            game.boyHud=Label("Boy Name Health and Score","FARMER BOY\nHEALTH 3/3   WINS 0",30,new Vector2(-650,405),new Vector2(390,105));
+            game.girlHud=Label("Girl Name Health and Score","FARMER GIRL\nHEALTH 3/3   WINS 0",30,new Vector2(650,405),new Vector2(390,105));
+            Panel("Round Clock",new Vector2(0,320),new Vector2(230,100));
+            game.timer=Label("Timer","ROUND TIME\n00:00",32,new Vector2(0,320),new Vector2(210,90));
+            Panel("Village Notice",new Vector2(0,230),new Vector2(760,54));
+            game.status=Label("Status","KEEP YOUR FOOTING - FACE YOUR RIVAL",26,new Vector2(0,230),new Vector2(730,44));
+            game.health=Label("Health Data","",1,Vector2.zero,Vector2.one);game.health.gameObject.SetActive(false);
+            game.devices=Label("Devices","",24,new Vector2(0,180),new Vector2(1500,38));
+            game.boy.emoteLabel=Label("Boy Emote","",28,Vector2.zero,new Vector2(300,50));
+            game.girl.emoteLabel=Label("Girl Emote","",28,Vector2.zero,new Vector2(300,50));
+            Panel("Farm Controls Board",new Vector2(0,-385),new Vector2(1160,170));
+            Label("Boy Controls","FARMER BOY\nA/D MOVE - W JUMP\nF PUNCH - G PUSH - E EMOTE",25,new Vector2(-280,-370),new Vector2(540,100));
+            Label("Girl Controls","FARMER GIRL\nARROWS MOVE - UP JUMP\nK PUNCH - L PUSH - O EMOTE",25,new Vector2(280,-370),new Vector2(540,100));
+            Label("Gamepad Controls","PAD: STICK MOVE - A JUMP - X PUNCH - B PUSH - Y EMOTE",22,new Vector2(0,-443),new Vector2(1110,40));
+            var restart=Panel("Restart Farm Sign",new Vector2(780,-405),new Vector2(280,90));
+            restart.GetComponent<Image>().raycastTarget=true;
+            var button=restart.gameObject.AddComponent<Button>();
+            var colors=button.colors;colors.highlightedColor=new Color(1,.9f,.72f);colors.pressedColor=new Color(.8f,.65f,.4f);button.colors=colors;
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(button.onClick,game.Restart);
+            var label=Label("Restart Label","RESTART [R]",34,Vector2.zero,new Vector2(260,70));label.transform.SetParent(restart,false);
+            Panel("Audio Notice",new Vector2(0,-510),new Vector2(1000,38));
+            game.audioStatus=Label("Audio Status","M MUTE - N MUSIC",22,new Vector2(0,-510),new Vector2(970,30));
             new GameObject("EventSystem",typeof(EventSystem),typeof(InputSystemUIInputModule));
         }
     }

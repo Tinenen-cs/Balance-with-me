@@ -1,25 +1,38 @@
 # Validation — 16 October 2026
 
-## Playable push/punch update
+## Current playtest state
 
-Editor used: **Unity 6000.3.26f1**. Project target remains **6000.3.24f1**; exact-target-patch verification is pending.
+Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1**; that exact patch has not been tested here. The project is ready for a Unity Editor playtest using the verified editor.
 
-- Main scene generated successfully with player Rigidbody2Ds, capsule colliders, configured ground checks, a hinged plank, separate ball/plank sprites, keyboard actions, health UI, winner detection, and restart.
-- Runtime and editor C# compilation passed.
-- **7 PlayMode tests passed, 0 failed**:
-  - Punch damages only once per attack, respects cooldown, and stuns its target.
-  - Push applies forward knockback without health damage.
-  - Punch cannot hit behind the attacker or beyond reach.
-  - Restart restores health, action state, positions, facing, and velocity.
-  - Falling ends the round and disables further attacks.
-  - Keyboard bindings invoke boy push and girl punch; their hand effects are enabled and visible-sized.
-  - Both jump keys lift grounded players.
-- Keyboard injection tests temporarily configure Input System to process devices without Game-view focus in batch mode, then restore the original settings.
-- The original `CharacterController2DP2.bin` remains unchanged. The active `.cs` now uses `Rigidbody2D.linearVelocity`, as permitted by the user's updated authorization.
-- Main remains a desktop 16:9 scene; runtime sprites are native Unity assets referencing the original textures.
+- C# compilation and scene generation succeeded.
+- **12 PlayMode tests passed, 0 failed**:
+  1. Punch applies damage only once, respects cooldown and stuns the target.
+  2. Push causes forward knockback without reducing health.
+  3. Punch rejects targets behind the player or beyond reach.
+  4. Restart resets health, position, facing, action state and velocity.
+  5. Falling ends a round and disables attacks.
+  6. A win updates the scorecard; restart preserves match wins and resets the round timer.
+  7. Keyboard bindings trigger independent boy/girl actions and visible-sized effects.
+  8. Both keyboard jump keys lift grounded players.
+  9. Two simulated gamepads independently control attacks; disconnecting one preserves the other slot.
+  10. Gamepad movement and jump input reach the physics motor.
+  11. Two music loops and ten cues are wired; switching, mute, emote and action cue selection work.
+  12. Gamepad emote and restart buttons work.
+- All twelve synthesized audio files were checked as nonempty 24 kHz, mono, 16-bit PCM WAVs.
+- A graphical Unity Editor render was inspected at 1920 × 1080: both characters are visible; the rope-bound plank and saddle meet the rooted tree; farming-village scenery, parchment scorecards, timer, controls and restart sign render together.
+- Native importer Sprite subassets replaced the earlier serialized generated character sprites after the graphical review revealed missing character rendering.
+- README embeds only the full game layout, and its local links and Markdown fences were checked.
+- Original CharacterController2DP2.bin remains byte-identical to the uploaded original. The active controller has authorized Unity 6 API updates plus a read-only grounding property for jump audio.
 
-## Limits
+## Build policy and limits
 
-Headless PlayMode tests verify state, input mapping, physics impulses, and effect dimensions. Interactive visual polish, extended matches, exact-target-patch validation, and packaged desktop/mobile/browser builds have not been verified. Existing animation frames plus simple pixel hand effects provide feedback; dedicated punch/push sprite-sheet frames, sound, touch controls, and free rolling-ball physics remain future work.
+The user explicitly put app and APK creation on hold. The in-progress macOS build was cancelled; no completed app/APK or release was produced or published. Verification continues inside the Unity Editor only.
 
-Earlier checks covered the static desktop preview. That preview is superseded by the playable Main scene.
+Headless input tests temporarily adjust and then restore Input System focus settings. Physical USB/Bluetooth controller compatibility, subjective audio mixing, long play sessions and exact-reference-patch behavior still need device testing. Touch input, dedicated punch/push sprite-sheet poses, and packaged platform builds remain future work.
+
+## Reproduce in Unity
+
+1. Open Assets/Scenes/Main.unity using Unity 6000.3.26f1 and select a 16:9 Game view.
+2. Press Play and focus the Game view; use the keyboard or connected gamepads.
+3. Run Window → General → Test Runner → PlayMode → Run All.
+4. Capture Full Layout updates Docs/gameplay_layout.png inside the Editor without building an app.

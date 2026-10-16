@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace BalanceWithMe
 {
@@ -14,6 +15,7 @@ namespace BalanceWithMe
         public Sprite[] idle, walk, jump, hurt;
         public PlayerActions opponent;
         public BalanceGame game;
+        public Text emoteLabel;
         public int Health { get; private set; } = 3;
         public float StunRemaining { get; private set; }
         public ActionType CurrentAction { get; private set; }
@@ -21,6 +23,9 @@ namespace BalanceWithMe
         public float cooldown;
         float actionTime, move, flash, animationTime;
         bool jumpQueued, punchConnected;
+        float emoteTime, reactionCooldown;
+        bool sadEmote;
+        string emoteText;
         public float Direction => controller.m_FacingRight ? 1 : -1;
 
         void Update()
@@ -29,6 +34,8 @@ namespace BalanceWithMe
             cooldown = Mathf.Max(0, cooldown - dt);
             StunRemaining = Mathf.Max(0, StunRemaining - dt);
             flash = Mathf.Max(0, flash - dt);
+            emoteTime = Mathf.Max(0, emoteTime - dt);
+            reactionCooldown = Mathf.Max(0, reactionCooldown - dt);
             CaptureKeyboardInput();
             Animate(dt);
         }
@@ -37,7 +44,8 @@ namespace BalanceWithMe
         {
             var keys = Keyboard.current;
             move = 0;
-            if (game != null && game.Running && StunRemaining <= 0 && keys != null)
+            if (game == null || !game.Running || StunRemaining > 0) return;
+            if (keys != null)
             {
                 move = isGirl
                     ? (keys.rightArrowKey.isPressed ? 1 : 0) - (keys.leftArrowKey.isPressed ? 1 : 0)
@@ -45,13 +53,28 @@ namespace BalanceWithMe
                 jumpQueued |= isGirl ? keys.upArrowKey.wasPressedThisFrame : keys.wKey.wasPressedThisFrame;
                 if (isGirl ? keys.kKey.wasPressedThisFrame : keys.fKey.wasPressedThisFrame) TryAction(ActionType.Punch);
                 if (isGirl ? keys.lKey.wasPressedThisFrame : keys.gKey.wasPressedThisFrame) TryAction(ActionType.Push);
+                if (isGirl ? keys.oKey.wasPressedThisFrame : keys.eKey.wasPressedThisFrame) Emote();
             }
+            var pad = game.inputs == null ? null : game.inputs.ForPlayer(isGirl);
+            if (pad == null) return;
+            float stick = pad.leftStick.x.ReadValue();
+            float padMove = Mathf.Abs(stick) > .2f ? stick : pad.dpad.x.ReadValue();
+            if (Mathf.Abs(move) < .01f) move = padMove;
+            jumpQueued |= pad.buttonSouth.wasPressedThisFrame;
+            if (pad.buttonWest.wasPressedThisFrame) TryAction(ActionType.Punch);
+            if (pad.buttonEast.wasPressedThisFrame) TryAction(ActionType.Push);
+            if (pad.buttonNorth.wasPressedThisFrame) Emote();
         }
 
         void FixedUpdate()
         {
             if (game == null || !game.Running) { jumpQueued = false; return; }
-            if (StunRemaining <= 0) controller.Move(move * .38f * (CurrentAction == ActionType.None ? 1 : .35f), false, jumpQueued);
+            if (StunRemaining <= 0)
+            {
+                bool jumped = jumpQueued && controller.IsGrounded;
+                controller.Move(move * .38f * (CurrentAction == ActionType.None ? 1 : .35f), false, jumpQueued);
+                if (jumped) game.sounds?.Play("jump");
+            }
             jumpQueued = false;
             AdvanceAction(Time.fixedDeltaTime);
         }
@@ -63,7 +86,28 @@ namespace BalanceWithMe
             actionTime = 0;
             punchConnected = false;
             cooldown = action == ActionType.Punch ? .65f : .9f;
+            game.sounds?.Play(action == ActionType.Punch ? "punch" : "push");
             return true;
+        }
+
+        public void Emote()
+        {
+            if (game == null || !game.Running || emoteTime > 0 || StunRemaining > 0) return;
+            sadEmote = !sadEmote;
+            emoteText = sadEmote ? "OH NO!" : "LET'S GO!";
+            emoteTime = 1.2f;
+            game.sounds?.Play(sadEmote ? "emote_sad" : "emote_happy");
+        }
+
+        void LateUpdate()
+        {
+            if (emoteLabel == null) return;
+            emoteLabel.text = emoteTime > 0 ? emoteText : "";
+            var camera = Camera.main;
+            if (camera == null) return;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)emoteLabel.transform.parent,
+                camera.WorldToScreenPoint(transform.position + new Vector3(0,1.9f,0)), null, out Vector2 point);
+            emoteLabel.rectTransform.anchoredPosition = point;
         }
 
         public void AdvanceAction(float dt)
@@ -94,6 +138,13 @@ namespace BalanceWithMe
             flash = .18f;
             CurrentAction = ActionType.None;
             body.AddForce(impulse, ForceMode2D.Impulse);
+            if (reactionCooldown <= 0)
+            {
+                game.sounds?.Play(action == ActionType.Punch ? "hit" : "shove");
+                reactionCooldown = .25f;
+                sadEmote = true;
+                emoteText = action == ActionType.Punch ? "OUCH!" : "WHOA!"; emoteTime = .5f;
+            }
         }
 
         public void ResetPlayer(Vector2 position)
@@ -105,6 +156,7 @@ namespace BalanceWithMe
             cooldown = StunRemaining = flash = actionTime = animationTime = move = 0;
             CurrentAction = LastReceivedAction = ActionType.None;
             jumpQueued = punchConnected = false;
+            emoteTime = reactionCooldown = 0; emoteText = ""; sadEmote = true;
             controller.m_FacingRight = !isGirl;
             transform.localScale = new Vector3(isGirl ? -1 : 1, 1, 1);
             Animate(0);
@@ -124,6 +176,7 @@ namespace BalanceWithMe
             palm.transform.localPosition = new Vector3(.75f, 1.05f, 0);
             visual.transform.localRotation = Quaternion.Euler(0, 0, punching ? -reach * 12 : pushing ? -8 : 0);
             visual.color = flash > 0 ? new Color(1, .45f, .4f) : Color.white;
+            visual.transform.localPosition = new Vector3(0, emoteTime > 0 && !sadEmote ? Mathf.Abs(Mathf.Sin(animationTime * 12)) * .07f : 0, 0);
         }
     }
 }

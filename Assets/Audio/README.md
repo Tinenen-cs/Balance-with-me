@@ -1,4 +1,3 @@
-# Audio
+# Original game audio
 
-Reserved for original or licensed music and effects. No audio is included yet.
-When adding audio, use `Music/` and `SFX/` subfolders and document source and license in the root README.
+Two background loops are in Music; ten action, reaction, emote and round cues are in SFX. They are synthesized by `Tools/make_audio.py` using Python’s standard library, without third-party samples. GameAudio controls loops, one-shot effects, switching and persistent mute. Sources and usage are listed in the root README.

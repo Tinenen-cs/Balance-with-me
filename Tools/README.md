@@ -1,3 +1,3 @@
-# Tools
+# Project tools
 
-Reserved for command-line build tooling. Rebuild the playable scene with **Balance with me → Rebuild Playable Scene** and run checks from Unity Test Runner. Platform builds use Unity Build Profiles.
+Run `python3 Tools/make_audio.py` to regenerate the original WAV files. In Unity, use **Balance with me → Rebuild Playable Scene** and Test Runner. **Capture Full Layout** refreshes the README image in the Editor. Do not create app/APK builds until the user explicitly asks.
