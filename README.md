@@ -1,10 +1,10 @@
 # Balance with me
 
-A local two-player 2D pixel-art game made with Unity and VS Code. A chibi boy and girl share a plank above a rooted tree in a farming village. Use a shared keyboard, two gamepads, or a mixed setup. Walk, jump, punch, and push your opponent: keep your footing and knock the other player off, or land three punches to win.
+A local two-player 2D pixel-art game made with Unity and VS Code. A chibi boy and girl share a plank above a round wooden fulcrum in a farming village. Use a shared keyboard, two gamepads, or a mixed setup. Walk, jump, punch, and push your opponent: keep your footing and knock the other player off, or land three punches to win.
 
-<p align="center"><img src="Docs/gameplay_layout.png" alt="Full desktop game layout: two players on a balancing plank above a rooted tree in a farming village" width="960"></p>
+<p align="center"><img src="Docs/gameplay_layout.png" alt="Full desktop game layout: two players on a balancing plank above a round wooden fulcrum in a farming village" width="960"></p>
 
-> Full 16:9 layout captured from the Unity scene. The plank and rope-wrapped tree fulcrum share honey-brown timber, matching rope bindings and a centered wooden bearing; farmhouses, fields and a windmill frame the central play area. Character sprite sheets are kept in the project assets and are not displayed in this README.
+> Full 16:9 layout captured from the Unity scene. The plank and circular wooden-log fulcrum share honey-brown timber, matching rope details and visible woodgrain; farmhouses, fields and a windmill frame the central play area. Character sprite sheets are kept in the project assets and are not displayed in this README.
 
 ## Download & play
 
@@ -30,7 +30,7 @@ Source: **[Tinenen-cs/Balance-with-me](https://github.com/Tinenen-cs/Balance-wit
 | Hit reaction | Brief stun and red flash; movement cannot immediately cancel knockback | `PlayerActions.Receive` | Stun/knockback tests |
 | Win and restart | Opponent reaches zero health or falls below the board; R/button resets the round | `BalanceGame` | Falling and restart tests |
 
-The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle centering torque. The plank is supported visually by a centered tree trunk whose roots reach into the foreground land. The support is stationary.
+The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle centering torque. The plank is supported visually by a centered circular wooden log resting on the foreground land. The support is stationary.
 
 ### Recording the video (about 2 minutes)
 
@@ -68,7 +68,7 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 - **Wood-and-parchment UI**, Tiny5 pixel lettering and a matching restart sign fit the farming-village design.
 - **Physics scene:** player Rigidbody2Ds and capsule colliders on a hinged plank.
 - **32 original animation frames** used for idle, walk, jump and hurt, plus programmatic combat hand effects.
-- **Desktop 16:9 farming village** with farmhouses, fields, clouds, a windmill and a rooted tree supporting the plank.
+- **Desktop 16:9 farming village** with farmhouses, fields, clouds, a windmill and a round wooden fulcrum supporting the plank.
 - **Original source retained:** `CharacterController2DP2.bin` is unchanged; the active controller uses Unity 6 `linearVelocity` instead of deprecated `velocity`. Companion scripts were added after the user authorized new code.
 
 ## Controls
@@ -113,9 +113,9 @@ Click the Game view to give it keyboard focus. Attack while facing the other pla
 
 ## Screen layout
 
-Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the rooted tree. Parchment player scorecards, a title sign, a round clock and a notice board sit above gameplay. Controls, audio status and the restart sign sit below it.
+Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Parchment player scorecards, a title sign, a round clock and a notice board sit above gameplay. Controls, audio status and the restart sign sit below it.
 
-Desktop defaults are a resizable 1920 × 1080 window; browser defaults are 1280 × 720. Select **16:9** or **Desktop 1920 × 1080** manually in Unity's Game view. The farming-village background is landscape artwork sized to fill the world view.
+Desktop defaults are a resizable 1920 × 1080 window; browser defaults are 1280 × 720. Select **16:9** or **Desktop 1920 × 1080** manually in Unity's Game view. The farming-village background uses uniform overscan to fill the view, preserve the round wooden fulcrum’s proportions and align its top with the plank.
 
 ## Unity version and packages
 
@@ -131,7 +131,7 @@ Assets/
   Art/
     Characters/two_players.png     original character sheet
     Characters/Generated/          shared unlit sprite material
-    Backgrounds/farm_village_tree.png  farmer village and rooted tree fulcrum
+    Backgrounds/farm_village_wood_ball.png  village and round wooden fulcrum
     Props/farm_balance_plank.png     rustic rope-bound plank and central saddle
     Fonts/Tiny5.ttf                pixel font, with SIL OFL license
     UI/pixel_hand.png               native pixel hand effect
@@ -185,7 +185,7 @@ Use **M** or the gamepad Select/View button to mute all sound; the setting is sa
 
 | Asset | Source | License / attribution |
 | --- | --- | --- |
-| Characters, farmer village, rooted tree and farm plank | Original images generated for this project using built-in imagegen | Prompts recorded in `Docs/generation_prompts.json`; no separate asset license assigned |
+| Characters, farmer village, wooden fulcrum and farm plank | Original images generated for this project using built-in imagegen | Prompts recorded in `Docs/generation_prompts.json`; no separate asset license assigned |
 | Tiny5 pixel font | [Tiny5 via Google Fonts](https://github.com/google/fonts/tree/main/ofl/tiny5), The Tiny5 Project Authors | SIL Open Font License 1.1; `Assets/Art/Fonts/Tiny5-OFL.txt` |
 | Project and URP configuration | Official Unity 2D template from the installed editor | Unity-provided configuration |
 | CharacterController2DP2 | User-supplied original retained as `.bin`; active `.cs` updated for Unity 6 APIs | Redistribution license not provided |

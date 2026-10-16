@@ -33,7 +33,7 @@ namespace BalanceWithMe.Editor
             camera.tag = "MainCamera"; camera.transform.position = new Vector3(0, 0, -10);
             var cam = camera.GetComponent<Camera>(); cam.orthographic = true; cam.orthographicSize = 5.4f;
             cam.backgroundColor = new Color(.4f,.7f,1);
-            const string backgroundPath = "Assets/Art/Backgrounds/farm_village_tree.png";
+            const string backgroundPath = "Assets/Art/Backgrounds/farm_village_wood_ball.png";
             var backgroundImporter = (TextureImporter)AssetImporter.GetAtPath(backgroundPath);
             backgroundImporter.textureType = TextureImporterType.Sprite;
             backgroundImporter.spriteImportMode = SpriteImportMode.Single;
@@ -43,8 +43,9 @@ namespace BalanceWithMe.Editor
             backgroundImporter.maxTextureSize = 4096;
             backgroundImporter.SaveAndReimport();
             Sprite bg = AssetDatabase.LoadAllAssetsAtPath(backgroundPath).OfType<Sprite>().First();
-            var background = Render("Farmer Village and Rooted Tree", bg, new Vector2(0,0), -10);
-            background.transform.localScale = new Vector3(19.2f / bg.bounds.size.x, 10.8f / bg.bounds.size.y, 1);
+            var background = Render("Farmer Village and Wooden Ball", bg, new Vector2(0,-.4f), -10);
+            // Uniform overscan keeps the wooden fulcrum round and seats its top under the plank.
+            background.transform.localScale = Vector3.one * (11.6f / bg.bounds.size.y);
             var plankSprite = ImportPlank();
             var board = new GameObject("Balancing Plank", typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(HingeJoint2D));
             board.transform.position = new Vector3(0,-.2f,0);

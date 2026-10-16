@@ -21,7 +21,7 @@ Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1*
   13. Background music actively plays and loops; both happy/sad emote jingles and track switching work.
   14. Punch-hit, restart and win reactions select their audio cues.
 - All twelve synthesized audio files were checked as nonempty 24 kHz, mono, 16-bit PCM WAVs.
-- A graphical Unity Editor render was inspected at 1920 × 1080: both characters are visible; the rope-bound plank and saddle meet the rooted tree; farming-village scenery, parchment scorecards, timer, controls and restart sign render together.
+- A graphical Unity Editor render was inspected at 1920 × 1080: both characters are visible; the rope-bound plank and saddle meet the circular wooden fulcrum; farming-village scenery, parchment scorecards, timer, controls and restart sign render together.
 - Native importer Sprite subassets replaced the earlier serialized generated character sprites after the graphical review revealed missing character rendering.
 - README embeds only the full game layout, and its local links and Markdown fences were checked.
 - Original CharacterController2DP2.bin remains byte-identical to the uploaded original. The active controller has authorized Unity 6 API updates plus a read-only grounding property for jump audio.
@@ -39,6 +39,10 @@ Headless input tests temporarily adjust and then restore Input System focus sett
 3. Run Window → General → Test Runner → PlayMode → Run All.
 4. Capture Full Layout updates Docs/gameplay_layout.png inside the Editor without building an app.
 
-## Final matched-wood check
+## Previous matched-wood check
 
 The trunk was refined to match the plank’s honey/chestnut wood, rope bindings and dark outlines, retaining the farming-village layout. The regenerated 1920 × 1080 full-scene image was visually inspected. All twelve WAV files have nonzero sample peaks and RMS energy; no silent or empty audio files were found. The 14-test suite passed on Unity 6000.3.26f1 after the artwork update.
+
+## Current wooden-ball fulcrum
+
+The upright trunk and roots have been replaced by a circular wooden-log support. The background was renamed to farm_village_wood_ball.png with its Unity asset GUID preserved. Uniform overscan aligns the round support with the existing plank and preserves its shape. The refreshed full-scene image was captured in the Unity Editor and visually inspected. Audio sources and gameplay controls are retained; all twelve WAVs were rechecked as nonempty and non-silent.

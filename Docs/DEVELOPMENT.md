@@ -43,3 +43,9 @@ Character frames and the new farm plank are now imported as native Unity Sprite 
 ## Matched platform and fulcrum
 
 The stump material and palette now match the movable farm plank: honey/chestnut wood, golden highlights, clean outlines, matching rope wraps and a small bearing cap. Only background artwork changed; combat, controls and board physics are retained. Audio verification additionally checks active looping playback, both emote jingles, hit reactions and round-result cues.
+
+## Current fulcrum: round wooden log
+
+The upright trunk and roots are replaced by a circular wooden log/ball silhouette in the village background. The support retains the plank’s warm timber palette, rope detail and woodgrain. It is a stationary visual fulcrum for the existing hinged plank, not a free-rolling physics ball. Earlier trunk notes describe previous artwork revisions. The current background is farm_village_wood_ball.png.
+
+The round wooden support is positioned using uniform background overscan (11.6 world-unit height, y=-0.4) so it retains its circular proportions and meets the existing plank without altering player physics. The scene and scene-builder settings match.
