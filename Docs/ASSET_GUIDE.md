@@ -12,3 +12,7 @@ Sprite import metadata is included. Use Point filtering, no mipmaps, and uncompr
 
 - `Assets/Art/Props/farm_balance_plank.png`: original transparent rustic plank with rope-bound ends and a small central saddle matching the tree fulcrum.
 - Tiny5 font: SIL OFL 1.1, license alongside the font in Assets/Art/Fonts.
+
+## Matched wood refinement
+
+The current farm_village_tree.png uses simplified honey/chestnut wood, dark pixel outlines, rope wraps and a central bearing cap matched to farm_balance_plank.png. The village placement and exposed roots remain unchanged. Updated full-scene preview: Docs/gameplay_layout.png. Edit prompt and built-in imagegen provenance: Docs/generation_prompts.json.

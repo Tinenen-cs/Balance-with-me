@@ -68,6 +68,29 @@ namespace BalanceWithMe.Tests
             game.boy.Emote();Assert.That(game.sounds.LastCue,Is.EqualTo("emote_happy"));
             game.boy.TryAction(PlayerActions.ActionType.Punch);Assert.That(game.sounds.LastCue,Is.EqualTo("punch"));
         }
+        [UnityTest] public IEnumerator BackgroundLoopsAndBothEmoteJinglesPlay()
+        {
+            Assert.That(game.sounds.music.loop,Is.True);
+            Assert.That(game.sounds.music.isPlaying,Is.True);
+            Assert.That(game.sounds.music.clip,Is.SameAs(game.sounds.tracks[0]));
+            game.boy.Emote();Assert.That(game.sounds.LastCue,Is.EqualTo("emote_happy"));
+            yield return new WaitForSeconds(1.3f);
+            game.boy.Emote();Assert.That(game.sounds.LastCue,Is.EqualTo("emote_sad"));
+            game.sounds.NextTrack();
+            Assert.That(game.sounds.music.clip,Is.SameAs(game.sounds.tracks[1]));
+            Assert.That(game.sounds.music.isPlaying,Is.True);
+        }
+        [UnityTest] public IEnumerator HitAndResultReactionsHaveAudio()
+        {
+            game.boy.body.position=new Vector2(-.4f,.1f);
+            game.girl.body.position=new Vector2(.4f,.1f);
+            game.boy.TryAction(PlayerActions.ActionType.Punch);game.boy.AdvanceAction(.1f);
+            Assert.That(game.sounds.LastCue,Is.EqualTo("hit"));
+            game.Restart();Assert.That(game.sounds.LastCue,Is.EqualTo("start"));
+            game.boy.body.position=new Vector2(0,-4);
+            yield return null;
+            Assert.That(game.sounds.LastCue,Is.EqualTo("win"));
+        }
         [UnityTest] public IEnumerator GamepadStartRestartsAndNorthButtonEmotes()
         {
             var pad=InputSystem.AddDevice<Gamepad>();

@@ -4,7 +4,7 @@ A local two-player 2D pixel-art game made with Unity and VS Code. A chibi boy an
 
 <p align="center"><img src="Docs/gameplay_layout.png" alt="Full desktop game layout: two players on a balancing plank above a rooted tree in a farming village" width="960"></p>
 
-> Full 16:9 layout captured from the Unity scene. The rooted tree replaces the former rock support; farmhouses, fields and a windmill frame the central play area. Character sprite sheets are kept in the project assets and are not displayed in this README.
+> Full 16:9 layout captured from the Unity scene. The plank and rope-wrapped tree fulcrum share honey-brown timber, matching rope bindings and a centered wooden bearing; farmhouses, fields and a windmill frame the central play area. Character sprite sheets are kept in the project assets and are not displayed in this README.
 
 ## Download & play
 

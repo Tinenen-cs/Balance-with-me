@@ -5,7 +5,7 @@
 Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1**; that exact patch has not been tested here. The project is ready for a Unity Editor playtest using the verified editor.
 
 - C# compilation and scene generation succeeded.
-- **12 PlayMode tests passed, 0 failed**:
+- **14 PlayMode tests passed, 0 failed**:
   1. Punch applies damage only once, respects cooldown and stuns the target.
   2. Push causes forward knockback without reducing health.
   3. Punch rejects targets behind the player or beyond reach.
@@ -18,6 +18,8 @@ Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1*
   10. Gamepad movement and jump input reach the physics motor.
   11. Two music loops and ten cues are wired; switching, mute, emote and action cue selection work.
   12. Gamepad emote and restart buttons work.
+  13. Background music actively plays and loops; both happy/sad emote jingles and track switching work.
+  14. Punch-hit, restart and win reactions select their audio cues.
 - All twelve synthesized audio files were checked as nonempty 24 kHz, mono, 16-bit PCM WAVs.
 - A graphical Unity Editor render was inspected at 1920 × 1080: both characters are visible; the rope-bound plank and saddle meet the rooted tree; farming-village scenery, parchment scorecards, timer, controls and restart sign render together.
 - Native importer Sprite subassets replaced the earlier serialized generated character sprites after the graphical review revealed missing character rendering.
@@ -36,3 +38,7 @@ Headless input tests temporarily adjust and then restore Input System focus sett
 2. Press Play and focus the Game view; use the keyboard or connected gamepads.
 3. Run Window → General → Test Runner → PlayMode → Run All.
 4. Capture Full Layout updates Docs/gameplay_layout.png inside the Editor without building an app.
+
+## Final matched-wood check
+
+The trunk was refined to match the plank’s honey/chestnut wood, rope bindings and dark outlines, retaining the farming-village layout. The regenerated 1920 × 1080 full-scene image was visually inspected. All twelve WAV files have nonzero sample peaks and RMS energy; no silent or empty audio files were found. The 14-test suite passed on Unity 6000.3.26f1 after the artwork update.

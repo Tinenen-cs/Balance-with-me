@@ -39,3 +39,7 @@ A new original 16:9 village background contains farmhouses, crop fields, fences,
 Tiny5 (SIL OFL 1.1) provides pixel lettering. Wood-rimmed parchment panels hold farmer names, health, match wins, the round clock, instructions and restart. Match wins persist across restarts within the same scene session; reloading the scene resets them. The timer freezes when the round ends.
 
 Character frames and the new farm plank are now imported as native Unity Sprite subassets using alpha-trimmed rectangles, rather than runtime-created serialized Sprite assets. This fixes missing character rendering found during the graphical layout review. The new plank has rope bindings and a central saddle aligned with the tree trunk. LayoutScreenshot warms font glyphs and renders the complete desktop view at 1920 × 1080.
+
+## Matched platform and fulcrum
+
+The stump material and palette now match the movable farm plank: honey/chestnut wood, golden highlights, clean outlines, matching rope wraps and a small bearing cap. Only background artwork changed; combat, controls and board physics are retained. Audio verification additionally checks active looping playback, both emote jingles, hit reactions and round-result cues.
