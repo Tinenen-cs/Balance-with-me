@@ -51,6 +51,12 @@ namespace BalanceWithMe
         public void Play(Kind kind, float direction = 0)
         {
             if (!Application.isPlaying || !isActiveAndEnabled || kind == Kind.None || player == null || pixelSprite == null || material == null) return;
+            if (kind == Kind.Punch || kind == Kind.Push)
+            {
+                LastEffect = kind;
+                EffectEmitted?.Invoke(kind);
+                return;
+            }
             EnsurePool();
             if (direction == 0) direction = player.Direction;
             Vector2 origin = player.body.position;

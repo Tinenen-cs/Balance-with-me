@@ -2,6 +2,14 @@
 
 ## Current playtest state
 
+17 October update: the rebuilt scene and new combat sheet pass **30/30 PlayMode tests** on Windows Unity **6000.3.24f1**, recorded in `Logs/Update-PlayMode-results.xml`. Four new tests cover automatic advancement with score/health restoration, first-to-three match completion/new-match reset, draws/win-rate calculation/countdown cancellation, and animation frames synchronized with one-hit punch damage and life-bar updates. Existing combat, movement, gamepad, audio, cloud and effects checks also pass. The legacy hand-box assertions now check full-body sprites and hidden hand renderers instead.
+
+The 24-frame generated sheet supplies new idle, punch and push sequences. The importer slices actual alpha gutters and anchors each pose to its boots. Round results freeze player/plank physics; the 3.2-second intermission advances automatically until a match winner is declared. The health display uses 100%, 67%, 33% and 0%; win rate includes draws in completed rounds. The startup helper only replaces an untouched empty scene and skips batch mode.
+
+Fresh-start verification: with Unity closed, the local last-opened-scene list was set to empty. Launching the project normally (without a scene path or execute method) automatically opened Main and selected the 16:9 Game view. Both new character sprites, separate spawn positions, initial percentages, scorecards and scenery were visually confirmed before pressing Play. This reproduces an empty editor startup on this Windows machine; a second physical device was not used.
+
+Final UI check: a solid one-pixel fill replaces the old hand texture in the life bars. The full 1920 × 1080 layout was recaptured in the Unity Editor and visually inspected. All four MatchFlow tests passed again against the final rebuilt scene (`Logs/Final-MatchFlow-results.xml`). The combat preview stages players outside contact range so neither character's punch/push animation is immediately replaced by hurt. No standalone app or APK was built.
+
 Verified editors: **Unity 6000.3.26f1** (previous validation) and **6000.3.24f1 on Windows** (17 October 2026). The exact recorded reference patch now compiles successfully and passes all 26 PlayMode tests. Local evidence is in `Logs/PlayMode-results.xml` and `Logs/PlayMode-validation.log` (ignored by Git).
 
 The Windows checkout initially had `sceneSetups: []` in `Library/LastSceneManagerSetup.txt`. The saved `Assets/Scenes/Main.unity` contains 72 GameObjects; all 40 distinct external asset GUID references resolve against project/package metadata, and no asset files are Git LFS pointer placeholders. An empty startup scene therefore does not indicate missing game content. Open Main from the Project window; see the README troubleshooting instructions.

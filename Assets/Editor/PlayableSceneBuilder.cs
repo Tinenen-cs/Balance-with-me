@@ -16,6 +16,7 @@ namespace BalanceWithMe.Editor
         static Material material;
         static Sprite fistSprite;
         static Sprite[] characterFrames;
+        static Sprite[] combatFrames;
         const string Generated = "Assets/Art/Characters/Generated";
 
         [MenuItem("Balance with me/Rebuild Playable Scene")]
@@ -24,6 +25,7 @@ namespace BalanceWithMe.Editor
             System.IO.Directory.CreateDirectory(Generated);
             AssetDatabase.Refresh();
             PrepareCharacterSprites();
+            PrepareCombatSprites();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
             if (shader == null) throw new InvalidOperationException("URP 2D sprite shader missing.");
@@ -66,11 +68,13 @@ namespace BalanceWithMe.Editor
             game.boy = Player(false, game); game.girl = Player(true, game);
             game.boy.opponent = game.girl; game.girl.opponent = game.boy;
             BuildUI(game);
+            game.RefreshHud();
             var tags = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
             tags.FindProperty("layers").GetArrayElementAtIndex(8).stringValue = "Ground"; tags.ApplyModifiedProperties();
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/Scenes/Main.unity");
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene("Assets/Scenes/Main.unity", true) };
             AssetDatabase.SaveAssets();
+            ProjectStartup.ConfigureGameView();
             Debug.Log("Balance with me: playable push/punch scene generated.");
         }
 
@@ -155,6 +159,8 @@ namespace BalanceWithMe.Editor
             var actions = root.AddComponent<PlayerActions>(); actions.isGirl = girl; actions.game = game;
             actions.controller = controller; actions.body = body;
             actions.idle = Frames(girl,0); actions.walk = Frames(girl,1); actions.jump = Frames(girl,2); actions.hurt = Frames(girl,3);
+            Sprite[] Combat(string action) => combatFrames.Where(frame => frame.name.StartsWith((girl ? "girl_" : "boy_") + action + "_")).OrderBy(frame => frame.name).ToArray();
+            actions.idle = Combat("idle"); actions.punch = Combat("punch"); actions.push = Combat("push");
             actions.visual = Render("Character", actions.idle[0], Vector2.zero, 5); actions.visual.transform.SetParent(root.transform,false);
             actions.fist = Render("Punch Fist", fistSprite, Vector2.zero, 8); actions.fist.transform.SetParent(root.transform,false);
             actions.fist.transform.localScale = new Vector3(.28f/fistSprite.bounds.size.x,.28f/fistSprite.bounds.size.y,1); actions.fist.color = new Color(1,.65f,.2f);
@@ -206,6 +212,71 @@ namespace BalanceWithMe.Editor
             characterFrames=AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
         }
 
+        static void PrepareCombatSprites()
+        {
+            const string path = "Assets/Art/Characters/combat_players.png";
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+            if (importer == null) throw new InvalidOperationException("The combat character sheet is missing.");
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Multiple;
+            importer.isReadable = true;
+            importer.alphaIsTransparency = true;
+            importer.npotScale = TextureImporterNPOTScale.None;
+            importer.maxTextureSize = 4096;
+            importer.filterMode = FilterMode.Point;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.mipmapEnabled = false;
+            importer.SaveAndReimport();
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            var pixels = texture.GetPixels32();
+            var occupiedX = new bool[texture.width];
+            var occupiedY = new bool[texture.height];
+            for (int y = 0; y < texture.height; y++)
+            for (int x = 0; x < texture.width; x++)
+                if (pixels[y * texture.width + x].a > 32) { occupiedX[x] = true; occupiedY[y] = true; }
+            // Slice at the actual transparent gutters rather than assuming a perfectly uniform generated grid.
+            List<Vector2Int> Bands(bool[] occupied)
+            {
+                var result = new List<Vector2Int>();
+                int start = -1;
+                for (int i = 0; i <= occupied.Length; i++)
+                {
+                    bool filled = i < occupied.Length && occupied[i];
+                    if (filled && start < 0) start = i;
+                    if (!filled && start >= 0) { result.Add(new Vector2Int(start, i)); start = -1; }
+                }
+                return result;
+            }
+            var columns = Bands(occupiedX);
+            var rows = Bands(occupiedY); rows.Reverse();
+            if (columns.Count != 4 || rows.Count != 6) throw new InvalidOperationException("Combat sheet must contain four columns and six separated rows.");
+            importer.spritePixelsPerUnit = (rows[0].y - rows[0].x) / 1.45f;
+            var rects = new List<SpriteRect>();
+            string[] actions = { "idle", "punch", "push" };
+            for (int row = 0; row < 6; row++)
+            for (int col = 0; col < 4; col++)
+            {
+                int minX = texture.width, minY = texture.height, maxX = 0, maxY = 0;
+                for (int y = rows[row].x; y < rows[row].y; y++)
+                for (int x = columns[col].x; x < columns[col].y; x++)
+                    if (pixels[y * texture.width + x].a > 32) { minX = Math.Min(minX, x); minY = Math.Min(minY, y); maxX = Math.Max(maxX, x); maxY = Math.Max(maxY, y); }
+                int footMin = maxX, footMax = minX;
+                for (int y = minY; y < minY + (maxY - minY + 1) / 10; y++)
+                for (int x = minX; x <= maxX; x++)
+                    if (pixels[y * texture.width + x].a > 32) { footMin = Math.Min(footMin, x); footMax = Math.Max(footMax, x); }
+                string name = (row >= 3 ? "girl_" : "boy_") + actions[row % 3] + "_" + (col + 1);
+                rects.Add(new SpriteRect { name = name, spriteID = new GUID(Hash128.Compute(path + name).ToString()),
+                    rect = new Rect(minX, minY, maxX - minX + 1, maxY - minY + 1), alignment = SpriteAlignment.Custom,
+                    pivot = new Vector2(((footMin + footMax) * .5f - minX) / (maxX - minX + 1), 0) });
+            }
+            var factory = new SpriteDataProviderFactories(); factory.Init();
+            var provider = factory.GetSpriteEditorDataProviderFromObject(importer); provider.InitSpriteEditorDataProvider();
+            provider.SetSpriteRects(rects.ToArray());
+            provider.GetDataProvider<ISpriteNameFileIdDataProvider>().SetNameFileIdPairs(rects.Select(rect => new SpriteNameFileIdPair(rect.name, rect.spriteID)));
+            provider.Apply(); importer.SaveAndReimport();
+            combatFrames = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
+        }
+
         static Sprite CreateFist()
         {
             const string path="Assets/Art/UI/pixel_hand.png";
@@ -230,6 +301,20 @@ namespace BalanceWithMe.Editor
         }
         static void BuildUI(BalanceGame game)
         {
+            const string lifeFillPath = "Assets/Art/UI/life_fill.png";
+            if (!System.IO.File.Exists(lifeFillPath))
+            {
+                var pixel = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+                pixel.SetPixel(0, 0, Color.white); pixel.Apply();
+                System.IO.File.WriteAllBytes(lifeFillPath, pixel.EncodeToPNG());
+                UnityEngine.Object.DestroyImmediate(pixel);
+            }
+            AssetDatabase.ImportAsset(lifeFillPath, ImportAssetOptions.ForceSynchronousImport);
+            var fillImporter = (TextureImporter)AssetImporter.GetAtPath(lifeFillPath);
+            fillImporter.textureType = TextureImporterType.Sprite; fillImporter.spriteImportMode = SpriteImportMode.Single;
+            fillImporter.filterMode = FilterMode.Point; fillImporter.mipmapEnabled = false;
+            fillImporter.textureCompression = TextureImporterCompression.Uncompressed; fillImporter.SaveAndReimport();
+            var lifeFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>(lifeFillPath);
             var canvas=new GameObject("Canvas",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));
             canvas.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;
             var scaler=canvas.GetComponent<CanvasScaler>(); scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -271,14 +356,22 @@ namespace BalanceWithMe.Editor
             Label("Title","BALANCE WITH ME",48,new Vector2(0,460),new Vector2(600,64));
             Text Scorecard(bool girl) {
                 string player=girl?"Girl":"Boy";
-                var panel=Panel(player+" Farm Scorecard",new Vector2(girl?650:-650,435),new Vector2(410,110));
+                var panel=Panel(player+" Farm Scorecard",new Vector2(girl?650:-650,425),new Vector2(410,156));
                 var badge=(RectTransform)new GameObject(player+" Icon Frame",typeof(RectTransform),typeof(Image)).transform;
-                badge.SetParent(panel,false);badge.anchoredPosition=new Vector2(-151,0);badge.sizeDelta=new Vector2(88,90);
+                badge.SetParent(panel,false);badge.anchoredPosition=new Vector2(-151,6);badge.sizeDelta=new Vector2(88,112);
                 badge.GetComponent<Image>().color=new Color(.69f,.43f,.20f);badge.GetComponent<Image>().raycastTarget=false;
                 var icon=new GameObject(player+" Character Icon",typeof(RectTransform)).AddComponent<Image>();
-                icon.transform.SetParent(badge,false);icon.rectTransform.sizeDelta=new Vector2(76,82);
+                icon.transform.SetParent(badge,false);icon.rectTransform.sizeDelta=new Vector2(76,102);
                 icon.sprite=girl?game.girl.idle[0]:game.boy.idle[0];icon.preserveAspect=true;icon.raycastTarget=false;
-                return PanelLabel(panel,player+" Name Health and Score",girl?"FARMER GIRL\nHEALTH 3/3   WINS 0":"FARMER BOY\nHEALTH 3/3   WINS 0",27,new Vector2(46,0),new Vector2(292,96));
+                var track = new GameObject(player+" Life Track", typeof(RectTransform)).AddComponent<Image>();
+                track.transform.SetParent(panel,false);track.rectTransform.anchoredPosition=new Vector2(46,-53);track.rectTransform.sizeDelta=new Vector2(276,14);
+                track.color=new Color(.32f,.23f,.12f);track.raycastTarget=false;
+                var bar = new GameObject(player+" Life Fill", typeof(RectTransform)).AddComponent<Image>();
+                bar.transform.SetParent(track.transform,false);bar.rectTransform.anchorMin=Vector2.zero;bar.rectTransform.anchorMax=Vector2.one;
+                bar.rectTransform.offsetMin=new Vector2(3,3);bar.rectTransform.offsetMax=new Vector2(-3,-3);
+                bar.sprite=lifeFillSprite;bar.type=Image.Type.Filled;bar.fillMethod=Image.FillMethod.Horizontal;bar.fillAmount=1;bar.raycastTarget=false;
+                if(girl)game.girlLifeBar=bar;else game.boyLifeBar=bar;
+                return PanelLabel(panel,player+" Name Health and Score","",25,new Vector2(46,10),new Vector2(292,102));
             }
             game.boyHud=Scorecard(false);
             game.girlHud=Scorecard(true);

@@ -107,10 +107,10 @@ namespace BalanceWithMe.Tests
                 Assert.That(game.boy.CurrentAction,Is.EqualTo(PlayerActions.ActionType.Push));
                 Assert.That(game.girl.CurrentAction,Is.EqualTo(PlayerActions.ActionType.Punch));
                 yield return null;
-                Assert.That(game.boy.palm.enabled,Is.True);
-                Assert.That(game.girl.fist.enabled,Is.True);
-                Assert.That(game.boy.palm.bounds.size.x,Is.GreaterThan(.1f));
-                Assert.That(game.girl.fist.bounds.size.x,Is.GreaterThan(.2f));
+                Assert.That(game.boy.palm.enabled,Is.False);
+                Assert.That(game.girl.fist.enabled,Is.False);
+                Assert.That(game.boy.push,Does.Contain(game.boy.visual.sprite));
+                Assert.That(game.girl.punch,Does.Contain(game.girl.visual.sprite));
             }
             finally { InputSystem.RemoveDevice(keyboard); }
         }

@@ -10,6 +10,11 @@ namespace BalanceWithMe.Editor
     {
         static double started, effectStarted;
         static bool actionPreview, staged;
+        public static void RebuildAndCapture()
+        {
+            PlayableSceneBuilder.Build();
+            Capture();
+        }
         [MenuItem("Balance with me/Capture Full Layout")]
         public static void Capture() => BeginCapture(false);
         [MenuItem("Balance with me/Capture Action Effects")]
@@ -37,13 +42,14 @@ namespace BalanceWithMe.Editor
                 if(!staged)
                 {
                     var game=Object.FindFirstObjectByType<BalanceGame>();
-                    game.boy.body.position=new Vector2(-.4f,.1f);game.girl.body.position=new Vector2(.4f,.1f);
+                    // Keep both attack poses readable; an immediate hit would replace the push with hurt.
+                    game.boy.body.position=new Vector2(-.8f,.1f);game.girl.body.position=new Vector2(.8f,.1f);
                     game.boy.body.linearVelocity=game.girl.body.linearVelocity=Vector2.zero;
                     Physics2D.SyncTransforms();
                     game.boy.TryAction(PlayerActions.ActionType.Punch);game.girl.TryAction(PlayerActions.ActionType.Push);
                     staged=true;effectStarted=EditorApplication.timeSinceStartup;return;
                 }
-                if(EditorApplication.timeSinceStartup-effectStarted<.12)return;
+                if(EditorApplication.timeSinceStartup-effectStarted<.18)return;
             }
             EditorApplication.update-=WaitForPlay;
             try

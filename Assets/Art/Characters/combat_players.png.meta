@@ -1,0 +1,881 @@
+fileFormatVersion: 2
+guid: 903e225fa4658c94d90c740080bcba2b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 513461876875325268
+    second: combat_players_0
+  - first:
+      213: -8679382702851149649
+    second: combat_players_1
+  - first:
+      213: 9047608783110574370
+    second: combat_players_2
+  - first:
+      213: 4127262508992755498
+    second: combat_players_3
+  - first:
+      213: -5733868506024772903
+    second: combat_players_4
+  - first:
+      213: -7298233689269866606
+    second: combat_players_5
+  - first:
+      213: 2540135914369387355
+    second: combat_players_6
+  - first:
+      213: -3891508863037953436
+    second: combat_players_7
+  - first:
+      213: -8852740791342946316
+    second: combat_players_8
+  - first:
+      213: 3554922738576839443
+    second: combat_players_9
+  - first:
+      213: 7208391599800477754
+    second: combat_players_10
+  - first:
+      213: -8613453980673045976
+    second: combat_players_11
+  - first:
+      213: 1005948535543391548
+    second: combat_players_12
+  - first:
+      213: -9083760144201646945
+    second: combat_players_13
+  - first:
+      213: -1911409784097978226
+    second: combat_players_14
+  - first:
+      213: 1852009170342844927
+    second: combat_players_15
+  - first:
+      213: -2253325782023867292
+    second: combat_players_16
+  - first:
+      213: 9076208604063878066
+    second: combat_players_17
+  - first:
+      213: 8962616644768760758
+    second: combat_players_18
+  - first:
+      213: 918210240974508980
+    second: combat_players_19
+  - first:
+      213: 1499739480821395825
+    second: combat_players_20
+  - first:
+      213: 9111774788932532102
+    second: combat_players_21
+  - first:
+      213: 1850094524011250641
+    second: combat_players_22
+  - first:
+      213: -5375605652810553573
+    second: combat_players_23
+  - first:
+      213: 1403520056950115136
+    second: combat_players_24
+  - first:
+      213: 1493557806074533466
+    second: combat_players_25
+  - first:
+      213: -8547448293530701113
+    second: combat_players_26
+  - first:
+      213: -2609843015718375835
+    second: combat_players_27
+  - first:
+      213: 5221828351406694386
+    second: combat_players_28
+  - first:
+      213: 7269492658145136224
+    second: combat_players_29
+  - first:
+      213: -2397237479268492959
+    second: combat_players_30
+  - first:
+      213: -4847078193639662656
+    second: combat_players_31
+  - first:
+      213: -6591539501772518562
+    second: combat_players_32
+  - first:
+      213: 8060156713601476199
+    second: combat_players_33
+  - first:
+      213: 4294983820789292674
+    second: combat_players_34
+  - first:
+      213: 7627415965445859383
+    second: combat_players_35
+  - first:
+      213: 742151261008794447
+    second: combat_players_36
+  - first:
+      213: -5888750834764235077
+    second: combat_players_37
+  - first:
+      213: 5514927978784435235
+    second: combat_players_38
+  - first:
+      213: 1276494131321669595
+    second: combat_players_39
+  - first:
+      213: -5965385253462647226
+    second: combat_players_40
+  - first:
+      213: 5198987052117569235
+    second: combat_players_41
+  - first:
+      213: 6115741366232273740
+    second: combat_players_42
+  - first:
+      213: 5534919193164689147
+    second: combat_players_43
+  - first:
+      213: 48285191670315474
+    second: combat_players_44
+  - first:
+      213: 7521881000025233596
+    second: combat_players_45
+  - first:
+      213: 7527184802175959012
+    second: combat_players_46
+  - first:
+      213: 8144343850254666071
+    second: combat_players_47
+  - first:
+      213: 2045209248521377041
+    second: combat_players_48
+  - first:
+      213: -970456596045675111
+    second: combat_players_49
+  - first:
+      213: -8942685519982679462
+    second: combat_players_50
+  - first:
+      213: -3132404758484659065
+    second: combat_players_51
+  - first:
+      213: -3854995076607224326
+    second: combat_players_52
+  - first:
+      213: -3290293674481251097
+    second: combat_players_53
+  - first:
+      213: 6514836485140174053
+    second: combat_players_54
+  - first:
+      213: -1298263351310558508
+    second: combat_players_55
+  - first:
+      213: -2468504120126744812
+    second: combat_players_56
+  - first:
+      213: 2294219243520287986
+    second: combat_players_57
+  - first:
+      213: -5197508544097678963
+    second: combat_players_58
+  - first:
+      213: -2763660356882503639
+    second: combat_players_59
+  - first:
+      213: 5156615145097001195
+    second: combat_players_60
+  - first:
+      213: 5132873473519664091
+    second: combat_players_61
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 133.10344
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: boy_idle_1
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 1036
+        width: 117
+        height: 193
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 744392a0eb07162a61aa92650be0b094
+      internalID: 1100953787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_idle_2
+      rect:
+        serializedVersion: 2
+        x: 467
+        y: 1036
+        width: 113
+        height: 192
+      alignment: 9
+      pivot: {x: 0.46460176, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bce7a9aa8b3ed03a8493c108c19f9b41
+      internalID: 303588731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_idle_3
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 1036
+        width: 113
+        height: 192
+      alignment: 9
+      pivot: {x: 0.46460176, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7eae004e3f382d93a14effad2d2921e4
+      internalID: -582703016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_idle_4
+      rect:
+        serializedVersion: 2
+        x: 957
+        y: 1036
+        width: 112
+        height: 192
+      alignment: 9
+      pivot: {x: 0.46875, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fec5bdc8c98a5760dc234ac9fb9e517
+      internalID: -2025594318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_punch_1
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 817
+        width: 137
+        height: 201
+      alignment: 9
+      pivot: {x: 0.42335767, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1196809b3c256aa63274ba69e4096ba4
+      internalID: 135331375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_punch_2
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 817
+        width: 149
+        height: 201
+      alignment: 9
+      pivot: {x: 0.44966444, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf0b23f1cfe082993034d6aada633bfd
+      internalID: 158984698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_punch_3
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 817
+        width: 185
+        height: 199
+      alignment: 9
+      pivot: {x: 0.37027028, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 398c3627f817f2f15cd9c98972cc7f83
+      internalID: -653697122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_punch_4
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 817
+        width: 112
+        height: 200
+      alignment: 9
+      pivot: {x: 0.45982143, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 301b5c06946caf7523de806e076b04a8
+      internalID: 1513231012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_push_1
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 613
+        width: 138
+        height: 188
+      alignment: 9
+      pivot: {x: 0.42391303, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ad4aff836dd58e23360431682c86af4
+      internalID: -1649753303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_push_2
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 612
+        width: 161
+        height: 187
+      alignment: 9
+      pivot: {x: 0.39130434, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65d24518a075297e15230d609705a3f0
+      internalID: -1035812376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_push_3
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 614
+        width: 197
+        height: 185
+      alignment: 9
+      pivot: {x: 0.34517765, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76b39a8ce9c95438114e7842ac21eb97
+      internalID: 1753868922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_push_4
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 612
+        width: 124
+        height: 187
+      alignment: 9
+      pivot: {x: 0.4233871, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd4b35a3ab0c115230db83177598b3a8
+      internalID: 725238787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_idle_1
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 404
+        width: 154
+        height: 188
+      alignment: 9
+      pivot: {x: 0.59090906, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a823e653728becec19079db6097dc1bc
+      internalID: -1745709408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_idle_2
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 404
+        width: 153
+        height: 188
+      alignment: 9
+      pivot: {x: 0.57843137, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d71ee2befe7f500fd19d6b5b4e86dd12
+      internalID: 1710383395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_idle_3
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 404
+        width: 150
+        height: 186
+      alignment: 9
+      pivot: {x: 0.5733333, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdb1ac4b6d7ea7c2995a58afbe799020
+      internalID: -2099516269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_idle_4
+      rect:
+        serializedVersion: 2
+        x: 936
+        y: 404
+        width: 155
+        height: 187
+      alignment: 9
+      pivot: {x: 0.5967742, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35b57d132fdf72c41b282349f6a8889c
+      internalID: 1592050079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_punch_1
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 201
+        width: 158
+        height: 192
+      alignment: 9
+      pivot: {x: 0.4841772, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cf02e43906ffb554cacd8daadf9331e
+      internalID: -1487693555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_punch_2
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 201
+        width: 166
+        height: 192
+      alignment: 9
+      pivot: {x: 0.44277108, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56b5fcbf28bd86e70460e5f12f5b0878
+      internalID: 1307537193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_punch_3
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 201
+        width: 176
+        height: 190
+      alignment: 9
+      pivot: {x: 0.38920453, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc297c9e66b70345de4f0b39812bf24e
+      internalID: 1760288708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_punch_4
+      rect:
+        serializedVersion: 2
+        x: 940
+        y: 201
+        width: 157
+        height: 190
+      alignment: 9
+      pivot: {x: 0.5127388, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ffddb1078eb609ee11dd7d16a554337c
+      internalID: 1916693420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_push_1
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 9
+        width: 168
+        height: 173
+      alignment: 9
+      pivot: {x: 0.4642857, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce5f8ffdc81b50be382449abc9f6db32
+      internalID: 1547327115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_push_2
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 9
+        width: 175
+        height: 172
+      alignment: 9
+      pivot: {x: 0.4857143, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 321720d4d9396aa1e012074f42ac6090
+      internalID: 1646389320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_push_3
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 9
+        width: 195
+        height: 175
+      alignment: 9
+      pivot: {x: 0.34615386, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b37497258c5b1f3b42b5794d4791591f
+      internalID: 81981143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_push_4
+      rect:
+        serializedVersion: 2
+        x: 945
+        y: 9
+        width: 163
+        height: 172
+      alignment: 9
+      pivot: {x: 0.5153374, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dde408d65f5680f1bb8fbef770c01dd3
+      internalID: -1841961540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1eb5c3b4c5733684ebca286f8589703e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      boy_idle_1: 1100953787
+      boy_idle_2: 303588731
+      boy_idle_3: -582703016
+      boy_idle_4: -2025594318
+      boy_punch_1: 135331375
+      boy_punch_2: 158984698
+      boy_punch_3: -653697122
+      boy_punch_4: 1513231012
+      boy_push_1: -1649753303
+      boy_push_2: -1035812376
+      boy_push_3: 1753868922
+      boy_push_4: 725238787
+      girl_idle_1: -1745709408
+      girl_idle_2: 1710383395
+      girl_idle_3: -2099516269
+      girl_idle_4: 1592050079
+      girl_punch_1: -1487693555
+      girl_punch_2: 1307537193
+      girl_punch_3: 1760288708
+      girl_punch_4: 1916693420
+      girl_push_1: 1547327115
+      girl_push_2: 1646389320
+      girl_push_3: 81981143
+      girl_push_4: -1841961540
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

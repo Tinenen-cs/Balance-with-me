@@ -2,6 +2,15 @@
 
 A local two-player 2D pixel-art game made with Unity and VS Code. A chibi boy and girl share a plank above a round wooden fulcrum in a farming village. Use a shared keyboard, two gamepads, or a mixed setup. Walk, jump, punch, and push your opponent: keep your footing and knock the other player off, or land three punches to win.
 
+### Updated match flow — 17 October 2026
+
+- On a fresh Unity checkout, the untouched empty startup scene automatically opens **Main** in the **Game** view, with a 16:9 preview. Both characters are saved in their starting positions and are visible before Play. Use **Balance with me > Open Game Preview** to return to it. Unity still requires Play to run gameplay.
+- New character artwork includes four-frame idle, punch and open-palm push sequences for each player. Attacks use full-body poses rather than floating yellow/blue hand boxes.
+- Scorecards show **LIFE %**, a matching life bar, **WINS / 3**, and **WIN RATE %**. Win rate means rounds won divided by completed rounds in the current match; draws count as completed rounds. Before a result, it is 0%.
+- Win a round by landing three punches or making the opponent fall. After a **3.2-second** result/countdown, the next round starts automatically with full health and the match score retained. A draw also advances without awarding a win.
+- The first player to **three round wins** wins the match. Gameplay stops at the match result. **RESTART / R / gamepad Start** then begins a fresh match; during an unfinished match it retries the current round and cancels any countdown.
+- Help is available on demand, keeping the opening screen clear. Configure `winsToMatch` and `nextRoundDelay` on GameManager to tune the match rules.
+
 <p align="center"><img src="Docs/gameplay_layout.png" alt="Full desktop game layout: two players on a balancing plank above a round wooden fulcrum in a farming village" width="960"></p>
 
 > Full 16:9 layout captured from the Unity scene. The plank and circular wooden-log fulcrum share honey-brown timber, matching rope details and visible woodgrain. Grass and moss fringe the fulcrum’s curved rim and base to blend with the land; farmhouses, fields and a windmill frame the central play area. Separate cloud sprites drift slowly across the sky. Character sprite sheets are kept in the project assets and are not displayed in this README.
@@ -28,7 +37,7 @@ Source: **[Tinenen-cs/Balance-with-me](https://github.com/Tinenen-cs/Balance-wit
 | Face the target and stay in range | Hits require the opponent ahead within 1.2 world units horizontally and vertically | `PlayerActions.AdvanceAction` | Facing/reach test |
 | Cooldowns | Punch 0.65 s; push 0.9 s | `PlayerActions.TryAction` | Repeated attack rejected |
 | Hit reaction | Brief stun and red flash; movement cannot immediately cancel knockback | `PlayerActions.Receive` | Stun/knockback tests |
-| Win and restart | Opponent reaches zero health or falls below the board; R/button resets the round | `BalanceGame` | Falling and restart tests |
+| Win and advance | Zero health or falling ends a round; next round starts automatically until three wins | `BalanceGame` | Round, draw, match completion and restart tests |
 
 The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle centering torque. The plank is supported visually by a centered circular wooden log resting on the foreground land. The support is stationary.
 
@@ -37,9 +46,9 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 1. Open **Assets → Scenes → Main**, select **Desktop 1920 × 1080**, and press Play.
 2. Start recording, then move both characters toward each other using **A/D** and **Left/Right Arrow**.
 3. Demonstrate **W** / **Up Arrow** jumps.
-4. Face the opponent and press **F** / **K** to punch. Show the orange fist, red hit flash, knockback, and health decrease.
-5. Press **G** / **L** to push. Show the cyan hand effect and shove without health loss.
-6. Win by landing three punches or knocking the other player off. Press **R** or **RESTART** to reset.
+4. Face the opponent and press **F** / **K** to punch. Show the wind-up, extended fist, recovery, hit flash, knockback, and life percentage decrease.
+5. Press **G** / **L** to push. Show the open-palm shove animation without health loss.
+6. Win by landing three punches or knocking the other player off. Wait for the automatic next round and play to three wins.
 
 ## Status
 
@@ -63,13 +72,13 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 - **Original audio:** two switchable looping music tracks, footsteps, jump/landing, punch/push and hit/shove sounds, happy/sad emote jingles, and separate fail/win/draw cues. Mute is remembered.
 - **Emotes:** alternate happy/sad speech labels and jingles above each player. The winner automatically celebrates with a golden “I DID IT!” popup, bouncing and rocking for 2.4 seconds, accompanied by the victory jingle. Draws have no winner emote; restart clears it.
 - **Distinct attacks:** punch damages and knocks back once; push shoves throughout its active window without damage.
-- **Action effects:** footstep dust, jump/landing puffs, orange punch arcs, mint push streaks, hit sparks and shove particles. Happy emotes sparkle, sad emotes shed blue droplets, winners burst confetti, and losing/respawning characters get brief puffs/leaves. [See the combat effects preview](Docs/action_effects.png).
-- **Combat feedback:** orange punch fist, cyan push hand, red hit flash and hurt frames.
-- **Farm-themed scorecards** show each character’s matching sprite icon beside their name, three health points and match wins. The round timer pauses at the result; restart resets the round while keeping match wins until the scene is reloaded.
-- **Wood-and-parchment UI** keeps names, health, wins, timer, title, Help and Restart visible. Controls appear for five seconds at startup or on demand; round-start and audio notices disappear after 2.5 seconds. The result stays visible until restart.
+- **Action effects:** footstep dust, jump/landing puffs, hit sparks and shove particles accompany full-body attack animation. Happy emotes sparkle, sad emotes shed blue droplets, winners burst confetti, and losing/respawning characters get brief puffs/leaves. [See the combat preview](Docs/action_effects.png).
+- **Combat feedback:** dedicated four-frame punch and push sequences, red hit flash and hurt frames.
+- **Farm-themed scorecards** show matching character icons, life percentage/bars, wins toward the match and round win rate. The round timer pauses at the result and resets automatically for the next round.
+- **Wood-and-parchment UI** keeps names, life, wins, win rate, round/time, title, Help and Restart visible. Controls appear for five seconds on demand; round-start and audio notices disappear after 2.5 seconds. Round results count down to the next round; the match result stays until a new match is requested.
 - **Smooth motion:** interpolated player/plank physics, 0.08-second movement smoothing and eased action/emote poses. The weighted plank uses angular damping and progressive resistance before its ±16° hinge limits. Restart clears stored movement smoothing.
 - **Physics scene:** player Rigidbody2Ds and capsule colliders on a hinged plank.
-- **32 original animation frames** used for idle, walk, jump and hurt, plus programmatic combat hand effects.
+- **24 new character frames** provide idle, punch and push animations; the original sheet supplies walk, jump and hurt animations.
 - **Slow moving clouds:** five transparent pixel-art clouds drift gently across the sky at different speeds and wrap completely offscreen. They keep moving between rounds.
 - **Desktop 16:9 farming village** with farmhouses, fields, clouds, a windmill and a grass-trimmed round wooden fulcrum supporting the plank.
 - **Original source retained:** `CharacterController2DP2.bin` is unchanged; the active controller uses Unity 6 `linearVelocity` instead of deprecated `velocity`. Companion scripts were added after the user authorized new code.
@@ -80,8 +89,8 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 | --- | --- |
 | Walk | Small trailing dust puffs on grounded footsteps |
 | Jump / land | Takeoff dust / a wider landing puff |
-| Punch / hit | Orange swing arc / cream-and-gold impact sparks |
-| Push / shove | Mint speed streaks / short green knockback particles |
+| Punch / hit | Full-body fist animation / brief impact sparks |
+| Push / shove | Full-body open-palm shove / short knockback particles |
 | Happy / sad emote | Gold sparkles / falling blue droplets |
 | Win / fail | Gold, green and coral confetti / a brief earthy puff |
 | Restart / spawn | Old effects clear, followed by small green leaf particles |
@@ -134,14 +143,14 @@ Click the Game view to give it keyboard focus. Attack while facing the other pla
 
 ## Screen layout
 
-Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Symmetrical parchment player scorecards, with matching boy/girl character icons beside their names, flank the centered title and round clock. Small Help and Restart signs sit in opposite bottom corners. The controls panel is a five-second popup (H / left bumper / HELP); audio status appears only after M / N or the corresponding gamepad input. Emote and reaction words appear briefly above the players. The winner or draw notice appears at round end and stays until restart.
+Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Symmetrical parchment player scorecards, with matching boy/girl character icons beside their names, flank the centered title and round clock. Small Help and Restart signs sit in opposite bottom corners. The controls panel is a five-second popup (H / left bumper / HELP); audio status appears only after M / N or the corresponding gamepad input. Emote and reaction words appear briefly above the players. Round results count down automatically to the next round; the match winner stays visible until a new match is requested.
 
 Desktop defaults are a resizable 1920 × 1080 window; browser defaults are 1280 × 720. Select **16:9** or **Desktop 1920 × 1080** manually in Unity's Game view. The farming-village background uses uniform overscan to fill the view, preserve the round wooden fulcrum’s proportions and align its top with the plank.
 
 ## Unity version and packages
 
 - Target: **Unity 6.3 LTS — 6000.3.24f1**, matching the reference repository.
-- Windows validation on 17 October 2026 uses **6000.3.24f1**: compilation and all 26 PlayMode tests pass. Previous validation used **6000.3.26f1**.
+- Windows validation on 17 October 2026 uses **6000.3.24f1**: compilation and all 30 PlayMode tests pass. Previous validation used **6000.3.26f1**.
 - URP 2D, 2D Sprite, 2D Animation, Input System, uGUI, and Unity Test Framework package configuration is in `Packages/manifest.json`.
 - VS Code extension recommendations are in `.vscode/extensions.json`.
 
@@ -151,6 +160,7 @@ Desktop defaults are a resizable 1920 × 1080 window; browser defaults are 1280 
 Assets/
   Art/
     Characters/two_players.png     original character sheet
+    Characters/combat_players.png  new idle, punch and push sequences
     Characters/Generated/          shared unlit sprite material
     Backgrounds/farm_village_wood_ball.png  cloudless village and round wooden fulcrum
     Backgrounds/moving_cloud.png          transparent drifting cloud sprite
@@ -161,6 +171,7 @@ Assets/
   Audio/Music/                     two original background loops
   Audio/SFX/                       thirteen original movement/action/reaction/emote/result cues
   Editor/PlayableSceneBuilder.cs   rebuilds the playable scene and wires references
+  Editor/ProjectStartup.cs         opens the saved game preview on a fresh checkout
   Editor/LayoutScreenshot.cs       captures the full scene for the README
   Scenes/Main.unity                playable desktop scene
   Scripts/
@@ -230,7 +241,7 @@ README section organization follows the supplied [CSEL Tamagotchi reference](htt
    cd Balance-with-me
    ```
    For the existing local copy, use `/Users/imac23/Documents/TWOCHARACTERGAME_CSEL`. Update a clean checkout with `git pull origin main`.
-2. Install **Unity Hub**. The recorded project version is **6000.3.24f1**, matching the reference and now verified on Windows with all 26 PlayMode tests passing. Previous macOS compilation, tests and captures used **6000.3.26f1**; you may select that installed version in Hub and accept the patch upgrade.
+2. Install **Unity Hub**. The recorded project version is **6000.3.24f1**, matching the reference and now verified on Windows with all 30 PlayMode tests passing. Previous macOS compilation, tests and captures used **6000.3.26f1**; you may select that installed version in Hub and accept the patch upgrade.
 3. In Hub, select **Projects → Add → Add project from disk**. Choose the folder containing `Assets`, `Packages`, and `ProjectSettings`.
 4. Open the project and allow package restoration and asset import to finish.
 5. Open **Assets → Scenes → Main**. To regenerate the playable setup, use **Balance with me → Rebuild Playable Scene**.
@@ -275,7 +286,7 @@ Use the Unity Editor to play the game now. Standalone builds are on hold at the 
 
 ### Unity opens an empty scene
 
-The playable game is saved in `Assets/Scenes/Main.unity`. Adding the project folder in Unity Hub does not necessarily open that scene: the last-opened scene is local editor state and is not included in Git.
+The playable game is saved in `Assets/Scenes/Main.unity`. The project now opens it automatically when Unity starts with an untouched empty scene. Saved scenes and unsaved work are preserved. Use **Balance with me > Open Game Preview** if needed, or follow the manual steps below.
 
 1. Add the root folder containing `Assets`, `Packages`, and `ProjectSettings` in Unity Hub, then open it with **6000.3.24f1**.
 2. Wait for imports and script compilation to finish.
@@ -301,7 +312,7 @@ This opens the project in the Editor for testing. Wait for Unity to finish loadi
 - **Original `.bin` differs from the active `.cs`:** the original is retained; the active motor received the authorized Unity 6 API update.
 - **Manual scene edits disappear:** the rebuild menu regenerates Main. Store repeatable setup in the builder or avoid rebuilding after Inspector-only edits.
 - **Version prompt:** target is 6000.3.24f1; local verification used 6000.3.26f1.
-- **Character animation needs polish:** existing frames, hand effects and brief pixel particles provide action feedback. Dedicated punch/push artwork remains future work.
+- **Combat animation:** punch and push use the new dedicated character frames. Their timing follows the attack window; particles are reserved for contact, movement and reactions.
 
 ## Contributing
 

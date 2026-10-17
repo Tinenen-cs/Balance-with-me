@@ -33,7 +33,7 @@ namespace BalanceWithMe.Tests
             Assert.That(game.boy.TryAction(PlayerActions.ActionType.Punch),Is.True);
             Assert.That(game.boy.effects.LastEffect,Is.EqualTo(ActionEffects.Kind.Punch));
             int count=game.boy.effects.ActiveParticleCount;
-            Assert.That(count,Is.GreaterThan(0));
+            Assert.That(count,Is.Zero,"Attack motion comes from the character frames, not colored particle boxes.");
             Assert.That(game.boy.TryAction(PlayerActions.ActionType.Punch),Is.False);
             Assert.That(game.boy.effects.ActiveParticleCount,Is.EqualTo(count));
             game.boy.AdvanceAction(.1f);

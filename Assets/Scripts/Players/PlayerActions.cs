@@ -13,11 +13,13 @@ namespace BalanceWithMe
         public Rigidbody2D body;
         public SpriteRenderer visual, fist, palm;
         public Sprite[] idle, walk, jump, hurt;
+        public Sprite[] punch, push;
         public PlayerActions opponent;
         public BalanceGame game;
         public ActionEffects effects;
         public Text emoteLabel;
         public int Health { get; private set; } = 3;
+        public float HealthPercent => Health * (100f / 3);
         public float StunRemaining { get; private set; }
         public ActionType CurrentAction { get; private set; }
         public ActionType LastReceivedAction { get; private set; }
@@ -108,6 +110,13 @@ namespace BalanceWithMe
             return true;
         }
 
+        public void CancelAction()
+        {
+            CurrentAction = ActionType.None;
+            move = 0;
+            jumpQueued = false;
+        }
+
         public void Emote()
         {
             if (game == null || !game.Running || emoteTime > 0 || StunRemaining > 0) return;
@@ -145,6 +154,7 @@ namespace BalanceWithMe
         public void AdvanceAction(float dt)
         {
             if (CurrentAction == ActionType.None) return;
+            if (game == null || !game.Running) { CancelAction(); return; }
             actionTime += dt;
             if (StunRemaining > 0) { CurrentAction = ActionType.None; return; }
             float duration = CurrentAction == ActionType.Punch ? .28f : .45f;
@@ -185,6 +195,7 @@ namespace BalanceWithMe
             effects?.Clear();
             controller.ResetMotion();
             body.position = position;
+            transform.position = position;
             body.linearVelocity = Vector2.zero;
             body.angularVelocity = 0;
             Health = 3;
@@ -202,12 +213,20 @@ namespace BalanceWithMe
         void Animate(float dt)
         {
             animationTime += dt;
-            Sprite[] frames = IsCelebrating ? idle : StunRemaining > 0 ? hurt : !controller.IsGrounded ? jump : Mathf.Abs(body.linearVelocity.x) > .15f ? walk : idle;
-            if (frames != null && frames.Length > 0) visual.sprite = frames[Mathf.FloorToInt(animationTime * 8) % frames.Length];
             bool punching = CurrentAction == ActionType.Punch;
             bool pushing = CurrentAction == ActionType.Push;
-            fist.enabled = punching;
-            palm.enabled = pushing;
+            Sprite[] frames = IsCelebrating ? idle : StunRemaining > 0 ? hurt : punching ? punch : pushing ? push : !Application.isPlaying || !controller.IsGrounded ? jump : Mathf.Abs(body.linearVelocity.x) > .15f ? walk : idle;
+            if (!Application.isPlaying) frames = idle;
+            if (frames != null && frames.Length > 0)
+            {
+                int frame = punching || pushing
+                    ? Mathf.Min(frames.Length - 1, Mathf.FloorToInt(actionTime / (punching ? .28f : .45f) * frames.Length))
+                    : Mathf.FloorToInt(animationTime * 8) % frames.Length;
+                visual.sprite = frames[frame];
+            }
+            // Attacks are full-body sprite animation; the old floating colored boxes stay hidden.
+            fist.enabled = false;
+            palm.enabled = false;
             float reach = punching ? Mathf.Sin(Mathf.Clamp01(actionTime / .28f) * Mathf.PI) : pushing ? .85f : 0;
             fist.transform.localPosition = new Vector3(.25f + reach * .6f, .85f, 0);
             palm.transform.localPosition = new Vector3(.75f, 1.05f, 0);
