@@ -37,7 +37,7 @@ namespace BalanceWithMe.Tests
                 Assert.That(game.statusPopup.alpha, Is.Zero);
                 foreach (var backdrop in game.winnerBackdropImages) Assert.That(backdrop.enabled, Is.False);
                 Assert.That(game.winnerPopup.alpha, Is.EqualTo(1));
-                Assert.That(((RectTransform)game.winnerPopup.transform).anchoredPosition, Is.EqualTo(Vector2.zero));
+                Assert.That(((RectTransform)game.winnerPopup.transform).anchoredPosition, Is.EqualTo(new Vector2(0,200)));
                 Assert.That(game.winnerName.text, Is.EqualTo(girlWins ? game.girlName : game.boyName));
                 Assert.That(game.winnerHead.sprite, Is.SameAs(girlWins ? game.girl.portraitVictory : game.boy.portraitVictory));
                 Assert.That(game.nextRoundText.text, Does.Contain("NEXT ROUND IN"));
@@ -49,6 +49,55 @@ namespace BalanceWithMe.Tests
                 Assert.That(game.winnerPopup.alpha, Is.Zero);
                 game.AdvanceReadyCountdown(3);
             }
+        }
+        [UnityTest] public IEnumerator WinStarsAwardOnePerRoundDrawsAwardNoneAndReplayClearsThem()
+        {
+            game.nextRoundDelay = 10;
+            foreach (var stars in new[] { game.boyWinStars, game.girlWinStars })
+            {
+                Assert.That(stars.Length, Is.EqualTo(3));
+                foreach (var star in stars) { Assert.That(star.sprite, Is.Not.Null); Assert.That(star.color.a, Is.LessThan(.5f)); }
+            }
+            game.girl.body.position = new Vector2(0,-4); yield return null;
+            Assert.That(game.boyWinStars[0].color, Is.EqualTo(Color.white));
+            Assert.That(game.boyWinStars[1].color.a, Is.LessThan(.5f));
+            game.Restart();
+            game.boy.body.position = game.girl.body.position = new Vector2(0,-4); yield return null;
+            Assert.That(game.BoyWins, Is.EqualTo(1));
+            Assert.That(game.boyWinStars[1].color.a, Is.LessThan(.5f));
+            game.Restart(); game.girl.body.position = new Vector2(0,-4); yield return null;
+            Assert.That(game.boyWinStars[1].color, Is.EqualTo(Color.white));
+            Assert.That(game.boyWinStars[2].color.a, Is.LessThan(.5f));
+            foreach (var star in game.girlWinStars) Assert.That(star.color.a, Is.LessThan(.5f));
+            game.PlayAgain();
+            foreach (var star in game.boyWinStars) Assert.That(star.color.a, Is.LessThan(.5f));
+        }
+        [UnityTest] public IEnumerator CountdownAndRoundResultContentStayAbovePlankInBothCanvasModes()
+        {
+            game.countdownStepDuration = 1; game.Restart();
+            var canvas = game.readyNumber.canvas;
+            foreach (var mode in new[] { RenderMode.ScreenSpaceOverlay, RenderMode.ScreenSpaceCamera })
+            {
+                canvas.renderMode = mode; canvas.worldCamera = Camera.main; canvas.planeDistance = 5;
+                Canvas.ForceUpdateCanvases();
+                foreach (var label in new[] { game.readyNumber, game.readyCaption }) AssertAbovePlank(label.rectTransform, canvas);
+            }
+            game.AdvanceReadyCountdown(3); game.girl.body.position = new Vector2(0,-4);
+            yield return new WaitForSecondsRealtime(.35f);
+            foreach (var mode in new[] { RenderMode.ScreenSpaceOverlay, RenderMode.ScreenSpaceCamera })
+            {
+                canvas.renderMode = mode; Canvas.ForceUpdateCanvases();
+                AssertAbovePlank(game.winnerHead.rectTransform, canvas);
+                foreach (var text in new[] { game.winnerHeading, game.winnerName, game.nextRoundText }) AssertAbovePlank(text.rectTransform, canvas);
+            }
+        }
+        void AssertAbovePlank(RectTransform rect, Canvas canvas)
+        {
+            var corners = new Vector3[4]; rect.GetWorldCorners(corners);
+            var camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+            float bottom = RectTransformUtility.WorldToScreenPoint(camera,corners[0]).y;
+            float plank = Camera.main.WorldToScreenPoint(game.board.transform.position + Vector3.up * .2f).y;
+            Assert.That(bottom, Is.GreaterThan(plank + 8), rect.name + " must clear the plank.");
         }
         [UnityTest] public IEnumerator VillageMotionContinuesDuringResultsWithoutGrowingPools()
         {
@@ -122,6 +171,7 @@ namespace BalanceWithMe.Tests
                 foreach (var backdrop in game.winnerBackdropImages) Assert.That(backdrop.enabled, Is.True);
                 Assert.That(game.winnerName.text, Is.EqualTo(girlWins ? game.girlName : game.boyName));
                 Assert.That(game.winnerHead.sprite, Is.SameAs(girlWins ? game.girl.portraitVictory : game.boy.portraitVictory));
+                foreach (var star in girlWins ? game.girlWinStars : game.boyWinStars) Assert.That(star.color, Is.EqualTo(Color.white));
                 Assert.That(game.roundClockPopup.alpha, Is.Zero);
                 yield return new WaitForSecondsRealtime(.6f);
                 Assert.That(game.MatchComplete, Is.True);

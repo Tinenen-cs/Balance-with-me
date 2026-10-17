@@ -25,7 +25,8 @@ namespace BalanceWithMe.Tests
             Assert.That(game.Running, Is.False);
             Assert.That(game.board.simulated || game.girl.body.simulated, Is.False);
             Assert.That(game.CompletedRounds, Is.EqualTo(1));
-            Assert.That(game.girlWinsText.text, Does.Contain("WINS 1"));
+            Assert.That(game.girlWinStars[0].color, Is.EqualTo(Color.white));
+            Assert.That(game.girlWinStars[1].color.a, Is.LessThan(.5f));
             Assert.That(game.boy.IsDefeated, Is.True);
             Assert.That(game.BoyDefeat, Is.EqualTo(BalanceGame.DefeatCause.Fall));
             Assert.That(game.boy.body.position.y, Is.EqualTo(-3.2f).Within(.01f));

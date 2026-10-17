@@ -440,6 +440,14 @@ namespace BalanceWithMe.Editor
             fillImporter.filterMode = FilterMode.Point; fillImporter.mipmapEnabled = false;
             fillImporter.textureCompression = TextureImporterCompression.Uncompressed; fillImporter.SaveAndReimport();
             var lifeFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>(lifeFillPath);
+            const string starPath = "Assets/Art/UI/round_win_star.png";
+            AssetDatabase.ImportAsset(starPath, ImportAssetOptions.ForceSynchronousImport);
+            var starImporter = (TextureImporter)AssetImporter.GetAtPath(starPath);
+            if (starImporter == null) throw new InvalidOperationException("Round win star sprite is missing.");
+            starImporter.textureType=TextureImporterType.Sprite;starImporter.spriteImportMode=SpriteImportMode.Single;
+            starImporter.filterMode=FilterMode.Point;starImporter.textureCompression=TextureImporterCompression.Uncompressed;
+            starImporter.alphaIsTransparency=true;starImporter.mipmapEnabled=false;starImporter.SaveAndReimport();
+            var starSprite=AssetDatabase.LoadAssetAtPath<Sprite>(starPath);
             var canvas=new GameObject("Canvas",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));
             canvas.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;
             canvas.GetComponent<Canvas>().sortingOrder=100;
@@ -501,8 +509,15 @@ namespace BalanceWithMe.Editor
                 var life = PanelLabel(track.rectTransform,player+" Life Percentage","LIFE 100%",30,Vector2.zero,new Vector2(278,38));
                 life.color=new Color(1,.98f,.87f);
                 var stroke=life.gameObject.AddComponent<Outline>();stroke.effectColor=new Color(.12f,.08f,.04f);stroke.effectDistance=new Vector2(1,-1);
-                var wins=PanelLabel(panel,player+" Round Wins","ROUND WINS 0",25,new Vector2(54,-48),new Vector2(284,32));
-                if(girl){game.girlLifeText=life;game.girlWinsText=wins;}else{game.boyLifeText=life;game.boyWinsText=wins;}
+                var stars=new Image[BalanceGame.RoundsPerMatch];
+                for(int i=0;i<stars.Length;i++)
+                {
+                    var star=new GameObject(player+" Round Star "+(i+1),typeof(RectTransform)).AddComponent<Image>();
+                    star.transform.SetParent(panel,false);star.rectTransform.anchoredPosition=new Vector2(54+(i-1)*56,-49);
+                    star.rectTransform.sizeDelta=new Vector2(44,44);star.sprite=starSprite;star.preserveAspect=true;star.raycastTarget=false;
+                    stars[i]=star;
+                }
+                if(girl){game.girlLifeText=life;game.girlWinStars=stars;}else{game.boyLifeText=life;game.boyWinStars=stars;}
                 return PanelLabel(panel,player+" Name","",31,new Vector2(54,47),new Vector2(284,38));
             }
             game.boyHud=Scorecard(false);
@@ -547,7 +562,7 @@ namespace BalanceWithMe.Editor
             game.nextRoundText=PanelLabel(announcement,"Next Round Indicator","",28,new Vector2(0,-100),new Vector2(450,74));
             game.replayHint=PanelLabel(announcement,"Replay Shortcuts","ENTER / PS4 CROSS OR OPTIONS",23,new Vector2(0,-137),new Vector2(470,32));
             var ready=(RectTransform)new GameObject("Round Start Countdown",typeof(RectTransform)).transform;
-            ready.SetParent(canvas.transform,false);ready.anchoredPosition=Vector2.zero;ready.sizeDelta=new Vector2(420,260);
+            ready.SetParent(canvas.transform,false);ready.anchoredPosition=new Vector2(0,150);ready.sizeDelta=new Vector2(420,260);
             game.readyPopup=Popup(ready);
             game.readyNumber=PanelLabel(ready,"Countdown Number","1",112,new Vector2(0,40),new Vector2(360,130));
             game.readyCaption=PanelLabel(ready,"Countdown Caption","READY",42,new Vector2(0,-65),new Vector2(360,60));

@@ -32,7 +32,7 @@ namespace BalanceWithMe
         public DefeatCause GirlDefeat { get; private set; }
         public Image boyLifeBar, girlLifeBar;
         public Text boyLifeText, girlLifeText;
-        public Text boyWinsText, girlWinsText;
+        public Image[] boyWinStars, girlWinStars;
         public Image boyPortrait, girlPortrait;
         public CanvasGroup roundClockPopup, winnerPopup;
         public Image winnerHead;
@@ -205,8 +205,8 @@ namespace BalanceWithMe
             health.text = $"BOY  {boy.Health}/3     |     GIRL  {girl.Health}/3";
             if (boyHud != null) boyHud.text = boyName;
             if (girlHud != null) girlHud.text = girlName;
-            if (boyWinsText != null) boyWinsText.text = $"ROUND WINS {BoyWins}";
-            if (girlWinsText != null) girlWinsText.text = $"ROUND WINS {GirlWins}";
+            UpdateStars(boyWinStars, BoyWins);
+            UpdateStars(girlWinStars, GirlWins);
             if (boyLifeText != null) boyLifeText.text = $"LIFE {boy.HealthPercent:0}%";
             if (girlLifeText != null) girlLifeText.text = $"LIFE {girl.HealthPercent:0}%";
             if (boyPortrait != null) boyPortrait.sprite = boy.CurrentPortrait;
@@ -233,6 +233,7 @@ namespace BalanceWithMe
             float eased = 1 - Mathf.Pow(1 - progress, 3);
             winnerPopup.alpha = eased;
             winnerPopup.transform.localScale = Vector3.one * Mathf.Lerp(.86f, 1, eased);
+            ((RectTransform)winnerPopup.transform).anchoredPosition = MatchComplete ? Vector2.zero : new Vector2(0,200);
             foreach (var backdrop in winnerBackdropImages) backdrop.enabled = MatchComplete;
             foreach (var label in new[] { winnerHeading, winnerName, nextRoundText })
             {
@@ -253,6 +254,12 @@ namespace BalanceWithMe
             status.text = MatchComplete
                 ? roundResult
                 : $"{roundResult}\nNEXT ROUND IN {Mathf.CeilToInt(nextRoundRemaining)}";
+        }
+        static void UpdateStars(Image[] stars, int wins)
+        {
+            if (stars == null) return;
+            for (int i = 0; i < stars.Length; i++)
+                stars[i].color = i < wins ? Color.white : new Color(.36f,.29f,.19f,.30f);
         }
         static void UpdateLifeBar(Image bar, float percent)
         {

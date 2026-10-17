@@ -106,3 +106,10 @@ RoundDuration is now 60 seconds and the saved/built clock starts at 01:00. The e
 Per-round results disable only the card's three backing Images. Heading, name and next-round text use cream lettering with dark outlines/shadows; the head has a cream outline and dark shadow. The final match card retains its parchment and Play Again button.
 
 PlayerActions ramps a grounded lower-side drift toward a tilt-dependent cap (1.65 world units/second at 14 degrees), using 0.9 world units/second squared acceleration and a 2-degree neutral zone. The motor adds this drift separately from input, so an idle slide does not flip the character and uphill movement can overcome it. Drift requires actual plank contact, clears in the air or when play stops, and resets with the player. The upper side eases toward zero drift as the tilt reverses. Physics handles vertical contact and eventual falling; this mechanic does not teleport active players. maxSlopeDrift and slopeDriftAcceleration are adjustable per player in the Inspector.
+
+
+### Above-plank announcements and win stars - 18 October 2026
+
+Raised the background-free Ready/Set/Start group to canvas y=150 so both number and caption clear the plank. Per-round announcements now sit at y=200, putting the head, name and next-round indicator above the platform. The final match card remains centered with Play Again. Positions use the existing 1920 x 1080 CanvasScaler and work in overlay or camera canvas mode.
+
+Replaced the numeric Round Wins HUD labels with three 44-pixel star slots per player. The new transparent round_win_star.png was created with built-in imagegen to match the game's gold/chestnut pixel palette. Full-color gold marks earned wins; muted stars mark unearned slots. RefreshHud derives stars from existing win counts, so one win earns one star, draws earn none, scores persist between rounds, and replay clears them without a second score source. The saved Main scene and scene builder both wire the six images.
