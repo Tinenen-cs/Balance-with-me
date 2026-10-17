@@ -23,7 +23,7 @@ namespace BalanceWithMe.Tests
             Assert.That(game.boy.body.simulated || game.board.simulated, Is.False);
             Assert.That(game.boy.TryAction(PlayerActions.ActionType.Punch), Is.False);
             game.AdvanceRoundTime(90);
-            Assert.That(game.RemainingSeconds, Is.EqualTo(180));
+            Assert.That(game.RemainingSeconds, Is.EqualTo(60));
             game.AdvanceReadyCountdown(1);
             Assert.That(game.readyNumber.text, Is.EqualTo("2"));
             Assert.That(game.readyCaption.text, Is.EqualTo("SET"));
@@ -34,14 +34,14 @@ namespace BalanceWithMe.Tests
             Assert.That(game.Running, Is.True);
             Assert.That(game.readyPopup.alpha, Is.Zero);
             Assert.That(game.board.simulated && game.boy.body.simulated, Is.True);
-            game.RefreshHud(); Assert.That(game.timer.text, Does.Contain("03:00"));
+            game.RefreshHud(); Assert.That(game.timer.text, Does.Contain("01:00"));
         }
         [Test] public void WarningsFireAtThirtyAndEveryFinalSecondAndClearOnRestart()
         {
             game.AdvanceReadyCountdown(3);
             int warnings = 0, ticks = 0;
             game.sounds.CuePlayed += cue => { if (cue == "time_warning") warnings++; if (cue == "time_tick") ticks++; };
-            game.AdvanceRoundTime(150);
+            game.AdvanceRoundTime(30);
             Assert.That(warnings, Is.EqualTo(1));
             Assert.That(game.timeAlert.text, Is.EqualTo("30 SECONDS LEFT!"));
             game.AdvanceRoundTime(.1f); Assert.That(warnings, Is.EqualTo(1));
@@ -51,15 +51,15 @@ namespace BalanceWithMe.Tests
             Assert.That(game.timeAlert.text, Is.EqualTo("1 SECOND LEFT!"));
             game.Restart();
             Assert.That(game.timeAlertPopup.alpha, Is.Zero);
-            Assert.That(game.RemainingSeconds, Is.EqualTo(180));
+            Assert.That(game.RemainingSeconds, Is.EqualTo(60));
         }
         [Test] public void TimeoutWithEqualLifeIsDrawAndCannotScoreTwice()
         {
-            game.AdvanceReadyCountdown(3); game.AdvanceRoundTime(180);
+            game.AdvanceReadyCountdown(3); game.AdvanceRoundTime(BalanceGame.RoundDuration);
             Assert.That(game.CompletedRounds, Is.EqualTo(1));
             Assert.That(game.BoyWins + game.GirlWins, Is.Zero);
             Assert.That(game.status.text, Does.Contain("DRAW"));
-            game.AdvanceRoundTime(180);
+            game.AdvanceRoundTime(BalanceGame.RoundDuration);
             Assert.That(game.CompletedRounds, Is.EqualTo(1));
             Assert.That(game.girl.body.position.y, Is.GreaterThan(-1));
         }
@@ -74,7 +74,7 @@ namespace BalanceWithMe.Tests
                 game.girl.body.position = new Vector2(.4f,.1f);
                 attacker.TryAction(PlayerActions.ActionType.Punch); attacker.AdvanceAction(.1f);
                 Assert.That(defender.Health, Is.EqualTo(2));
-                game.AdvanceRoundTime(180);
+                game.AdvanceRoundTime(BalanceGame.RoundDuration);
                 Assert.That(attacker.HasWonRound, Is.True);
                 Assert.That(defender.IsDefeated, Is.True);
                 Assert.That(defender.body.position.y, Is.GreaterThan(-1));
@@ -86,7 +86,7 @@ namespace BalanceWithMe.Tests
             for (int round = 0; round < 3; round++)
             {
                 if (round > 0) game.Restart();
-                game.AdvanceReadyCountdown(3); game.AdvanceRoundTime(180);
+                game.AdvanceReadyCountdown(3); game.AdvanceRoundTime(BalanceGame.RoundDuration);
             }
             yield return new WaitForSecondsRealtime(5.2f);
             Assert.That(game.MatchComplete, Is.True, "Final result must wait for input, beyond the old automatic reset delay.");
@@ -103,7 +103,7 @@ namespace BalanceWithMe.Tests
             Assert.That(game.CompletedRounds + game.BoyWins + game.GirlWins, Is.Zero);
             Assert.That(game.IsCountingDown, Is.True);
             Assert.That(game.readyCaption.text, Is.EqualTo("READY"));
-            Assert.That(game.RemainingSeconds, Is.EqualTo(180));
+            Assert.That(game.RemainingSeconds, Is.EqualTo(60));
         }
         [UnityTest] public IEnumerator FallenLoserStaysOnGrassUntilNextRoundReadyPopup()
         {

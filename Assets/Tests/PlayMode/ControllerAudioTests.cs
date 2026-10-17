@@ -33,7 +33,7 @@ namespace BalanceWithMe.Tests
             for (int round = 0; round < 3; round++)
             {
                 if (round > 0) game.Restart();
-                game.AdvanceRoundTime(180);
+                game.AdvanceRoundTime(BalanceGame.RoundDuration);
             }
         }
         [Test] public void EnterAndNumpadEnterReplayOnlyAfterMatchEnds()
@@ -52,7 +52,7 @@ namespace BalanceWithMe.Tests
                     Assert.That(game.IsCountingDown, Is.True);
                     game.AdvanceReadyCountdown(3); game.AdvanceRoundTime(5);
                     game.CaptureSharedInput();
-                    Assert.That(game.RemainingSeconds, Is.EqualTo(175), "Enter cannot restart active gameplay.");
+                    Assert.That(game.RemainingSeconds, Is.EqualTo(55), "Enter cannot restart active gameplay.");
                     InputSystem.QueueStateEvent(keyboard, new KeyboardState()); InputSystem.Update();
                     game.countdownStepDuration = 0;
                 }

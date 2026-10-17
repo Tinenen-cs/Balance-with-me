@@ -26,6 +26,9 @@ namespace BalanceWithMe
         public ActionType CurrentAction { get; private set; }
         public ActionType LastReceivedAction { get; private set; }
         public float cooldown;
+        [Min(0)] public float maxSlopeDrift = 1.65f;
+        [Min(0)] public float slopeDriftAcceleration = .9f;
+        public float SlopeDrift { get; private set; }
         float actionTime, move, flash, animationTime;
         float visualLean, leanVelocity, visualBob, bobVelocity;
         bool jumpQueued, punchConnected;
@@ -93,14 +96,28 @@ namespace BalanceWithMe
                     stepRemaining = .32f;
                 }
             }
+            AdvanceSlopeDrift(dt);
             if (StunRemaining <= 0)
             {
                 bool jumped = jumpQueued && controller.IsGrounded;
-                controller.Move(move * .38f * (CurrentAction == ActionType.None ? 1 : .35f), false, jumpQueued);
+                controller.Move(move * .38f * (CurrentAction == ActionType.None ? 1 : .35f), false, jumpQueued, SlopeDrift);
                 if (jumped) { game.sounds?.Play("jump"); effects?.Play(ActionEffects.Kind.Jump); }
             }
             jumpQueued = false;
             AdvanceAction(Time.fixedDeltaTime);
+        }
+
+        public void AdvanceSlopeDrift(float dt)
+        {
+            // The lower half loses footing gradually; input still steers faster than the slide.
+            if (game == null || !game.Running || !body.simulated || !controller.IsGrounded ||
+                !body.IsTouching(game.board.GetComponent<Collider2D>()))
+            { SlopeDrift = 0; return; }
+            float angle = Mathf.DeltaAngle(0, game.board.rotation);
+            float localX = game.board.transform.InverseTransformPoint(body.position).x;
+            bool lowerSide = Mathf.Abs(localX) > .15f && localX * angle < 0;
+            float target = lowerSide ? -Mathf.Sign(angle) * maxSlopeDrift * Mathf.InverseLerp(2, 14, Mathf.Abs(angle)) : 0;
+            SlopeDrift = Mathf.MoveTowards(SlopeDrift, target, slopeDriftAcceleration * Mathf.Max(0, dt));
         }
 
         public bool TryAction(ActionType action)
@@ -118,6 +135,7 @@ namespace BalanceWithMe
         public void CancelAction()
         {
             CurrentAction = ActionType.None;
+            SlopeDrift = 0;
             move = 0;
             jumpQueued = false;
         }
@@ -230,6 +248,7 @@ namespace BalanceWithMe
             body.linearVelocity = Vector2.zero;
             body.angularVelocity = 0;
             Health = 3;
+            SlopeDrift = 0;
             cooldown = StunRemaining = flash = actionTime = animationTime = move = 0;
             CurrentAction = LastReceivedAction = ActionType.None;
             jumpQueued = punchConnected = false;

@@ -33,6 +33,64 @@ namespace BalanceWithMe.Tests
             InputSystem.settings.backgroundBehavior=backgroundBehavior;
             InputSystem.settings.editorInputBehaviorInPlayMode=editorBehavior;
         }
+        void Tilt(float angle, float girlX = 3)
+        {
+            game.board.constraints = RigidbodyConstraints2D.FreezeRotation;
+            game.board.rotation = angle;
+            game.board.transform.rotation = Quaternion.Euler(0,0,angle);
+            game.boy.body.position = game.board.transform.TransformPoint(new Vector3(-3,.24f,0));
+            game.girl.body.position = game.board.transform.TransformPoint(new Vector3(girlX,.24f,0));
+            game.boy.body.linearVelocity = game.girl.body.linearVelocity = Vector2.zero;
+            Physics2D.SyncTransforms();
+        }
+        [UnityTest] public IEnumerator LowerSideSlideBuildsGraduallyAndFollowsTiltReversal()
+        {
+            Tilt(12);
+            yield return new WaitForSeconds(.35f);
+            Assert.That(game.boy.SlopeDrift, Is.LessThan(-.1f).And.GreaterThan(-.5f));
+            Assert.That(game.girl.SlopeDrift, Is.Zero);
+            float first = game.boy.SlopeDrift;
+            float x = game.boy.body.position.x;
+            yield return new WaitForSeconds(.4f);
+            Assert.That(game.boy.SlopeDrift, Is.LessThan(first));
+            Assert.That(game.boy.body.position.x, Is.LessThan(x));
+            Tilt(-12);
+            yield return new WaitForSeconds(.9f);
+            Assert.That(game.girl.SlopeDrift, Is.GreaterThan(.2f));
+            Assert.That(Mathf.Abs(game.boy.SlopeDrift), Is.LessThan(.05f));
+            game.Restart(); Assert.That(game.boy.SlopeDrift + game.girl.SlopeDrift, Is.Zero);
+        }
+        [UnityTest] public IEnumerator UphillInputOvercomesSlideAndJumpClearsIt()
+        {
+            var keyboard = InputSystem.AddDevice<Keyboard>();
+            try
+            {
+                InputSystem.EnableDevice(keyboard); Tilt(-12);
+                yield return new WaitForSeconds(.7f);
+                Assert.That(game.girl.SlopeDrift, Is.GreaterThan(.2f));
+                float x = game.girl.body.position.x;
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.LeftArrow)); InputSystem.Update();
+                game.girl.CaptureKeyboardInput();
+                yield return new WaitForSeconds(.4f);
+                Assert.That(game.girl.body.position.x, Is.LessThan(x - .2f));
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.UpArrow)); InputSystem.Update();
+                game.girl.CaptureKeyboardInput();
+                yield return new WaitForSeconds(.12f);
+                Assert.That(game.girl.controller.IsGrounded, Is.False);
+                Assert.That(game.girl.SlopeDrift, Is.Zero);
+            }
+            finally { InputSystem.RemoveDevice(keyboard); }
+        }
+        [UnityTest] public IEnumerator UnattendedLowerEdgePlayerEventuallyFalls()
+        {
+            Tilt(-14, 3.9f);
+            float deadline = Time.time + 6;
+            while (game.Running && Time.time < deadline) yield return new WaitForFixedUpdate();
+            Assert.That(game.Running, Is.False, "An idle lower-side player must eventually slide off the edge.");
+            Assert.That(game.GirlDefeat, Is.EqualTo(BalanceGame.DefeatCause.Fall));
+            Assert.That(game.BoyWins, Is.EqualTo(1));
+            Assert.That(game.girl.SlopeDrift, Is.Zero);
+        }
         [Test] public void PunchHitsOnceAndCannotBeSpammed()
         {
             Assert.That(game.boy.TryAction(PlayerActions.ActionType.Punch),Is.True);
@@ -91,7 +149,7 @@ namespace BalanceWithMe.Tests
             Assert.That(game.girlWinsText.text,Does.Contain("WINS 1"));
             game.Restart();yield return null;
             Assert.That(game.GirlWins,Is.EqualTo(1));
-            Assert.That(game.timer.text,Does.Contain("03:00"));
+            Assert.That(game.timer.text,Does.Contain("01:00"));
             Assert.That(game.girl.Health,Is.EqualTo(3));
         }
         [UnityTest] public IEnumerator KeyboardStartsBoyPushAndGirlPunch()

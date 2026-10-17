@@ -35,6 +35,7 @@ namespace BalanceWithMe.Tests
                 (girlWins ? game.boy : game.girl).body.position = new Vector2(0,-4);
                 yield return new WaitForSecondsRealtime(.35f);
                 Assert.That(game.statusPopup.alpha, Is.Zero);
+                foreach (var backdrop in game.winnerBackdropImages) Assert.That(backdrop.enabled, Is.False);
                 Assert.That(game.winnerPopup.alpha, Is.EqualTo(1));
                 Assert.That(((RectTransform)game.winnerPopup.transform).anchoredPosition, Is.EqualTo(Vector2.zero));
                 Assert.That(game.winnerName.text, Is.EqualTo(girlWins ? game.girlName : game.boyName));
@@ -118,6 +119,7 @@ namespace BalanceWithMe.Tests
                 }
                 yield return new WaitForSecondsRealtime(.35f);
                 Assert.That(game.winnerPopup.alpha, Is.EqualTo(1).Within(.01f));
+                foreach (var backdrop in game.winnerBackdropImages) Assert.That(backdrop.enabled, Is.True);
                 Assert.That(game.winnerName.text, Is.EqualTo(girlWins ? game.girlName : game.boyName));
                 Assert.That(game.winnerHead.sprite, Is.SameAs(girlWins ? game.girl.portraitVictory : game.boy.portraitVictory));
                 Assert.That(game.roundClockPopup.alpha, Is.Zero);

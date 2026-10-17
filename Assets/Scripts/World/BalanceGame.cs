@@ -19,7 +19,7 @@ namespace BalanceWithMe
         public const int RoundsPerMatch = 3;
         [Min(.1f)] public float nextRoundDelay = 3.2f;
         [Min(0)] public float countdownStepDuration = 1;
-        public const float RoundDuration = 180;
+        public const float RoundDuration = 60;
         public float RemainingSeconds => Mathf.Max(0, RoundDuration - elapsed);
         public bool IsCountingDown { get; private set; }
         public int CountdownPhase { get; private set; }
@@ -36,6 +36,7 @@ namespace BalanceWithMe
         public Image boyPortrait, girlPortrait;
         public CanvasGroup roundClockPopup, winnerPopup;
         public Image winnerHead;
+        public Image[] winnerBackdropImages;
         public Text winnerName, nextRoundText, replayHint;
         MatchResult announcedResult;
         float winnerPopupTime;
@@ -232,6 +233,12 @@ namespace BalanceWithMe
             float eased = 1 - Mathf.Pow(1 - progress, 3);
             winnerPopup.alpha = eased;
             winnerPopup.transform.localScale = Vector3.one * Mathf.Lerp(.86f, 1, eased);
+            foreach (var backdrop in winnerBackdropImages) backdrop.enabled = MatchComplete;
+            foreach (var label in new[] { winnerHeading, winnerName, nextRoundText })
+            {
+                label.color = MatchComplete ? new Color(.25f,.14f,.07f) : new Color(1,.96f,.79f);
+                foreach (var effect in label.GetComponents<Shadow>()) effect.enabled = !MatchComplete;
+            }
             winnerHeading.text = announcedResult == MatchResult.Draw ? (MatchComplete ? "MATCH DRAW" : "ROUND DRAW") : MatchComplete ? "MATCH WINNER" : "ROUND WINNER";
             playAgainButton.gameObject.SetActive(MatchComplete);
             replayHint.gameObject.SetActive(MatchComplete);

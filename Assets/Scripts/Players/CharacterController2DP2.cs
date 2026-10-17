@@ -62,7 +62,7 @@ public class CharacterController2DP2 : MonoBehaviour
 	}
 
 
-	public void Move(float move, bool crouch, bool jump)
+	public void Move(float move, bool crouch, bool jump, float groundDrift = 0)
 	{
 		// If crouching, check to see if the character can stand up
 		if (!crouch)
@@ -107,7 +107,7 @@ public class CharacterController2DP2 : MonoBehaviour
 			}
 
 			// Move the character by finding the target velocity
-			Vector3 targetVelocity = new Vector2(move * 10f, m_Rigidbody2D.linearVelocity.y);
+			Vector3 targetVelocity = new Vector2(move * 10f + (m_Grounded && !jump ? groundDrift : 0), m_Rigidbody2D.linearVelocity.y);
 			// And then smoothing it out and applying it to the character
 			m_Rigidbody2D.linearVelocity = Vector3.SmoothDamp(m_Rigidbody2D.linearVelocity, targetVelocity, ref m_Velocity, m_MovementSmoothing, Mathf.Infinity, Time.fixedDeltaTime);
 

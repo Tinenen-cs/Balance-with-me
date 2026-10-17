@@ -509,7 +509,7 @@ namespace BalanceWithMe.Editor
             game.girlHud=Scorecard(true);
             var clock=Panel("Round Clock",new Vector2(0,365),new Vector2(250,84));
             game.roundClockPopup=clock.gameObject.AddComponent<CanvasGroup>();game.roundClockPopup.blocksRaycasts=false;
-            game.timer=PanelLabel(clock,"Timer","ROUND 1 / 3\n03:00",30,Vector2.zero,new Vector2(230,78));
+            game.timer=PanelLabel(clock,"Timer","ROUND 1 / 3\n01:00",30,Vector2.zero,new Vector2(230,78));
             var notice=Panel("Village Notice",new Vector2(0,245),new Vector2(790,76));
             game.statusPopup=Popup(notice);
             game.status=PanelLabel(notice,"Status","",28,Vector2.zero,new Vector2(754,68));
@@ -529,12 +529,16 @@ namespace BalanceWithMe.Editor
             var audio=Panel("Audio Notice",new Vector2(0,-465),new Vector2(520,48));game.audioPopup=Popup(audio);
             game.audioStatus=PanelLabel(audio,"Audio Status","",24,Vector2.zero,new Vector2(500,40));
             var announcement=Panel("Match Winner Announcement",Vector2.zero,new Vector2(500,340));
+            game.winnerBackdropImages=announcement.GetComponentsInChildren<Image>(true);
             game.winnerPopup=Popup(announcement);
             game.winnerHeading=PanelLabel(announcement,"Winner Heading","MATCH WINNER",28,new Vector2(0,135),new Vector2(450,34));
             game.winnerHead=new GameObject("Winning Character Head",typeof(RectTransform)).AddComponent<Image>();
             game.winnerHead.transform.SetParent(announcement,false);game.winnerHead.rectTransform.anchoredPosition=new Vector2(0,55);
             game.winnerHead.rectTransform.sizeDelta=new Vector2(118,104);game.winnerHead.preserveAspect=true;game.winnerHead.raycastTarget=false;
             game.winnerHead.sprite=game.boy.portraitVictory;
+            var headOutline=game.winnerHead.gameObject.AddComponent<Outline>();headOutline.effectColor=new Color(1,.96f,.79f,1);
+            headOutline.effectDistance=new Vector2(2,-2);headOutline.useGraphicAlpha=false;
+            var headShadow=game.winnerHead.gameObject.AddComponent<Shadow>();headShadow.effectColor=new Color(.18f,.08f,.03f,1);headShadow.effectDistance=new Vector2(1,-2);
             game.winnerName=PanelLabel(announcement,"Winning Player Name","",38,new Vector2(0,-25),new Vector2(454,46));
             game.winnerName.resizeTextForBestFit=true;game.winnerName.resizeTextMinSize=24;game.winnerName.resizeTextMaxSize=38;
             game.playAgainButton=SignButton("Play Again", "PLAY AGAIN", Vector2.zero, game.PlayAgain);
@@ -547,13 +551,13 @@ namespace BalanceWithMe.Editor
             game.readyPopup=Popup(ready);
             game.readyNumber=PanelLabel(ready,"Countdown Number","1",112,new Vector2(0,40),new Vector2(360,130));
             game.readyCaption=PanelLabel(ready,"Countdown Caption","READY",42,new Vector2(0,-65),new Vector2(360,60));
-            foreach (var text in new[] { game.readyNumber, game.readyCaption })
+            foreach (var text in new[] { game.readyNumber, game.readyCaption, game.winnerHeading, game.winnerName, game.nextRoundText })
             {
                 text.color=new Color(1,.96f,.79f);
                 var outline=text.gameObject.AddComponent<Outline>();outline.effectColor=new Color(.18f,.08f,.03f,1);
-                outline.effectDistance=new Vector2(4,-4);outline.useGraphicAlpha=false;
+                outline.effectDistance=text == game.readyNumber || text == game.readyCaption ? new Vector2(4,-4) : new Vector2(2,-2);outline.useGraphicAlpha=false;
                 var shadow=text.gameObject.AddComponent<Shadow>();shadow.effectColor=new Color(.10f,.04f,.02f,.85f);
-                shadow.effectDistance=new Vector2(2,-6);
+                shadow.effectDistance=text == game.readyNumber || text == game.readyCaption ? new Vector2(2,-6) : new Vector2(0,-2);
             }
             var warning=Panel("Time Warning",new Vector2(0,280),new Vector2(450,58));game.timeAlertPopup=Popup(warning);
             game.timeAlert=PanelLabel(warning,"Time Warning Text","",30,Vector2.zero,new Vector2(426,50));

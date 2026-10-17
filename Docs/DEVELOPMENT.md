@@ -97,3 +97,12 @@ Round resolution records fall, stamina or timeout causes before freezing physics
 The result card is shared by round and match results and sits at the canvas center. Round results use the round winner's head/name plus a next-round countdown; match results use aggregate scores and offer Play Again with keyboard/PS4 hints. Draws show a neutral text result without a winner face. The former top banner is hidden throughout results. Result poses leave room on both sides of the card. The Ready/Set/Start popup now contains only cream text with a dark outline and shadow, with no panel Image descendants.
 
 PlayAgain guards against replay input during active rounds. Enter and numpad Enter invoke it after match completion, as does Cross on either assigned gamepad; Options retains its restart behavior. Existing joystick/D-pad, jump, punch, push, emote and auxiliary mappings apply to DualShock pads through Unity's Gamepad aliases. Help displays PlayStation names.
+
+
+### One-minute pressure rounds and downhill footing - 18 October 2026
+
+RoundDuration is now 60 seconds and the saved/built clock starts at 01:00. The existing 30-second warning and 10-to-1 second beeps remain. Timeout still compares remaining life; three-round scoring and Play Again are unchanged.
+
+Per-round results disable only the card's three backing Images. Heading, name and next-round text use cream lettering with dark outlines/shadows; the head has a cream outline and dark shadow. The final match card retains its parchment and Play Again button.
+
+PlayerActions ramps a grounded lower-side drift toward a tilt-dependent cap (1.65 world units/second at 14 degrees), using 0.9 world units/second squared acceleration and a 2-degree neutral zone. The motor adds this drift separately from input, so an idle slide does not flip the character and uphill movement can overcome it. Drift requires actual plank contact, clears in the air or when play stops, and resets with the player. The upper side eases toward zero drift as the tilt reverses. Physics handles vertical contact and eventual falling; this mechanic does not teleport active players. maxSlopeDrift and slopeDriftAcceleration are adjustable per player in the Inspector.
