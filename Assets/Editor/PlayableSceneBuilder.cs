@@ -522,27 +522,39 @@ namespace BalanceWithMe.Editor
             var help=Panel("Farm Controls Popup",new Vector2(0,-300),new Vector2(1260,220));game.helpPopup=Popup(help);
             PanelLabel(help,"Boy Controls","BOY: A/D MOVE - W JUMP - F PUNCH - G PUSH - E EMOTE",25,new Vector2(0,75),new Vector2(1220,40));
             PanelLabel(help,"Girl Controls","GIRL: ARROWS MOVE - UP JUMP - K PUNCH - L PUSH - O EMOTE",25,new Vector2(0,30),new Vector2(1220,40));
-            PanelLabel(help,"Gamepad Controls","PAD: STICK MOVE - SOUTH JUMP - WEST PUNCH - EAST PUSH - NORTH EMOTE",23,new Vector2(0,-15),new Vector2(1220,40));
-            PanelLabel(help,"Shared Controls","M MUTE - N MUSIC - PAD: START RESTART / SELECT MUTE / RB MUSIC / LB HELP",23,new Vector2(0,-65),new Vector2(1220,40));
+            PanelLabel(help,"Gamepad Controls","PS4: STICK / D-PAD MOVE - CROSS JUMP - SQUARE PUNCH - CIRCLE PUSH - TRIANGLE EMOTE",23,new Vector2(0,-15),new Vector2(1220,40));
+            PanelLabel(help,"Shared Controls","M MUTE - N MUSIC - PS4: OPTIONS RESTART / SHARE MUTE / R1 MUSIC / L1 HELP",23,new Vector2(0,-65),new Vector2(1220,40));
             SignButton("Help Farm Sign","HELP [H]",new Vector2(-780,-460),game.ShowHelp);
             SignButton("Restart Farm Sign","RESTART [R]",new Vector2(780,-460),game.Restart);
             var audio=Panel("Audio Notice",new Vector2(0,-465),new Vector2(520,48));game.audioPopup=Popup(audio);
             game.audioStatus=PanelLabel(audio,"Audio Status","",24,Vector2.zero,new Vector2(500,40));
-            var announcement=Panel("Match Winner Announcement",new Vector2(0,55),new Vector2(500,284));
+            var announcement=Panel("Match Winner Announcement",Vector2.zero,new Vector2(500,340));
             game.winnerPopup=Popup(announcement);
-            game.winnerHeading=PanelLabel(announcement,"Winner Heading","MATCH WINNER",28,new Vector2(0,110),new Vector2(450,34));
+            game.winnerHeading=PanelLabel(announcement,"Winner Heading","MATCH WINNER",28,new Vector2(0,135),new Vector2(450,34));
             game.winnerHead=new GameObject("Winning Character Head",typeof(RectTransform)).AddComponent<Image>();
-            game.winnerHead.transform.SetParent(announcement,false);game.winnerHead.rectTransform.anchoredPosition=new Vector2(0,32);
+            game.winnerHead.transform.SetParent(announcement,false);game.winnerHead.rectTransform.anchoredPosition=new Vector2(0,55);
             game.winnerHead.rectTransform.sizeDelta=new Vector2(118,104);game.winnerHead.preserveAspect=true;game.winnerHead.raycastTarget=false;
             game.winnerHead.sprite=game.boy.portraitVictory;
-            game.winnerName=PanelLabel(announcement,"Winning Player Name","",38,new Vector2(0,-50),new Vector2(454,46));
+            game.winnerName=PanelLabel(announcement,"Winning Player Name","",38,new Vector2(0,-25),new Vector2(454,46));
             game.winnerName.resizeTextForBestFit=true;game.winnerName.resizeTextMinSize=24;game.winnerName.resizeTextMaxSize=38;
-            game.playAgainButton=SignButton("Play Again", "PLAY AGAIN", Vector2.zero, game.Restart);
+            game.playAgainButton=SignButton("Play Again", "PLAY AGAIN", Vector2.zero, game.PlayAgain);
             var replay=(RectTransform)game.playAgainButton.transform;replay.SetParent(announcement,false);
-            replay.anchoredPosition=new Vector2(0,-108);replay.sizeDelta=new Vector2(260,52);
-            var ready=Panel("Round Start Countdown",new Vector2(0,90),new Vector2(420,260));game.readyPopup=Popup(ready);
+            replay.anchoredPosition=new Vector2(0,-85);replay.sizeDelta=new Vector2(260,52);
+            game.nextRoundText=PanelLabel(announcement,"Next Round Indicator","",28,new Vector2(0,-100),new Vector2(450,74));
+            game.replayHint=PanelLabel(announcement,"Replay Shortcuts","ENTER / PS4 CROSS OR OPTIONS",23,new Vector2(0,-137),new Vector2(470,32));
+            var ready=(RectTransform)new GameObject("Round Start Countdown",typeof(RectTransform)).transform;
+            ready.SetParent(canvas.transform,false);ready.anchoredPosition=Vector2.zero;ready.sizeDelta=new Vector2(420,260);
+            game.readyPopup=Popup(ready);
             game.readyNumber=PanelLabel(ready,"Countdown Number","1",112,new Vector2(0,40),new Vector2(360,130));
             game.readyCaption=PanelLabel(ready,"Countdown Caption","READY",42,new Vector2(0,-65),new Vector2(360,60));
+            foreach (var text in new[] { game.readyNumber, game.readyCaption })
+            {
+                text.color=new Color(1,.96f,.79f);
+                var outline=text.gameObject.AddComponent<Outline>();outline.effectColor=new Color(.18f,.08f,.03f,1);
+                outline.effectDistance=new Vector2(4,-4);outline.useGraphicAlpha=false;
+                var shadow=text.gameObject.AddComponent<Shadow>();shadow.effectColor=new Color(.10f,.04f,.02f,.85f);
+                shadow.effectDistance=new Vector2(2,-6);
+            }
             var warning=Panel("Time Warning",new Vector2(0,280),new Vector2(450,58));game.timeAlertPopup=Popup(warning);
             game.timeAlert=PanelLabel(warning,"Time Warning Text","",30,Vector2.zero,new Vector2(426,50));
             game.timeAlert.color=new Color(.65f,.08f,.04f);

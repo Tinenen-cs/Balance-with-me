@@ -90,3 +90,10 @@ Capture Action Effects stages a real punch/push exchange after startup notices e
 Each round now has a three-step parchment popup (1 READY, 2 SET, 3 START!) before physics and combat resume. The clock counts down from 03:00 only during active gameplay. At zero, the player with more remaining life wins; equal life awards neither player a win. The clock changes color with a labeled sound alert at 30 seconds, followed by a beep and labeled countdown every second from 10 through 1. Restart clears pending warnings. Three synthesized cue assets are reproducible with Tools/make_audio.py.
 
 Round resolution records fall, stamina or timeout causes before freezing physics. Fallen players are presented on the grass on their exit side; stamina and timeout defeats remain on the plank. All three rounds still play, and rounds one and two advance automatically. After round three the final result stays visible with an interactive Play Again button, including match draws. Clicking it resets scores and begins the opening countdown. This replaces the previous automatic match reset.
+
+
+### Centered round results and controller replay - 17 October 2026
+
+The result card is shared by round and match results and sits at the canvas center. Round results use the round winner's head/name plus a next-round countdown; match results use aggregate scores and offer Play Again with keyboard/PS4 hints. Draws show a neutral text result without a winner face. The former top banner is hidden throughout results. Result poses leave room on both sides of the card. The Ready/Set/Start popup now contains only cream text with a dark outline and shadow, with no panel Image descendants.
+
+PlayAgain guards against replay input during active rounds. Enter and numpad Enter invoke it after match completion, as does Cross on either assigned gamepad; Options retains its restart behavior. Existing joystick/D-pad, jump, punch, push, emote and auxiliary mappings apply to DualShock pads through Unity's Gamepad aliases. Help displays PlayStation names.

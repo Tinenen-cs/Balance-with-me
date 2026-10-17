@@ -4,6 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.InputSystem.DualShock;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
@@ -26,6 +27,78 @@ namespace BalanceWithMe.Tests
         [TearDown] public void Restore()
         {
             InputSystem.settings.backgroundBehavior=background;InputSystem.settings.editorInputBehaviorInPlayMode=editor;
+        }
+        void FinishMatch()
+        {
+            for (int round = 0; round < 3; round++)
+            {
+                if (round > 0) game.Restart();
+                game.AdvanceRoundTime(180);
+            }
+        }
+        [Test] public void EnterAndNumpadEnterReplayOnlyAfterMatchEnds()
+        {
+            var keyboard = InputSystem.AddDevice<Keyboard>();
+            try
+            {
+                InputSystem.EnableDevice(keyboard);
+                foreach (var key in new[] { Key.Enter, Key.NumpadEnter })
+                {
+                    FinishMatch();
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(key)); InputSystem.Update();
+                    game.countdownStepDuration = 1; game.CaptureSharedInput();
+                    Assert.That(game.MatchComplete, Is.False);
+                    Assert.That(game.CompletedRounds, Is.Zero);
+                    Assert.That(game.IsCountingDown, Is.True);
+                    game.AdvanceReadyCountdown(3); game.AdvanceRoundTime(5);
+                    game.CaptureSharedInput();
+                    Assert.That(game.RemainingSeconds, Is.EqualTo(175), "Enter cannot restart active gameplay.");
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState()); InputSystem.Update();
+                    game.countdownStepDuration = 0;
+                }
+            }
+            finally { InputSystem.RemoveDevice(keyboard); }
+        }
+        [UnityTest] public IEnumerator PlayStationSticksFaceButtonsAndCrossReplayWorkForBothPlayers()
+        {
+            var first = InputSystem.AddDevice<DualShockGamepad>();
+            var second = InputSystem.AddDevice<DualShockGamepad>();
+            try
+            {
+                InputSystem.EnableDevice(first); InputSystem.EnableDevice(second);
+                game.inputs.Assign(false, first); game.inputs.Assign(true, second);
+                Assert.That(first.buttonSouth.displayName, Is.EqualTo("Cross"));
+                Assert.That(first.buttonWest.displayName, Is.EqualTo("Square"));
+                Assert.That(first.buttonEast.displayName, Is.EqualTo("Circle"));
+                foreach (var player in new[] { game.boy, game.girl })
+                {
+                    var pad = player.isGirl ? second : first;
+                    game.Restart(); yield return new WaitForSeconds(.15f);
+                    float x = player.body.position.x;
+                    InputSystem.QueueStateEvent(pad, new GamepadState { leftStick = new Vector2(.8f,0) }.WithButton(GamepadButton.South)); InputSystem.Update();
+                    player.CaptureKeyboardInput(); yield return new WaitForSeconds(.12f);
+                    Assert.That(player.body.position.x, Is.GreaterThan(x));
+                    Assert.That(player.body.position.y, Is.GreaterThan(.4f));
+                    InputSystem.QueueStateEvent(pad, new GamepadState()); InputSystem.Update();
+                    foreach (var button in new[] { GamepadButton.West, GamepadButton.East, GamepadButton.North })
+                    {
+                        game.Restart();
+                        InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(button)); InputSystem.Update();
+                        player.CaptureKeyboardInput();
+                        if (button == GamepadButton.North) Assert.That(game.sounds.LastCue, Is.EqualTo("emote_happy"));
+                        else Assert.That(player.CurrentAction, Is.EqualTo(button == GamepadButton.West ? PlayerActions.ActionType.Punch : PlayerActions.ActionType.Push));
+                        InputSystem.QueueStateEvent(pad, new GamepadState()); InputSystem.Update();
+                    }
+                    game.Restart(); FinishMatch();
+                    InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.South)); InputSystem.Update();
+                    game.countdownStepDuration = 1; game.CaptureSharedInput();
+                    Assert.That(game.IsCountingDown, Is.True);
+                    Assert.That(game.CompletedRounds, Is.Zero);
+                    InputSystem.QueueStateEvent(pad, new GamepadState()); InputSystem.Update();
+                    game.countdownStepDuration = 0;
+                }
+            }
+            finally { InputSystem.RemoveDevice(first); InputSystem.RemoveDevice(second); }
         }
         [UnityTest] public IEnumerator TwoGamepadsControlSeparatePlayers()
         {

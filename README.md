@@ -8,10 +8,10 @@ A local two-player 2D pixel-art game made with Unity and VS Code. A chibi boy an
 - New character artwork includes four-frame idle, punch and open-palm push sequences for each player. Attacks use full-body poses rather than floating yellow/blue hand boxes.
 - Scorecards use separate name, life and score rows. **LIFE % is centered inside the life bar**, including at 0%; **ROUND WINS** sits below it. Win rate has been removed.
 - Cute head-only portraits sit directly on the parchment, with no blue/red portrait backing. Each character has calm, hurt, happy and crying faces; hits briefly change the portrait to hurt, and results show the appropriate happy/crying expression.
-- Reaction text tracks above the visible character sprite, including win/cry poses. During results the central notice moves higher and temporarily replaces the clock, keeping the text clear.
-- Every round opens with **1 READY, 2 SET, 3 START!**. Movement and combat wait for the countdown to finish. Each round has a **03:00 countdown**: falling or zero life ends it immediately; at timeout the higher remaining life wins, and equal life is a draw. A visual and audio alert plays at 30 seconds, then every second from 10 to 1.
+- Reaction text tracks above the visible character sprite, including win/cry poses. Results appear in a centered popup with the winning head and name; the old top result banner is hidden. Between rounds the popup also shows the next round number and countdown.
+- Every round opens with **1 READY, 2 SET, 3 START!** in cream lettering with a dark outline and shadow, without a background panel. Movement and combat wait for the countdown to finish. Each round has a **03:00 countdown**: falling or zero life ends it immediately; at timeout the higher remaining life wins, and equal life is a draw. A visual and audio alert plays at 30 seconds, then every second from 10 to 1.
 - After a **3.2-second** round result, the next round starts automatically with the opening countdown, full health and the match score retained. A draw advances without awarding a win.
-- Matches last **exactly three rounds**, including draws. The player with more round wins wins the match; equal scores show a match draw. The final result stays visible until **PLAY AGAIN** is clicked; this clears the scores and starts a fresh three-round match with the opening countdown.
+- Matches last **exactly three rounds**, including draws. The player with more round wins wins the match; equal scores show a match draw. The final result stays visible until **PLAY AGAIN** is clicked, **Enter** is pressed, or either assigned PS4 controller presses **Cross / Options**; this clears the scores and starts a fresh three-round match with the opening countdown.
 - Winners play a four-frame fist-pump/hop animation with the original victory jingle. Fallen losers stay on the grass beside the plank for their crying reaction. Losers who exhaust their life or lose on time stay on the plank. Final reactions use the overall match score, not just the last round's winner.
 - After round three, the winner's happy head and name pop into a dedicated announcement panel with a **PLAY AGAIN** button. Match draws also offer Play Again.
 - Both chimneys emit rising, drifting, fading smoke puffs, and the windmill sails rotate independently of the tower. These continue between rounds like the existing clouds.
@@ -152,7 +152,7 @@ Click the Game view to give it keyboard focus. Attack while facing the other pla
 
 ## Screen layout
 
-Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Symmetrical parchment player scorecards, with matching boy/girl character icons beside their names, flank the centered title and round clock. Small Help and Restart signs sit in opposite bottom corners. The controls panel is a five-second popup (H / left bumper / HELP); audio status appears only after M / N or the corresponding gamepad input. Emote and reaction words appear briefly near the players; reaction labels track above their heads while the result notice moves higher. Round results count down automatically to the next round; the match result starts a fresh match automatically after five seconds.
+Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Symmetrical parchment player scorecards, with matching boy/girl character icons beside their names, flank the centered title and round clock. Small Help and Restart signs sit in opposite bottom corners. The controls panel is a five-second popup (H / left bumper / HELP); audio status appears only after M / N or the corresponding gamepad input. Emote and reaction words appear briefly near the players; reaction labels track above their heads. The centered round popup shows a winning face, name and next-round countdown. The final popup waits for Play Again, Enter, or PS4 Cross / Options.
 
 Desktop defaults are a resizable 1920 × 1080 window; browser defaults are 1280 × 720. Select **16:9** or **Desktop 1920 × 1080** manually in Unity's Game view. The farming-village background uses uniform overscan to fill the view, preserve the round wooden fulcrum’s proportions and align its top with the plank.
 
@@ -345,3 +345,16 @@ git push -u origin feature/short-name
 ```
 
 Commit asset `.meta` files, update status and validation notes, and exclude Unity caches, logs, local builds and credentials.
+
+
+### PS4 controller controls
+
+Connect one or two DualShock 4 controllers before or during play. The first available pad controls Farmer Boy, the second Farmer Girl; a connected player keeps their assignment when the other disconnects. Mixed keyboard and controller play is supported. The mappings use Unity Input System Gamepad controls with PlayStation button aliases ([Unity Input System documentation](https://github.com/Unity-Technologies/InputSystem/blob/develop/Packages/com.unity.inputsystem/Documentation~/supported-devices-reference.md)).
+
+- Left joystick or D-pad: move.
+- Cross: jump during play; Play Again after the match.
+- Square: punch. Circle: push. Triangle: emote.
+- Options: restart / Play Again. Share: mute. R1: next music. L1: help.
+- Keyboard Enter or numpad Enter: Play Again after the match.
+
+Controller mappings are covered with simulated PlayStation devices in PlayMode tests. Physical DualShock 4 connection and feel still need a hardware playtest on the target computer.

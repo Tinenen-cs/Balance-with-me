@@ -17,6 +17,38 @@ namespace BalanceWithMe.Tests
             game.countdownStepDuration = 0; game.Restart();
         }
 
+        [Test] public void ReadyCountdownHasOnlyOutlinedTextAndNoPanelGraphics()
+        {
+            Assert.That(game.readyPopup.GetComponentsInChildren<Image>(true).Length, Is.Zero);
+            foreach (var text in new[] { game.readyNumber, game.readyCaption })
+            {
+                Assert.That(text.GetComponent<Outline>().effectColor.a, Is.EqualTo(1));
+                Assert.That(text.GetComponent<Shadow>(), Is.Not.Null);
+                Assert.That(text.color.r, Is.GreaterThan(.9f));
+            }
+        }
+        [UnityTest] public IEnumerator RoundPopupShowsCorrectHeadNameAndNextRoundThenHidesForReady()
+        {
+            game.nextRoundDelay = .8f;
+            foreach (bool girlWins in new[] { false, true })
+            {
+                (girlWins ? game.boy : game.girl).body.position = new Vector2(0,-4);
+                yield return new WaitForSecondsRealtime(.35f);
+                Assert.That(game.statusPopup.alpha, Is.Zero);
+                Assert.That(game.winnerPopup.alpha, Is.EqualTo(1));
+                Assert.That(((RectTransform)game.winnerPopup.transform).anchoredPosition, Is.EqualTo(Vector2.zero));
+                Assert.That(game.winnerName.text, Is.EqualTo(girlWins ? game.girlName : game.boyName));
+                Assert.That(game.winnerHead.sprite, Is.SameAs(girlWins ? game.girl.portraitVictory : game.boy.portraitVictory));
+                Assert.That(game.nextRoundText.text, Does.Contain("NEXT ROUND IN"));
+                Assert.That(game.nextRoundText.text, Does.Contain($"ROUND {game.CompletedRounds + 1} OF 3"));
+                Assert.That(game.playAgainButton.gameObject.activeSelf, Is.False);
+                game.countdownStepDuration = 1;
+                yield return new WaitForSecondsRealtime(.55f);
+                Assert.That(game.IsCountingDown, Is.True);
+                Assert.That(game.winnerPopup.alpha, Is.Zero);
+                game.AdvanceReadyCountdown(3);
+            }
+        }
         [UnityTest] public IEnumerator VillageMotionContinuesDuringResultsWithoutGrowingPools()
         {
             var rotor = Object.FindFirstObjectByType<WindmillRotor>();
@@ -63,9 +95,7 @@ namespace BalanceWithMe.Tests
                     float labelBottom = RectTransformUtility.WorldToScreenPoint(uiCamera, corners[0]).y;
                     float headTop = Camera.main.WorldToScreenPoint(new Vector3(player.transform.position.x, player.visual.bounds.max.y, 0)).y;
                     Assert.That(labelBottom, Is.GreaterThan(headTop), "The entire reaction label must be above the visible character.");
-                    var labelBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(canvas.transform, player.emoteLabel.transform);
-                    var noticeBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(canvas.transform, game.statusPopup.transform);
-                    Assert.That(labelBounds.max.y, Is.LessThan(noticeBounds.min.y), "The result notice must leave room for the reaction text.");
+                    Assert.That(game.statusPopup.alpha, Is.Zero, "Round results must not leave the old top banner visible.");
                 }
             }
         }
@@ -81,7 +111,8 @@ namespace BalanceWithMe.Tests
                     yield return null;
                     if (round < 3)
                     {
-                        Assert.That(game.winnerPopup.alpha, Is.Zero);
+                        Assert.That(game.winnerHeading.text, Is.EqualTo("ROUND WINNER"));
+                        Assert.That(game.playAgainButton.gameObject.activeSelf, Is.False);
                         yield return new WaitForSecondsRealtime(.2f);
                     }
                 }
