@@ -10,7 +10,7 @@ namespace BalanceWithMe.Editor
     {
         static double started, effectStarted;
         static bool actionPreview, staged;
-        static bool hurtPreview, resultPreview, captureSet;
+        static bool hurtPreview, resultPreview, winnerPreview, captureSet;
         static int captureIndex;
         public static void CaptureAllPreviews()
         {
@@ -30,9 +30,11 @@ namespace BalanceWithMe.Editor
         public static void CaptureHurtPortrait() { BeginCapture(false); hurtPreview = true; }
         [MenuItem("Balance with me/Capture Round Result")]
         public static void CaptureRoundResult() { BeginCapture(false); resultPreview = true; }
+        [MenuItem("Balance with me/Capture Winner Announcement")]
+        public static void CaptureWinnerAnnouncement() { BeginCapture(false); winnerPreview = true; }
         static void BeginCapture(bool effects)
         {
-            actionPreview=effects;hurtPreview=resultPreview=false;staged=false;effectStarted=0;
+            actionPreview=effects;hurtPreview=resultPreview=winnerPreview=false;staged=false;effectStarted=0;
             EditorSceneManager.OpenScene("Assets/Scenes/Main.unity");
             // Disable domain reload for this automated capture, then restore it.
             SessionState.SetBool("BalanceCapture.OptionsEnabled",EditorSettings.enterPlayModeOptionsEnabled);
@@ -48,6 +50,18 @@ namespace BalanceWithMe.Editor
             if(!EditorApplication.isPlaying)return;
             if(started==0)started=EditorApplication.timeSinceStartup;
             if(EditorApplication.timeSinceStartup-started<6)return;
+            if (winnerPreview)
+            {
+                var game = Object.FindFirstObjectByType<BalanceGame>();
+                game.nextRoundDelay = .1f;
+                if (!game.MatchComplete)
+                {
+                    if (game.Running) game.girl.body.position = new Vector2(0, -4);
+                    return;
+                }
+                if (!staged) { staged = true; effectStarted = EditorApplication.timeSinceStartup; }
+                if (EditorApplication.timeSinceStartup - effectStarted < .8) return;
+            }
             if(actionPreview || hurtPreview || resultPreview)
             {
                 if(!staged)
@@ -77,6 +91,8 @@ namespace BalanceWithMe.Editor
                 var target=new RenderTexture(1920,1080,24,RenderTextureFormat.ARGB32);
                 target.Create();camera.targetTexture=target;camera.aspect=16f/9;
                 canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=5;
+                Canvas.ForceUpdateCanvases();
+                foreach (var player in Object.FindObjectsByType<PlayerActions>(FindObjectsSortMode.None)) player.RefreshEmoteLabel();
                 foreach(var label in Object.FindObjectsByType<UnityEngine.UI.Text>(FindObjectsSortMode.None))
                 {
                     label.font.RequestCharactersInTexture(label.text,label.fontSize,label.fontStyle);
@@ -89,7 +105,7 @@ namespace BalanceWithMe.Editor
                 var previous=RenderTexture.active;RenderTexture.active=target;
                 var pixels=new Texture2D(1920,1080,TextureFormat.RGB24,false);
                 pixels.ReadPixels(new Rect(0,0,1920,1080),0,0);pixels.Apply();
-                string path=resultPreview?"Docs/round_result.png":hurtPreview?"Docs/hurt_portrait.png":actionPreview?"Docs/action_effects.png":"Docs/gameplay_layout.png";
+                string path=winnerPreview?"Docs/winner_announcement.png":resultPreview?"Docs/round_result.png":hurtPreview?"Docs/hurt_portrait.png":actionPreview?"Docs/action_effects.png":"Docs/gameplay_layout.png";
                 System.IO.Directory.CreateDirectory("Docs");System.IO.File.WriteAllBytes(path,pixels.EncodeToPNG());
                 RenderTexture.active=previous;camera.targetTexture=null;target.Release();Object.DestroyImmediate(target);Object.DestroyImmediate(pixels);
                 Debug.Log("Full desktop game layout saved to "+path);
@@ -105,11 +121,12 @@ namespace BalanceWithMe.Editor
             EditorSettings.enterPlayModeOptionsEnabled=SessionState.GetBool("BalanceCapture.OptionsEnabled",false);
             EditorSettings.enterPlayModeOptions=(EnterPlayModeOptions)SessionState.GetInt("BalanceCapture.Options",0);
             bool failed=SessionState.GetBool("BalanceCapture.Failed",false);SessionState.EraseBool("BalanceCapture.Failed");
-            if (captureSet && !failed && ++captureIndex < 4)
+            if (captureSet && !failed && ++captureIndex < 5)
             {
                 if (captureIndex == 1) CaptureActionEffects();
                 else if (captureIndex == 2) CaptureHurtPortrait();
-                else CaptureRoundResult();
+                else if (captureIndex == 3) CaptureRoundResult();
+                else CaptureWinnerAnnouncement();
                 return;
             }
             captureSet = false;

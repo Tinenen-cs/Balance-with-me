@@ -7,10 +7,13 @@ A local two-player 2D pixel-art game made with Unity and VS Code. A chibi boy an
 - On a fresh Unity checkout, the untouched empty startup scene automatically opens **Main** in the **Game** view, with a 16:9 preview. Both characters are saved in their starting positions and are visible before Play. Use **Balance with me > Open Game Preview** to return to it. Unity still requires Play to run gameplay.
 - New character artwork includes four-frame idle, punch and open-palm push sequences for each player. Attacks use full-body poses rather than floating yellow/blue hand boxes.
 - Scorecards use separate name, life and score rows. **LIFE % is centered inside the life bar**, including at 0%; **ROUND WINS** sits below it. Win rate has been removed.
-- Cute head-only portraits replace full-body HUD icons. Each character has calm, hurt, happy and crying faces; hits briefly change the portrait to hurt, and results show the appropriate happy/crying expression.
+- Cute head-only portraits sit directly on the parchment, with no blue/red portrait backing. Each character has calm, hurt, happy and crying faces; hits briefly change the portrait to hurt, and results show the appropriate happy/crying expression.
+- Reaction text tracks above the visible character sprite, including win/cry poses. During results the central notice moves higher and temporarily replaces the clock, keeping the text clear.
 - Win a round by landing three punches or making the opponent fall. After a **3.2-second** result/countdown, the next round starts automatically with full health and the match score retained. A draw also advances without awarding a win.
 - Matches last **exactly three rounds**, including draws. The player with more round wins wins the match; equal scores show a match draw. After a **five-second** match-result display, a fresh match starts automatically with scores cleared. No restart input is needed.
 - Winners play a four-frame fist-pump/hop animation with the original victory jingle. Losers return to the stage for a visible four-frame crying reaction, including after falling. Final reactions use the overall match score, not just the last round's winner.
+- After round three, the winner's happy head and name pop into a dedicated announcement panel before the automatic reset. Draws keep the draw notice without announcing a winner.
+- Both chimneys emit rising, drifting, fading smoke puffs, and the windmill sails rotate independently of the tower. These continue between rounds like the existing clouds.
 - Help is available on demand. Tune `nextRoundDelay` and `matchResetDelay` on GameManager. R / Restart / gamepad Start remain optional shortcuts; a restart after a counted result advances without counting that round twice.
 
 The expressive portraits, prominent percentage feedback and clear round-result presentation take inspiration from [Super Smash Bros.' platform-fighting presentation](https://www.smashbros.com/en_US/howtoplay/basic.html). Characters, artwork, scenery and audio remain personalized to this farming game; percentages here represent remaining life.
@@ -148,14 +151,14 @@ Click the Game view to give it keyboard focus. Attack while facing the other pla
 
 ## Screen layout
 
-Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Symmetrical parchment player scorecards, with matching boy/girl character icons beside their names, flank the centered title and round clock. Small Help and Restart signs sit in opposite bottom corners. The controls panel is a five-second popup (H / left bumper / HELP); audio status appears only after M / N or the corresponding gamepad input. Emote and reaction words appear briefly near the players; result labels sit below them to keep the central banner clear. Round results count down automatically to the next round; the match result starts a fresh match automatically after five seconds.
+Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Symmetrical parchment player scorecards, with matching boy/girl character icons beside their names, flank the centered title and round clock. Small Help and Restart signs sit in opposite bottom corners. The controls panel is a five-second popup (H / left bumper / HELP); audio status appears only after M / N or the corresponding gamepad input. Emote and reaction words appear briefly near the players; reaction labels track above their heads while the result notice moves higher. Round results count down automatically to the next round; the match result starts a fresh match automatically after five seconds.
 
 Desktop defaults are a resizable 1920 × 1080 window; browser defaults are 1280 × 720. Select **16:9** or **Desktop 1920 × 1080** manually in Unity's Game view. The farming-village background uses uniform overscan to fill the view, preserve the round wooden fulcrum’s proportions and align its top with the plank.
 
 ## Unity version and packages
 
 - Target: **Unity 6.3 LTS — 6000.3.24f1**, matching the reference repository.
-- Windows validation on 17 October 2026 uses **6000.3.24f1**: compilation and all 32 PlayMode tests pass. Previous validation used **6000.3.26f1**.
+- Windows validation on 17 October 2026 uses **6000.3.24f1**: compilation and all 35 PlayMode tests pass. Previous validation used **6000.3.26f1**.
 - URP 2D, 2D Sprite, 2D Animation, Input System, uGUI, and Unity Test Framework package configuration is in `Packages/manifest.json`.
 - VS Code extension recommendations are in `.vscode/extensions.json`.
 
@@ -169,8 +172,10 @@ Assets/
     Characters/result_players.png  four-frame win/cry sequences for both players
     Characters/Generated/          shared unlit sprite material
     Backgrounds/farm_village_wood_ball.png  cloudless village and round wooden fulcrum
+    Backgrounds/farm_village_animated_base.png  village without baked smoke or sails
     Backgrounds/moving_cloud.png          transparent drifting cloud sprite
     Props/farm_balance_plank.png     rustic rope-bound plank and central saddle
+    Props/windmill_rotor.png         separate rotating windmill sails
     Fonts/Tiny5.ttf                pixel font, with SIL OFL license
     UI/pixel_hand.png               native pixel hand effect
     UI/character_portraits.png      calm, hurt, happy and crying head portraits
@@ -189,6 +194,8 @@ Assets/
     Audio/GameAudio.cs              looping music, named cues and persistent mute
     World/BalanceGame.cs            health, winner/restart, global input and audio
     World/CloudDrift.cs             slow cloud movement and offscreen wrapping
+    World/ChimneySmoke.cs           pooled rising and fading chimney puffs
+    World/WindmillRotor.cs          gentle background sail rotation
     BalanceWithMe.Runtime.asmdef    runtime assembly definition
   Data/                            reserved tuning assets
   Settings/                        URP 2D configuration
@@ -248,7 +255,7 @@ README section organization follows the supplied [CSEL Tamagotchi reference](htt
    cd Balance-with-me
    ```
    For the existing local copy, use `/Users/imac23/Documents/TWOCHARACTERGAME_CSEL`. Update a clean checkout with `git pull origin main`.
-2. Install **Unity Hub**. The recorded project version is **6000.3.24f1**, matching the reference and now verified on Windows with all 32 PlayMode tests passing. Previous macOS compilation, tests and captures used **6000.3.26f1**; you may select that installed version in Hub and accept the patch upgrade.
+2. Install **Unity Hub**. The recorded project version is **6000.3.24f1**, matching the reference and now verified on Windows with all 35 PlayMode tests passing. Previous macOS compilation, tests and captures used **6000.3.26f1**; you may select that installed version in Hub and accept the patch upgrade.
 3. In Hub, select **Projects → Add → Add project from disk**. Choose the folder containing `Assets`, `Packages`, and `ProjectSettings`.
 4. Open the project and allow package restoration and asset import to finish.
 5. Open **Assets → Scenes → Main**. To regenerate the playable setup, use **Balance with me → Rebuild Playable Scene**.

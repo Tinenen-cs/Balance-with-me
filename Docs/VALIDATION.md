@@ -1,6 +1,16 @@
 # Validation — 17 October 2026
 
-## Current HUD and three-round match update
+## Current reaction, village-motion and winner-announcement update
+
+The ui-ux-pro-max layout guidance was applied to avoid overlapping fixed elements and keep labels legible. Character reaction labels now follow the top of the actual sprite bounds in both overlay and camera canvases. The round notice moves above the reaction area during results, temporarily hiding the clock. HUD portraits have no colored backing image. A named happy-head winner panel eases in after the third round and clears automatically on reset; draws do not announce a winner.
+
+The village base has baked smoke and windmill sails removed. A separate rotor turns at 12 degrees per second and each chimney uses a fixed six-puff pool that rises, drifts and fades. These components continue independently of round state. Original scenery is retained as an art reference. No app or APK is built.
+
+**35/35 PlayMode tests passed on Unity 6000.3.24f1**, recorded in `Logs/Final-Village-results.xml` (ignored by Git). New presentation tests check head-only portrait containers, reaction-label placement above the entire sprite in overlay and camera canvases, clearance below the result notice, UI sorting above world sprites, fixed smoke pool size and motion during results, and correct named-head announcements for either winner followed by automatic clearing/reset. The existing 32 gameplay checks remain passing.
+
+The first pass caught a taller-aspect label/notice overlap; the notice now uses the clock area during results with enough clearance. The Canvas sorts at 100 so the plank cannot draw over the winner name. Five 1920 × 1080 previews were captured and inspected, including `Docs/winner_announcement.png`. The same cached temporary Unity project was used for validation, then the rebuilt scene, new asset metadata and preview images were copied back into the repository.
+
+## Previous HUD and three-round match update
 
 Life labels are independent of the filled portion and centered inside 42-pixel life bars; names and round wins have separate rows. Win rate has been removed from runtime logic and UI. Eight head-only portraits cover calm, hurt, happy and crying states. Sixteen full-body result frames cover victory and sobbing for both characters. Hits select the hurt portrait, and result expressions persist until the next round/match.
 

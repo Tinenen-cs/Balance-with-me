@@ -166,15 +166,19 @@ namespace BalanceWithMe
             Animate(0);
         }
 
-        void LateUpdate()
+        void LateUpdate() => RefreshEmoteLabel();
+
+        public void RefreshEmoteLabel()
         {
             if (emoteLabel == null) return;
             emoteLabel.text = emoteTime > 0 ? emoteText : "";
-            emoteLabel.color = IsCelebrating ? new Color(1, .85f, .3f) : IsDefeated ? new Color(1, .95f, .83f) : new Color(.25f, .14f, .07f);
+            emoteLabel.color = new Color(.22f, .12f, .05f);
             var camera = Camera.main;
             if (camera == null) return;
+            var canvas = emoteLabel.canvas;
+            var headAnchor = new Vector3(transform.position.x, visual.bounds.max.y + .32f, 0);
             RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)emoteLabel.transform.parent,
-                camera.WorldToScreenPoint(transform.position + new Vector3(0, HasWonRound || IsDefeated ? -.65f : 1.9f, 0)), null, out Vector2 point);
+                camera.WorldToScreenPoint(headAnchor), canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera, out Vector2 point);
             emoteLabel.rectTransform.anchoredPosition = point;
         }
 

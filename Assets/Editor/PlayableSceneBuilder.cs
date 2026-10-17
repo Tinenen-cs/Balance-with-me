@@ -38,7 +38,7 @@ namespace BalanceWithMe.Editor
             camera.tag = "MainCamera"; camera.transform.position = new Vector3(0, 0, -10);
             var cam = camera.GetComponent<Camera>(); cam.orthographic = true; cam.orthographicSize = 5.4f;
             cam.backgroundColor = new Color(.4f,.7f,1);
-            const string backgroundPath = "Assets/Art/Backgrounds/farm_village_wood_ball.png";
+            const string backgroundPath = "Assets/Art/Backgrounds/farm_village_animated_base.png";
             var backgroundImporter = (TextureImporter)AssetImporter.GetAtPath(backgroundPath);
             backgroundImporter.textureType = TextureImporterType.Sprite;
             backgroundImporter.spriteImportMode = SpriteImportMode.Single;
@@ -52,6 +52,7 @@ namespace BalanceWithMe.Editor
             // Uniform overscan keeps the wooden fulcrum round and seats its top under the plank.
             background.transform.localScale = Vector3.one * (11.6f / bg.bounds.size.y);
             BuildClouds(cam);
+            BuildVillageMotion(background);
             var plankSprite = ImportPlank();
             var board = new GameObject("Balancing Plank", typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(HingeJoint2D));
             board.transform.position = new Vector3(0,-.2f,0);
@@ -81,6 +82,36 @@ namespace BalanceWithMe.Editor
             Debug.Log("Balance with me: playable push/punch scene generated.");
         }
 
+        static void BuildVillageMotion(SpriteRenderer background)
+        {
+            const string rotorPath = "Assets/Art/Props/windmill_rotor.png";
+            var importer = (TextureImporter)AssetImporter.GetAtPath(rotorPath);
+            if (importer == null) throw new InvalidOperationException("Windmill rotor artwork is missing.");
+            importer.textureType = TextureImporterType.Sprite; importer.spriteImportMode = SpriteImportMode.Single;
+            importer.alphaIsTransparency = true; importer.filterMode = FilterMode.Point; importer.mipmapEnabled = false;
+            importer.textureCompression = TextureImporterCompression.Uncompressed; importer.SaveAndReimport();
+            var rotorSprite = AssetDatabase.LoadAssetAtPath<Sprite>(rotorPath);
+            var bounds = background.bounds;
+            Vector3 At(float x, float y) => new Vector3(bounds.min.x + bounds.size.x * x, bounds.max.y - bounds.size.y * y, 0);
+            var rotor = Render("Turning Windmill Sails", rotorSprite, At(320f / 1672, 328f / 941), -8);
+            rotor.transform.localScale = Vector3.one * (bounds.size.x * (120f / 1672) / rotorSprite.bounds.size.x);
+            rotor.gameObject.AddComponent<WindmillRotor>();
+            var smokeSprite = CreateSmokePuff();
+            foreach (bool right in new[] { false, true })
+            {
+                var root = new GameObject(right ? "Right Chimney Smoke" : "Left Chimney Smoke");
+                root.transform.position = At((right ? 1598f : 119f) / 1672, (right ? 326f : 320f) / 941);
+                var smoke = root.AddComponent<ChimneySmoke>(); smoke.phaseOffset = right ? .37f : 0;
+                smoke.puffs = new SpriteRenderer[6];
+                for (int i = 0; i < smoke.puffs.Length; i++)
+                {
+                    var puff = Render("Rising Smoke Puff " + (i + 1), smokeSprite, Vector2.zero, -7);
+                    puff.transform.SetParent(root.transform, false); smoke.puffs[i] = puff;
+                }
+                smoke.Advance(0);
+            }
+        }
+
         static void BuildClouds(Camera camera)
         {
             const string path = "Assets/Art/Backgrounds/moving_cloud.png";
@@ -107,6 +138,30 @@ namespace BalanceWithMe.Editor
                 drift.view = camera;
                 drift.speed = .06f + i * .012f;
             }
+        }
+
+        static Sprite CreateSmokePuff()
+        {
+            const string path = "Assets/Art/Props/smoke_puff.png";
+            if (!System.IO.File.Exists(path))
+            {
+                var texture = new Texture2D(32, 32, TextureFormat.RGBA32, false);
+                var lobes = new[] { new Vector3(10, 13, 7), new Vector3(16, 21, 8), new Vector3(23, 14, 7), new Vector3(16, 11, 9) };
+                for (int y = 0; y < 32; y++)
+                for (int x = 0; x < 32; x++)
+                {
+                    float coverage = 0;
+                    foreach (var lobe in lobes) coverage = Mathf.Max(coverage, lobe.z - Vector2.Distance(new Vector2(x, y), new Vector2(lobe.x, lobe.y)));
+                    texture.SetPixel(x, y, new Color(1, 1, 1, coverage > 1 ? 1 : coverage > 0 ? .55f : 0));
+                }
+                texture.Apply(); System.IO.File.WriteAllBytes(path, texture.EncodeToPNG()); UnityEngine.Object.DestroyImmediate(texture);
+            }
+            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+            importer.textureType = TextureImporterType.Sprite; importer.spriteImportMode = SpriteImportMode.Single;
+            importer.alphaIsTransparency = true; importer.filterMode = FilterMode.Point; importer.mipmapEnabled = false;
+            importer.textureCompression = TextureImporterCompression.Uncompressed; importer.SaveAndReimport();
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         }
 
         static Sprite ImportPlank()
@@ -387,6 +442,7 @@ namespace BalanceWithMe.Editor
             var lifeFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>(lifeFillPath);
             var canvas=new GameObject("Canvas",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));
             canvas.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;
+            canvas.GetComponent<Canvas>().sortingOrder=100;
             var scaler=canvas.GetComponent<CanvasScaler>(); scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution=new Vector2(1920,1080);scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;
             var font=AssetDatabase.LoadAssetAtPath<Font>("Assets/Art/Fonts/Tiny5.ttf");
@@ -427,9 +483,8 @@ namespace BalanceWithMe.Editor
             Text Scorecard(bool girl) {
                 string player=girl?"Girl":"Boy";
                 var panel=Panel(player+" Farm Scorecard",new Vector2(girl?650:-650,425),new Vector2(440,166));
-                var badge=(RectTransform)new GameObject(player+" Icon Frame",typeof(RectTransform),typeof(Image)).transform;
+                var badge=(RectTransform)new GameObject(player+" Head Anchor",typeof(RectTransform)).transform;
                 badge.SetParent(panel,false);badge.anchoredPosition=new Vector2(-155,0);badge.sizeDelta=new Vector2(108,132);
-                badge.GetComponent<Image>().color=girl?new Color(.65f,.30f,.22f):new Color(.23f,.39f,.47f);badge.GetComponent<Image>().raycastTarget=false;
                 var icon=new GameObject(player+" Character Icon",typeof(RectTransform)).AddComponent<Image>();
                 icon.transform.SetParent(badge,false);icon.rectTransform.sizeDelta=new Vector2(100,116);
                 icon.sprite=girl?game.girl.portraitNormal:game.boy.portraitNormal;icon.preserveAspect=true;icon.raycastTarget=false;
@@ -451,16 +506,17 @@ namespace BalanceWithMe.Editor
             }
             game.boyHud=Scorecard(false);
             game.girlHud=Scorecard(true);
-            Panel("Round Clock",new Vector2(0,365),new Vector2(250,84));
-            game.timer=Label("Timer","ROUND 1 / 3\n00:00",30,new Vector2(0,365),new Vector2(230,78));
-            var notice=Panel("Village Notice",new Vector2(0,245),new Vector2(790,100));
+            var clock=Panel("Round Clock",new Vector2(0,365),new Vector2(250,84));
+            game.roundClockPopup=clock.gameObject.AddComponent<CanvasGroup>();game.roundClockPopup.blocksRaycasts=false;
+            game.timer=PanelLabel(clock,"Timer","ROUND 1 / 3\n00:00",30,Vector2.zero,new Vector2(230,78));
+            var notice=Panel("Village Notice",new Vector2(0,245),new Vector2(790,76));
             game.statusPopup=Popup(notice);
-            game.status=PanelLabel(notice,"Status","",32,Vector2.zero,new Vector2(754,84));
+            game.status=PanelLabel(notice,"Status","",28,Vector2.zero,new Vector2(754,68));
             game.health=Label("Health Data","",1,Vector2.zero,Vector2.one);game.health.gameObject.SetActive(false);
             game.boy.emoteLabel=Label("Boy Emote","",28,Vector2.zero,new Vector2(300,50));
             game.girl.emoteLabel=Label("Girl Emote","",28,Vector2.zero,new Vector2(300,50));
             foreach (var label in new[] { game.boy.emoteLabel, game.girl.emoteLabel }) {
-                var outline=label.gameObject.AddComponent<Outline>();outline.effectColor=new Color(.18f,.09f,.03f,.9f);outline.effectDistance=new Vector2(1,-1);
+                var outline=label.gameObject.AddComponent<Outline>();outline.effectColor=new Color(1,.94f,.77f,.95f);outline.effectDistance=new Vector2(1,-1);
             }
             var help=Panel("Farm Controls Popup",new Vector2(0,-300),new Vector2(1260,220));game.helpPopup=Popup(help);
             PanelLabel(help,"Boy Controls","BOY: A/D MOVE - W JUMP - F PUNCH - G PUSH - E EMOTE",25,new Vector2(0,75),new Vector2(1220,40));
@@ -471,6 +527,16 @@ namespace BalanceWithMe.Editor
             SignButton("Restart Farm Sign","RESTART [R]",new Vector2(780,-460),game.Restart);
             var audio=Panel("Audio Notice",new Vector2(0,-465),new Vector2(520,48));game.audioPopup=Popup(audio);
             game.audioStatus=PanelLabel(audio,"Audio Status","",24,Vector2.zero,new Vector2(500,40));
+            var announcement=Panel("Match Winner Announcement",new Vector2(0,55),new Vector2(500,260));
+            game.winnerPopup=Popup(announcement);
+            PanelLabel(announcement,"Winner Heading","MATCH WINNER",28,new Vector2(0,110),new Vector2(450,34));
+            game.winnerHead=new GameObject("Winning Character Head",typeof(RectTransform)).AddComponent<Image>();
+            game.winnerHead.transform.SetParent(announcement,false);game.winnerHead.rectTransform.anchoredPosition=new Vector2(0,32);
+            game.winnerHead.rectTransform.sizeDelta=new Vector2(118,104);game.winnerHead.preserveAspect=true;game.winnerHead.raycastTarget=false;
+            game.winnerHead.sprite=game.boy.portraitVictory;
+            game.winnerName=PanelLabel(announcement,"Winning Player Name","",38,new Vector2(0,-57),new Vector2(454,50));
+            game.winnerName.resizeTextForBestFit=true;game.winnerName.resizeTextMinSize=24;game.winnerName.resizeTextMaxSize=38;
+            PanelLabel(announcement,"Winner Reset Note","A NEW MATCH STARTS SHORTLY",22,new Vector2(0,-108),new Vector2(456,30));
             new GameObject("EventSystem",typeof(EventSystem),typeof(InputSystemUIInputModule));
         }
     }

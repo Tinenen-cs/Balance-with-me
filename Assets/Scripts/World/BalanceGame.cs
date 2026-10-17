@@ -23,6 +23,10 @@ namespace BalanceWithMe
         public Text boyLifeText, girlLifeText;
         public Text boyWinsText, girlWinsText;
         public Image boyPortrait, girlPortrait;
+        public CanvasGroup roundClockPopup, winnerPopup;
+        public Image winnerHead;
+        public Text winnerName;
+        float winnerPopupTime;
         public enum MatchResult { None, Boy, Girl, Draw }
         public MatchResult Result { get; private set; }
         float nextRoundRemaining;
@@ -85,8 +89,10 @@ namespace BalanceWithMe
                     bool girlWinner = MatchComplete ? GirlWins > BoyWins : !girlLost && boyLost;
                     if (MatchComplete) Result = boyWinner ? MatchResult.Boy : girlWinner ? MatchResult.Girl : MatchResult.Draw;
                     sounds?.PlayResult(!boyWinner && !girlWinner);
-                    boy.PresentResult(boyWinner, new Vector2(-2.6f, boardOrigin.y + .24f));
-                    girl.PresentResult(girlWinner, new Vector2(2.6f, boardOrigin.y + .24f));
+                    float spacing = MatchComplete ? 3.5f : 2.6f;
+                    boy.PresentResult(boyWinner, new Vector2(-spacing, boardOrigin.y + .24f));
+                    girl.PresentResult(girlWinner, new Vector2(spacing, boardOrigin.y + .24f));
+                    winnerPopupTime = 0;
                     statusRemaining = float.PositiveInfinity;
                     roundResult = !boyWinner && !girlWinner ? "DRAW" : (boyWinner ? boyName : girlName) + " WINS";
                     if (MatchComplete) roundResult = Result == MatchResult.Draw ? "MATCH DRAW" : roundResult + " THE MATCH!";
@@ -103,6 +109,7 @@ namespace BalanceWithMe
                 }
             }
             RefreshHud();
+            UpdateWinnerAnnouncement(Time.unscaledDeltaTime);
         }
         public void RefreshHud()
         {
@@ -118,6 +125,22 @@ namespace BalanceWithMe
             UpdateLifeBar(boyLifeBar, boy.HealthPercent);
             UpdateLifeBar(girlLifeBar, girl.HealthPercent);
             if (timer != null) timer.text = $"ROUND {RoundNumber} / {RoundsPerMatch}\n{(int)elapsed/60:00}:{(int)elapsed%60:00}";
+            if (roundClockPopup != null) roundClockPopup.alpha = !Application.isPlaying || Running ? 1 : 0;
+            if (statusPopup != null)
+                ((RectTransform)statusPopup.transform).anchoredPosition = new Vector2(0, Application.isPlaying && !Running ? 380 : 245);
+        }
+        void UpdateWinnerAnnouncement(float dt)
+        {
+            if (winnerPopup == null) return;
+            bool visible = MatchComplete && Result != MatchResult.Draw;
+            if (!visible) { winnerPopup.alpha = 0; return; }
+            winnerPopupTime += dt;
+            float progress = Mathf.Clamp01(winnerPopupTime / .3f);
+            float eased = 1 - Mathf.Pow(1 - progress, 3);
+            winnerPopup.alpha = eased;
+            winnerPopup.transform.localScale = Vector3.one * Mathf.Lerp(.86f, 1, eased);
+            winnerHead.sprite = Result == MatchResult.Boy ? boy.portraitVictory : girl.portraitVictory;
+            winnerName.text = Result == MatchResult.Boy ? boyName : girlName;
         }
         void ShowCountdown()
         {
@@ -174,6 +197,8 @@ namespace BalanceWithMe
                 Result = MatchResult.None;
             }
             nextRoundRemaining = 0;
+            winnerPopupTime = 0;
+            if (winnerPopup != null) winnerPopup.alpha = 0;
             RoundNumber = CompletedRounds + 1;
             board.simulated = boy.body.simulated = girl.body.simulated = true;
             board.position = boardOrigin;
