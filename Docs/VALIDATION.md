@@ -122,3 +122,12 @@ Capture Action Effects saved a full 1920 × 1080 Unity scene preview at Docs/act
 ## Unity Hub launch log check
 
 Reviewed the supplied Unity Hub logs directory. The recent LocalProjectService/ProjectService error is a macOS launch failure: Code=-600, procNotFound, while Hub invokes the Unity executable through `open -a` with an activation URI. Direct invocation of the installed 6000.3.26f1 executable has already completed the project’s batchmode tests and graphical captures successfully. README now includes the direct executable command for an Editor playtest; interactive launch through that workaround still needs to be tried on the user’s device.
+
+
+## Ready countdown, timed rounds and Play Again - 17 October 2026
+
+Verified in Unity 6000.3.24f1 using an isolated copy of the project so the open source Editor session was not interrupted. The final PlayMode run passed **41/41 tests** (0 failures). The local report is Logs/round-clock-final-results.xml.
+
+Coverage includes the 1 READY / 2 SET / 3 START countdown, frozen physics and rejected attacks during preparation, a full 180 seconds remaining after preparation, higher-life timeout wins for either player, equal-life draws, prevention of duplicate round scoring, the 30-second cue and ten final-second ticks, warning reset, and automatic advancement to the next round's preparation. Fall results stay on grass until the next round; zero-life and timeout results stay on the plank. Three-round match scoring, both named winner announcements, and match draws remain covered. The replay test waits beyond the former five-second automatic reset, confirms the actual button receives UI raycasts, sends a pointer click, and verifies cleared scores and a fresh Ready countdown.
+
+Rebuilt Main with all new UI and audio references, then captured seven 1920 x 1080 previews. Inspected the ready popup, grass-level fall result, warning notice and winner panel; corrected final character spacing so the panel does not cover the winner. Updated images are in Docs, including round_start.png and time_warning.png. All three new WAV assets have nonzero sample peaks; tests verify imported clips and cue emission. Speaker output was not manually auditioned. Unity's background SearchDatabase indexing emitted an Editor startup exception during capture; scene rebuilding, all seven captures and the complete gameplay suite still completed successfully. No app/APK was created.

@@ -14,6 +14,7 @@ namespace BalanceWithMe.Tests
         {
             yield return SceneManager.LoadSceneAsync("Main"); yield return null;
             game = Object.FindFirstObjectByType<BalanceGame>();
+            game.countdownStepDuration = 0; game.Restart();
         }
 
         [UnityTest] public IEnumerator VillageMotionContinuesDuringResultsWithoutGrowingPools()
@@ -69,9 +70,9 @@ namespace BalanceWithMe.Tests
             }
         }
 
-        [UnityTest] public IEnumerator EitherWinnerGetsNamedHeadAnnouncementBeforeAutomaticReset()
+        [UnityTest] public IEnumerator EitherWinnerGetsNamedHeadAnnouncementAndReplayButton()
         {
-            game.nextRoundDelay = .1f; game.matchResetDelay = .8f;
+            game.nextRoundDelay = .1f;
             foreach (bool girlWins in new[] { false, true })
             {
                 for (int round = 1; round <= 3; round++)
@@ -90,6 +91,9 @@ namespace BalanceWithMe.Tests
                 Assert.That(game.winnerHead.sprite, Is.SameAs(girlWins ? game.girl.portraitVictory : game.boy.portraitVictory));
                 Assert.That(game.roundClockPopup.alpha, Is.Zero);
                 yield return new WaitForSecondsRealtime(.6f);
+                Assert.That(game.MatchComplete, Is.True);
+                Assert.That(game.playAgainButton.IsInteractable(), Is.True);
+                game.playAgainButton.onClick.Invoke();
                 Assert.That(game.winnerPopup.alpha, Is.Zero);
                 Assert.That(game.Running, Is.True);
                 Assert.That(game.CompletedRounds, Is.Zero);

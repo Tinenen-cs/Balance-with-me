@@ -20,7 +20,8 @@ namespace BalanceWithMe.Tests
             InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
             InputSystem.settings.editorInputBehaviorInPlayMode=InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
             yield return SceneManager.LoadSceneAsync("Main");yield return null;
-            game=Object.FindFirstObjectByType<BalanceGame>();game.Restart();
+            game=Object.FindFirstObjectByType<BalanceGame>();
+            game.countdownStepDuration = 0; game.Restart();
         }
         [TearDown] public void Restore()
         {

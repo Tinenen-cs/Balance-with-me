@@ -18,7 +18,18 @@ namespace BalanceWithMe
         public bool MatchComplete { get; private set; }
         public const int RoundsPerMatch = 3;
         [Min(.1f)] public float nextRoundDelay = 3.2f;
-        [Min(.1f)] public float matchResetDelay = 5;
+        [Min(0)] public float countdownStepDuration = 1;
+        public const float RoundDuration = 180;
+        public float RemainingSeconds => Mathf.Max(0, RoundDuration - elapsed);
+        public bool IsCountingDown { get; private set; }
+        public int CountdownPhase { get; private set; }
+        public CanvasGroup readyPopup, timeAlertPopup;
+        public Text readyNumber, readyCaption, timeAlert, winnerHeading;
+        public Button playAgainButton;
+        float readyElapsed, timeAlertRemaining;
+        public enum DefeatCause { None, Fall, Stamina, Timeout }
+        public DefeatCause BoyDefeat { get; private set; }
+        public DefeatCause GirlDefeat { get; private set; }
         public Image boyLifeBar, girlLifeBar;
         public Text boyLifeText, girlLifeText;
         public Text boyWinsText, girlWinsText;
@@ -71,45 +82,112 @@ namespace BalanceWithMe
             TickPopup(helpPopup, ref helpRemaining);
             TickPopup(statusPopup, ref statusRemaining);
             TickPopup(audioPopup, ref audioRemaining);
-            if (Running)
+            TickPopup(timeAlertPopup, ref timeAlertRemaining);
+            if (IsCountingDown) AdvanceReadyCountdown(Time.unscaledDeltaTime);
+            else if (Running)
             {
-                elapsed += Time.deltaTime;
                 bool boyLost = boy.Health <= 0 || boy.body.position.y < -3;
                 bool girlLost = girl.Health <= 0 || girl.body.position.y < -3;
                 if (boyLost || girlLost)
-                {
-                    Running = false;
-                    CompletedRounds++;
-                    if (boyLost && !girlLost) GirlWins++;
-                    if (girlLost && !boyLost) BoyWins++;
-                    MatchComplete = CompletedRounds >= RoundsPerMatch;
-                    nextRoundRemaining = Mathf.Max(.1f, MatchComplete ? matchResetDelay : nextRoundDelay);
-                    FreezeRound();
-                    bool boyWinner = MatchComplete ? BoyWins > GirlWins : !boyLost && girlLost;
-                    bool girlWinner = MatchComplete ? GirlWins > BoyWins : !girlLost && boyLost;
-                    if (MatchComplete) Result = boyWinner ? MatchResult.Boy : girlWinner ? MatchResult.Girl : MatchResult.Draw;
-                    sounds?.PlayResult(!boyWinner && !girlWinner);
-                    float spacing = MatchComplete ? 3.5f : 2.6f;
-                    boy.PresentResult(boyWinner, new Vector2(-spacing, boardOrigin.y + .24f));
-                    girl.PresentResult(girlWinner, new Vector2(spacing, boardOrigin.y + .24f));
-                    winnerPopupTime = 0;
-                    statusRemaining = float.PositiveInfinity;
-                    roundResult = !boyWinner && !girlWinner ? "DRAW" : (boyWinner ? boyName : girlName) + " WINS";
-                    if (MatchComplete) roundResult = Result == MatchResult.Draw ? "MATCH DRAW" : roundResult + " THE MATCH!";
-                    ShowCountdown();
-                }
+                    EndRound(boyLost, girlLost,
+                        boyLost ? (boy.body.position.y < -3 ? DefeatCause.Fall : DefeatCause.Stamina) : DefeatCause.None,
+                        girlLost ? (girl.body.position.y < -3 ? DefeatCause.Fall : DefeatCause.Stamina) : DefeatCause.None);
+                else AdvanceRoundTime(Time.deltaTime);
             }
-            else
+            else if (!MatchComplete)
             {
                 nextRoundRemaining = Mathf.Max(0, nextRoundRemaining - Time.unscaledDeltaTime);
                 ShowCountdown();
-                if (nextRoundRemaining <= 0)
-                {
-                    Restart();
-                }
+                if (nextRoundRemaining <= 0) Restart();
             }
             RefreshHud();
             UpdateWinnerAnnouncement(Time.unscaledDeltaTime);
+        }
+        public void AdvanceReadyCountdown(float dt)
+        {
+            if (!IsCountingDown) return;
+            readyElapsed += Mathf.Max(0, dt);
+            if (readyElapsed >= countdownStepDuration * 3) { StartPlaying(); return; }
+            int phase = Mathf.Min(3, (int)(readyElapsed / countdownStepDuration) + 1);
+            if (phase != CountdownPhase) SetReadyPhase(phase);
+        }
+        void SetReadyPhase(int phase)
+        {
+            CountdownPhase = phase;
+            readyNumber.text = phase.ToString();
+            readyCaption.text = phase == 1 ? "READY" : phase == 2 ? "SET" : "START!";
+            sounds?.Play(phase == 3 ? "start" : "ready_tick");
+        }
+        void StartPlaying()
+        {
+            IsCountingDown = false;
+            if (readyPopup != null) readyPopup.alpha = 0;
+            board.simulated = boy.body.simulated = girl.body.simulated = true;
+            Running = true;
+            if (countdownStepDuration <= 0) sounds?.Play("start");
+            status.text = "KEEP YOUR FOOTING - FACE YOUR RIVAL";
+            statusRemaining = 2.5f;
+        }
+        public void AdvanceRoundTime(float dt)
+        {
+            if (!Running) return;
+            float before = RemainingSeconds;
+            elapsed = Mathf.Min(RoundDuration, elapsed + Mathf.Max(0, dt));
+            float remaining = RemainingSeconds;
+            if (remaining <= 0)
+            {
+                bool tie = boy.Health == girl.Health;
+                EndRound(tie || boy.Health < girl.Health, tie || girl.Health < boy.Health,
+                    tie || boy.Health < girl.Health ? DefeatCause.Timeout : DefeatCause.None,
+                    tie || girl.Health < boy.Health ? DefeatCause.Timeout : DefeatCause.None);
+                return;
+            }
+            int seconds = Mathf.CeilToInt(remaining);
+            if (before > 30 && remaining <= 30) ShowTimeAlert(30, "time_warning");
+            if (seconds <= 10 && seconds < Mathf.CeilToInt(before)) ShowTimeAlert(seconds, "time_tick");
+        }
+        void ShowTimeAlert(int seconds, string cue)
+        {
+            timeAlert.text = seconds == 1 ? "1 SECOND LEFT!" : $"{seconds} SECONDS LEFT!";
+            timeAlertRemaining = seconds <= 10 ? 1.2f : 2.5f;
+            timeAlertPopup.alpha = 1;
+            sounds?.Play(cue);
+        }
+        void EndRound(bool boyLost, bool girlLost, DefeatCause boyCause, DefeatCause girlCause)
+        {
+            Running = false;
+            BoyDefeat = boyCause; GirlDefeat = girlCause;
+            CompletedRounds++;
+            if (boyLost && !girlLost) GirlWins++;
+            if (girlLost && !boyLost) BoyWins++;
+            MatchComplete = CompletedRounds >= RoundsPerMatch;
+            nextRoundRemaining = Mathf.Max(.1f, nextRoundDelay);
+            Vector2 boyPosition = ResultPosition(boy, boyCause, false);
+            Vector2 girlPosition = ResultPosition(girl, girlCause, true);
+            FreezeRound();
+            bool boyWinner = MatchComplete ? BoyWins > GirlWins : !boyLost && girlLost;
+            bool girlWinner = MatchComplete ? GirlWins > BoyWins : !girlLost && boyLost;
+            if (MatchComplete) Result = boyWinner ? MatchResult.Boy : girlWinner ? MatchResult.Girl : MatchResult.Draw;
+            sounds?.PlayResult(!boyWinner && !girlWinner);
+            boy.PresentResult(boyWinner, boyPosition);
+            girl.PresentResult(girlWinner, girlPosition);
+            winnerPopupTime = 0;
+            timeAlertRemaining = 0;
+            timeAlertPopup.alpha = 0;
+            statusRemaining = float.PositiveInfinity;
+            roundResult = !boyWinner && !girlWinner ? "DRAW" : (boyWinner ? boyName : girlName) + " WINS";
+            if (MatchComplete) roundResult = Result == MatchResult.Draw ? "MATCH DRAW" : roundResult + " THE MATCH!";
+            ShowCountdown();
+        }
+        Vector2 ResultPosition(PlayerActions player, DefeatCause cause, bool isGirl)
+        {
+            if (cause == DefeatCause.Fall)
+            {
+                float side = Mathf.Abs(player.body.position.x) > .1f ? Mathf.Sign(player.body.position.x) : (isGirl ? 1 : -1);
+                return new Vector2(side * Mathf.Clamp(Mathf.Abs(player.body.position.x), 6.4f, 8.2f), -3.2f);
+            }
+            float spacing = MatchComplete ? 3.5f : 2.6f;
+            return new Vector2(isGirl ? spacing : -spacing, boardOrigin.y + .24f);
         }
         public void RefreshHud()
         {
@@ -124,28 +202,36 @@ namespace BalanceWithMe
             if (girlPortrait != null) girlPortrait.sprite = girl.CurrentPortrait;
             UpdateLifeBar(boyLifeBar, boy.HealthPercent);
             UpdateLifeBar(girlLifeBar, girl.HealthPercent);
-            if (timer != null) timer.text = $"ROUND {RoundNumber} / {RoundsPerMatch}\n{(int)elapsed/60:00}:{(int)elapsed%60:00}";
-            if (roundClockPopup != null) roundClockPopup.alpha = !Application.isPlaying || Running ? 1 : 0;
+            if (timer != null)
+            {
+                int seconds = Mathf.CeilToInt(RemainingSeconds);
+                timer.text = $"ROUND {RoundNumber} / {RoundsPerMatch}\n{seconds / 60:00}:{seconds % 60:00}";
+                timer.color = RemainingSeconds <= 10 ? new Color(.65f,.08f,.04f) : RemainingSeconds <= 30 ? new Color(.57f,.26f,.02f) : new Color(.25f,.14f,.07f);
+            }
+            if (roundClockPopup != null) roundClockPopup.alpha = !Application.isPlaying || Running || IsCountingDown ? 1 : 0;
             if (statusPopup != null)
-                ((RectTransform)statusPopup.transform).anchoredPosition = new Vector2(0, Application.isPlaying && !Running ? 380 : 245);
+                ((RectTransform)statusPopup.transform).anchoredPosition = new Vector2(0, Application.isPlaying && !Running && !IsCountingDown ? 380 : 245);
         }
         void UpdateWinnerAnnouncement(float dt)
         {
             if (winnerPopup == null) return;
-            bool visible = MatchComplete && Result != MatchResult.Draw;
+            bool visible = MatchComplete;
+            winnerPopup.blocksRaycasts = winnerPopup.interactable = visible;
             if (!visible) { winnerPopup.alpha = 0; return; }
             winnerPopupTime += dt;
             float progress = Mathf.Clamp01(winnerPopupTime / .3f);
             float eased = 1 - Mathf.Pow(1 - progress, 3);
             winnerPopup.alpha = eased;
             winnerPopup.transform.localScale = Vector3.one * Mathf.Lerp(.86f, 1, eased);
+            winnerHeading.text = Result == MatchResult.Draw ? "MATCH DRAW" : "MATCH WINNER";
+            winnerHead.gameObject.SetActive(Result != MatchResult.Draw);
             winnerHead.sprite = Result == MatchResult.Boy ? boy.portraitVictory : girl.portraitVictory;
-            winnerName.text = Result == MatchResult.Boy ? boyName : girlName;
+            winnerName.text = Result == MatchResult.Draw ? "EQUAL ROUND WINS" : Result == MatchResult.Boy ? boyName : girlName;
         }
         void ShowCountdown()
         {
             status.text = MatchComplete
-                ? $"{roundResult}\nNEW MATCH IN {Mathf.CeilToInt(nextRoundRemaining)}"
+                ? roundResult
                 : $"{roundResult}\nNEXT ROUND IN {Mathf.CeilToInt(nextRoundRemaining)}";
         }
         static void UpdateLifeBar(Image bar, float percent)
@@ -198,7 +284,7 @@ namespace BalanceWithMe
             }
             nextRoundRemaining = 0;
             winnerPopupTime = 0;
-            if (winnerPopup != null) winnerPopup.alpha = 0;
+            if (winnerPopup != null) { winnerPopup.alpha = 0; winnerPopup.blocksRaycasts = winnerPopup.interactable = false; }
             RoundNumber = CompletedRounds + 1;
             board.simulated = boy.body.simulated = girl.body.simulated = true;
             board.position = boardOrigin;
@@ -210,11 +296,16 @@ namespace BalanceWithMe
             boy.ResetPlayer(new Vector2(-2.6f, board.position.y + .24f));
             girl.ResetPlayer(new Vector2(2.6f, board.position.y + .24f));
             elapsed = 0;
-            Running = true;
+            Running = false;
+            BoyDefeat = GirlDefeat = DefeatCause.None;
+            timeAlertRemaining = statusRemaining = 0;
+            timeAlertPopup.alpha = 0;
             sounds?.CancelResult();
-            sounds?.Play("start");
-            status.text = "KEEP YOUR FOOTING - FACE YOUR RIVAL";
-            statusRemaining = 2.5f;
+            readyElapsed = 0;
+            IsCountingDown = countdownStepDuration > 0;
+            readyPopup.alpha = IsCountingDown ? 1 : 0;
+            if (IsCountingDown) { FreezeRound(); SetReadyPhase(1); }
+            else StartPlaying();
             Physics2D.SyncTransforms();
             RefreshHud();
         }

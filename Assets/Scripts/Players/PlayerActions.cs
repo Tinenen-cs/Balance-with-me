@@ -248,7 +248,7 @@ namespace BalanceWithMe
             bool punching = CurrentAction == ActionType.Punch;
             bool pushing = CurrentAction == ActionType.Push;
             Sprite[] frames = IsDefeated ? defeat : HasWonRound ? victory : StunRemaining > 0 ? hurt : punching ? punch : pushing ? push : !controller.IsGrounded ? jump : Mathf.Abs(body.linearVelocity.x) > .15f ? walk : idle;
-            if (!Application.isPlaying) frames = idle;
+            if (!Application.isPlaying || (game != null && game.IsCountingDown)) frames = idle;
             if (frames != null && frames.Length > 0)
             {
                 int frame = punching || pushing

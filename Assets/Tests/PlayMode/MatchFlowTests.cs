@@ -14,6 +14,7 @@ namespace BalanceWithMe.Tests
             yield return SceneManager.LoadSceneAsync("Main");
             yield return null;
             game = Object.FindFirstObjectByType<BalanceGame>();
+            game.countdownStepDuration = 0; game.Restart();
         }
 
         [UnityTest] public IEnumerator RoundAutomaticallyAdvancesAndPreservesScore()
@@ -26,6 +27,8 @@ namespace BalanceWithMe.Tests
             Assert.That(game.CompletedRounds, Is.EqualTo(1));
             Assert.That(game.girlWinsText.text, Does.Contain("WINS 1"));
             Assert.That(game.boy.IsDefeated, Is.True);
+            Assert.That(game.BoyDefeat, Is.EqualTo(BalanceGame.DefeatCause.Fall));
+            Assert.That(game.boy.body.position.y, Is.EqualTo(-3.2f).Within(.01f));
             Assert.That(game.boyPortrait.sprite, Is.SameAs(game.boy.portraitDefeat));
             Assert.That(game.boy.defeat, Does.Contain(game.boy.visual.sprite));
             yield return new WaitForSecondsRealtime(.25f);
@@ -37,10 +40,10 @@ namespace BalanceWithMe.Tests
             Assert.That(game.board.simulated && game.girl.body.simulated, Is.True);
         }
 
-        [UnityTest] public IEnumerator ThreeRoundsUseTotalScoreAndAutomaticallyBeginFreshMatch()
+        [UnityTest] public IEnumerator ThreeRoundsUseTotalScoreAndWaitForPlayAgain()
         {
             game.nextRoundDelay = .12f;
-            game.matchResetDelay = .5f;
+
             for (int round = 1; round <= 3; round++)
             {
                 // Boy wins the first two; Girl wins the last. The match winner must still be Boy.
@@ -64,6 +67,9 @@ namespace BalanceWithMe.Tests
             Assert.That(game.boyPortrait.sprite, Is.SameAs(game.boy.portraitVictory));
             Assert.That(game.boy.TryAction(PlayerActions.ActionType.Punch), Is.False);
             yield return new WaitForSecondsRealtime(.6f);
+            Assert.That(game.MatchComplete, Is.True);
+            Assert.That(game.playAgainButton.IsInteractable(), Is.True);
+            game.playAgainButton.onClick.Invoke();
             Assert.That(game.MatchComplete, Is.False);
             Assert.That(game.BoyWins + game.GirlWins + game.CompletedRounds, Is.Zero);
             Assert.That(game.RoundNumber, Is.EqualTo(1));
@@ -111,9 +117,9 @@ namespace BalanceWithMe.Tests
             Assert.That(game.girl.Health, Is.EqualTo(2), "One punch cannot damage on multiple animation frames.");
         }
 
-        [UnityTest] public IEnumerator ThreeDrawsEndAtThreeRoundsAndResetWithoutInput()
+        [UnityTest] public IEnumerator ThreeDrawsEndAtThreeRoundsAndOfferPlayAgain()
         {
-            game.nextRoundDelay = .12f; game.matchResetDelay = .4f;
+            game.nextRoundDelay = .12f;
             for (int round = 1; round <= 3; round++)
             {
                 game.boy.body.position = game.girl.body.position = new Vector2(0, -4);
@@ -124,6 +130,10 @@ namespace BalanceWithMe.Tests
             Assert.That(game.Result, Is.EqualTo(BalanceGame.MatchResult.Draw));
             Assert.That(game.status.text, Does.Contain("MATCH DRAW"));
             yield return new WaitForSecondsRealtime(.5f);
+            Assert.That(game.winnerPopup.alpha, Is.EqualTo(1));
+            Assert.That(game.winnerHeading.text, Is.EqualTo("MATCH DRAW"));
+            Assert.That(game.MatchComplete, Is.True);
+            game.playAgainButton.onClick.Invoke();
             Assert.That(game.CompletedRounds, Is.Zero);
             Assert.That(game.RoundNumber, Is.EqualTo(1));
             Assert.That(game.Running, Is.True);
@@ -142,6 +152,8 @@ namespace BalanceWithMe.Tests
             }
             yield return null; yield return null;
             Assert.That(game.girl.HealthPercent, Is.Zero);
+            Assert.That(game.GirlDefeat, Is.EqualTo(BalanceGame.DefeatCause.Stamina));
+            Assert.That(game.girl.body.position.y, Is.EqualTo(game.board.position.y + .24f).Within(.01f));
             Assert.That(game.girl.IsDefeated, Is.True);
             Assert.That(game.girl.defeat, Does.Contain(game.girl.visual.sprite));
             Assert.That(game.girlPortrait.sprite, Is.SameAs(game.girl.portraitDefeat));

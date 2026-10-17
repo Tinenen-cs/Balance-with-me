@@ -22,6 +22,7 @@ namespace BalanceWithMe.Tests
             yield return SceneManager.LoadSceneAsync("Main");
             yield return null;
             game=Object.FindFirstObjectByType<BalanceGame>();
+            game.countdownStepDuration = 0; game.Restart();
             Assert.That(game,Is.Not.Null);
             game.boy.body.position=new Vector2(-.4f,.3f);
             game.girl.body.position=new Vector2(.4f,.3f);
@@ -90,7 +91,7 @@ namespace BalanceWithMe.Tests
             Assert.That(game.girlWinsText.text,Does.Contain("WINS 1"));
             game.Restart();yield return null;
             Assert.That(game.GirlWins,Is.EqualTo(1));
-            Assert.That(game.timer.text,Does.Contain("00:00"));
+            Assert.That(game.timer.text,Does.Contain("03:00"));
             Assert.That(game.girl.Health,Is.EqualTo(3));
         }
         [UnityTest] public IEnumerator KeyboardStartsBoyPushAndGirlPunch()

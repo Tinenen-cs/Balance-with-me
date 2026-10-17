@@ -190,7 +190,7 @@ namespace BalanceWithMe.Editor
             audio.music = root.AddComponent<AudioSource>(); audio.music.playOnAwake = false; audio.music.volume = .18f;
             audio.effects = root.AddComponent<AudioSource>(); audio.effects.playOnAwake = false; audio.effects.volume = .55f;
             audio.tracks = new[] { "sky_breeze", "playful_balance" }.Select(name => AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/"+name+".wav")).ToArray();
-            audio.cues = new[] { "jump", "punch", "push", "hit", "shove", "start", "win", "draw", "emote_happy", "emote_sad", "step", "land", "fail" }
+            audio.cues = new[] { "jump", "punch", "push", "hit", "shove", "start", "win", "draw", "emote_happy", "emote_sad", "step", "land", "fail", "ready_tick", "time_warning", "time_tick" }
                 .Select(name => new GameAudio.Cue { name=name, clip=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/"+name+".wav") }).ToArray();
             if (audio.tracks.Any(clip => clip == null) || audio.cues.Any(cue => cue.clip == null))
                 throw new InvalidOperationException("Audio missing. Run python3 Tools/make_audio.py before rebuilding.");
@@ -471,12 +471,13 @@ namespace BalanceWithMe.Editor
             CanvasGroup Popup(RectTransform panel) {
                 var group=panel.gameObject.AddComponent<CanvasGroup>();group.alpha=0;group.blocksRaycasts=false;group.interactable=false;return group;
             }
-            void SignButton(string name,string caption,Vector2 position,UnityEngine.Events.UnityAction action) {
+            Button SignButton(string name,string caption,Vector2 position,UnityEngine.Events.UnityAction action) {
                 var panel=Panel(name,position,new Vector2(260,70));panel.GetComponent<Image>().raycastTarget=true;
                 var button=panel.gameObject.AddComponent<Button>();button.targetGraphic=panel.GetComponent<Image>();
                 var colors=button.colors;colors.highlightedColor=new Color(1,.9f,.72f);colors.pressedColor=new Color(.8f,.65f,.4f);button.colors=colors;
                 UnityEditor.Events.UnityEventTools.AddPersistentListener(button.onClick,action);
                 PanelLabel(panel,name+" Label",caption,30,Vector2.zero,new Vector2(240,58));
+                return button;
             }
             Panel("Village Title Sign",new Vector2(0,460),new Vector2(620,72));
             Label("Title","BALANCE WITH ME",48,new Vector2(0,460),new Vector2(600,64));
@@ -508,7 +509,7 @@ namespace BalanceWithMe.Editor
             game.girlHud=Scorecard(true);
             var clock=Panel("Round Clock",new Vector2(0,365),new Vector2(250,84));
             game.roundClockPopup=clock.gameObject.AddComponent<CanvasGroup>();game.roundClockPopup.blocksRaycasts=false;
-            game.timer=PanelLabel(clock,"Timer","ROUND 1 / 3\n00:00",30,Vector2.zero,new Vector2(230,78));
+            game.timer=PanelLabel(clock,"Timer","ROUND 1 / 3\n03:00",30,Vector2.zero,new Vector2(230,78));
             var notice=Panel("Village Notice",new Vector2(0,245),new Vector2(790,76));
             game.statusPopup=Popup(notice);
             game.status=PanelLabel(notice,"Status","",28,Vector2.zero,new Vector2(754,68));
@@ -527,16 +528,24 @@ namespace BalanceWithMe.Editor
             SignButton("Restart Farm Sign","RESTART [R]",new Vector2(780,-460),game.Restart);
             var audio=Panel("Audio Notice",new Vector2(0,-465),new Vector2(520,48));game.audioPopup=Popup(audio);
             game.audioStatus=PanelLabel(audio,"Audio Status","",24,Vector2.zero,new Vector2(500,40));
-            var announcement=Panel("Match Winner Announcement",new Vector2(0,55),new Vector2(500,260));
+            var announcement=Panel("Match Winner Announcement",new Vector2(0,55),new Vector2(500,284));
             game.winnerPopup=Popup(announcement);
-            PanelLabel(announcement,"Winner Heading","MATCH WINNER",28,new Vector2(0,110),new Vector2(450,34));
+            game.winnerHeading=PanelLabel(announcement,"Winner Heading","MATCH WINNER",28,new Vector2(0,110),new Vector2(450,34));
             game.winnerHead=new GameObject("Winning Character Head",typeof(RectTransform)).AddComponent<Image>();
             game.winnerHead.transform.SetParent(announcement,false);game.winnerHead.rectTransform.anchoredPosition=new Vector2(0,32);
             game.winnerHead.rectTransform.sizeDelta=new Vector2(118,104);game.winnerHead.preserveAspect=true;game.winnerHead.raycastTarget=false;
             game.winnerHead.sprite=game.boy.portraitVictory;
-            game.winnerName=PanelLabel(announcement,"Winning Player Name","",38,new Vector2(0,-57),new Vector2(454,50));
+            game.winnerName=PanelLabel(announcement,"Winning Player Name","",38,new Vector2(0,-50),new Vector2(454,46));
             game.winnerName.resizeTextForBestFit=true;game.winnerName.resizeTextMinSize=24;game.winnerName.resizeTextMaxSize=38;
-            PanelLabel(announcement,"Winner Reset Note","A NEW MATCH STARTS SHORTLY",22,new Vector2(0,-108),new Vector2(456,30));
+            game.playAgainButton=SignButton("Play Again", "PLAY AGAIN", Vector2.zero, game.Restart);
+            var replay=(RectTransform)game.playAgainButton.transform;replay.SetParent(announcement,false);
+            replay.anchoredPosition=new Vector2(0,-108);replay.sizeDelta=new Vector2(260,52);
+            var ready=Panel("Round Start Countdown",new Vector2(0,90),new Vector2(420,260));game.readyPopup=Popup(ready);
+            game.readyNumber=PanelLabel(ready,"Countdown Number","1",112,new Vector2(0,40),new Vector2(360,130));
+            game.readyCaption=PanelLabel(ready,"Countdown Caption","READY",42,new Vector2(0,-65),new Vector2(360,60));
+            var warning=Panel("Time Warning",new Vector2(0,280),new Vector2(450,58));game.timeAlertPopup=Popup(warning);
+            game.timeAlert=PanelLabel(warning,"Time Warning Text","",30,Vector2.zero,new Vector2(426,50));
+            game.timeAlert.color=new Color(.65f,.08f,.04f);
             new GameObject("EventSystem",typeof(EventSystem),typeof(InputSystemUIInputModule));
         }
     }

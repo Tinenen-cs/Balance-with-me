@@ -83,3 +83,10 @@ Removed painted sky clouds from the village base using built-in imagegen, retain
 ActionEffects adds per-player pools of 64 tiny SpriteRenderers using the existing pixel hand stamp and URP sprite material. Effects emit at fixed world positions, independent of subsequent player movement, with short lifetimes, fading alpha and simple ballistic motion. Walking/landing/jumping, accepted punch/push starts, throttled hit/shove reactions, happy/sad emotes, victory/failure and spawn each have a distinct emission. Restart clears previous particles before emitting spawn leaves; disabling or unloading the player clears/disposes its pool. Effects do not change colliders, damage or input.
 
 Capture Action Effects stages a real punch/push exchange after startup notices expire and saves a full-scene preview. Tests cover action/contact selection, rejected attack inputs, both players’ movement emissions, emote/result effects, expiry, restart cleanup and bounded renderer counts under repeated bursts.
+
+
+### Ready countdown, timed rounds and replay - 17 October 2026
+
+Each round now has a three-step parchment popup (1 READY, 2 SET, 3 START!) before physics and combat resume. The clock counts down from 03:00 only during active gameplay. At zero, the player with more remaining life wins; equal life awards neither player a win. The clock changes color with a labeled sound alert at 30 seconds, followed by a beep and labeled countdown every second from 10 through 1. Restart clears pending warnings. Three synthesized cue assets are reproducible with Tools/make_audio.py.
+
+Round resolution records fall, stamina or timeout causes before freezing physics. Fallen players are presented on the grass on their exit side; stamina and timeout defeats remain on the plank. All three rounds still play, and rounds one and two advance automatically. After round three the final result stays visible with an interactive Play Again button, including match draws. Clicking it resets scores and begins the opening countdown. This replaces the previous automatic match reset.

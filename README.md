@@ -9,12 +9,13 @@ A local two-player 2D pixel-art game made with Unity and VS Code. A chibi boy an
 - Scorecards use separate name, life and score rows. **LIFE % is centered inside the life bar**, including at 0%; **ROUND WINS** sits below it. Win rate has been removed.
 - Cute head-only portraits sit directly on the parchment, with no blue/red portrait backing. Each character has calm, hurt, happy and crying faces; hits briefly change the portrait to hurt, and results show the appropriate happy/crying expression.
 - Reaction text tracks above the visible character sprite, including win/cry poses. During results the central notice moves higher and temporarily replaces the clock, keeping the text clear.
-- Win a round by landing three punches or making the opponent fall. After a **3.2-second** result/countdown, the next round starts automatically with full health and the match score retained. A draw also advances without awarding a win.
-- Matches last **exactly three rounds**, including draws. The player with more round wins wins the match; equal scores show a match draw. After a **five-second** match-result display, a fresh match starts automatically with scores cleared. No restart input is needed.
-- Winners play a four-frame fist-pump/hop animation with the original victory jingle. Losers return to the stage for a visible four-frame crying reaction, including after falling. Final reactions use the overall match score, not just the last round's winner.
-- After round three, the winner's happy head and name pop into a dedicated announcement panel before the automatic reset. Draws keep the draw notice without announcing a winner.
+- Every round opens with **1 READY, 2 SET, 3 START!**. Movement and combat wait for the countdown to finish. Each round has a **03:00 countdown**: falling or zero life ends it immediately; at timeout the higher remaining life wins, and equal life is a draw. A visual and audio alert plays at 30 seconds, then every second from 10 to 1.
+- After a **3.2-second** round result, the next round starts automatically with the opening countdown, full health and the match score retained. A draw advances without awarding a win.
+- Matches last **exactly three rounds**, including draws. The player with more round wins wins the match; equal scores show a match draw. The final result stays visible until **PLAY AGAIN** is clicked; this clears the scores and starts a fresh three-round match with the opening countdown.
+- Winners play a four-frame fist-pump/hop animation with the original victory jingle. Fallen losers stay on the grass beside the plank for their crying reaction. Losers who exhaust their life or lose on time stay on the plank. Final reactions use the overall match score, not just the last round's winner.
+- After round three, the winner's happy head and name pop into a dedicated announcement panel with a **PLAY AGAIN** button. Match draws also offer Play Again.
 - Both chimneys emit rising, drifting, fading smoke puffs, and the windmill sails rotate independently of the tower. These continue between rounds like the existing clouds.
-- Help is available on demand. Tune `nextRoundDelay` and `matchResetDelay` on GameManager. R / Restart / gamepad Start remain optional shortcuts; a restart after a counted result advances without counting that round twice.
+- Help is available on demand. Tune `nextRoundDelay` and `countdownStepDuration` on GameManager; the round limit is 180 seconds. R / Restart / gamepad Start remain optional shortcuts; a restart after a counted result advances without counting that round twice.
 
 The expressive portraits, prominent percentage feedback and clear round-result presentation take inspiration from [Super Smash Bros.' platform-fighting presentation](https://www.smashbros.com/en_US/howtoplay/basic.html). Characters, artwork, scenery and audio remain personalized to this farming game; percentages here represent remaining life.
 
@@ -44,7 +45,7 @@ Source: **[Tinenen-cs/Balance-with-me](https://github.com/Tinenen-cs/Balance-wit
 | Face the target and stay in range | Hits require the opponent ahead within 1.2 world units horizontally and vertically | `PlayerActions.AdvanceAction` | Facing/reach test |
 | Cooldowns | Punch 0.65 s; push 0.9 s | `PlayerActions.TryAction` | Repeated attack rejected |
 | Hit reaction | Brief stun and red flash; movement cannot immediately cancel knockback | `PlayerActions.Receive` | Stun/knockback tests |
-| Win and advance | Zero health or falling ends a round; play three rounds, show the total-score result, then reset automatically | `BalanceGame` | Round, draw, match completion and restart tests |
+| Win and advance | Zero health, falling or a three-minute timeout ends a round; play three rounds, show the total-score result, then choose Play Again | `BalanceGame` | Round, draw, match completion and restart tests |
 
 The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle centering torque. The plank is supported visually by a centered circular wooden log resting on the foreground land. The support is stationary.
 
@@ -55,7 +56,7 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 3. Demonstrate **W** / **Up Arrow** jumps.
 4. Face the opponent and press **F** / **K** to punch. Show the wind-up, extended fist, recovery, hit flash, knockback, and life percentage decrease.
 5. Press **G** / **L** to push. Show the open-palm shove animation without health loss.
-6. Win by landing three punches or knocking the other player off. Play all three rounds, watch the winner/loser reactions, and let the next match start automatically.
+6. Win by landing three punches or knocking the other player off. Play all three rounds, watch the winner/loser reactions, and click Play Again to start a fresh match.
 
 ## Status
 
