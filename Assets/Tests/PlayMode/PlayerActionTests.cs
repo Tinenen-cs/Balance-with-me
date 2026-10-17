@@ -87,7 +87,7 @@ namespace BalanceWithMe.Tests
             game.boy.body.position=new Vector2(0,-4);
             yield return null;
             Assert.That(game.GirlWins,Is.EqualTo(1));
-            Assert.That(game.girlHud.text,Does.Contain("WINS 1"));
+            Assert.That(game.girlWinsText.text,Does.Contain("WINS 1"));
             game.Restart();yield return null;
             Assert.That(game.GirlWins,Is.EqualTo(1));
             Assert.That(game.timer.text,Does.Contain("00:00"));

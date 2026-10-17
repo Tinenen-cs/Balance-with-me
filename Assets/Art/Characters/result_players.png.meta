@@ -1,0 +1,685 @@
+fileFormatVersion: 2
+guid: 5eb6ffde138375e4b874046e17386bbb
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4242764350878141084
+    second: result_players_0
+  - first:
+      213: -7485772105887300635
+    second: result_players_1
+  - first:
+      213: 7707413855697500061
+    second: result_players_2
+  - first:
+      213: 2710762763180193009
+    second: result_players_3
+  - first:
+      213: -2547039984864651094
+    second: result_players_4
+  - first:
+      213: 2287259751205573533
+    second: result_players_5
+  - first:
+      213: 9112467478651221726
+    second: result_players_6
+  - first:
+      213: 7023553631756812634
+    second: result_players_7
+  - first:
+      213: 6739730304856291185
+    second: result_players_8
+  - first:
+      213: -5021126489448122711
+    second: result_players_9
+  - first:
+      213: -2299121313050119130
+    second: result_players_10
+  - first:
+      213: 7753695427415339027
+    second: result_players_11
+  - first:
+      213: 7771181646390457882
+    second: result_players_12
+  - first:
+      213: 751429450376797102
+    second: result_players_13
+  - first:
+      213: 1597268100725432805
+    second: result_players_14
+  - first:
+      213: 2530730952043747097
+    second: result_players_15
+  - first:
+      213: 1855031304911174755
+    second: result_players_16
+  - first:
+      213: -9042023905649492443
+    second: result_players_17
+  - first:
+      213: -5292167668660641033
+    second: result_players_18
+  - first:
+      213: 5292112312443107103
+    second: result_players_19
+  - first:
+      213: 1998182136186895894
+    second: result_players_20
+  - first:
+      213: 7982702661830782442
+    second: result_players_21
+  - first:
+      213: -3598222233625502464
+    second: result_players_22
+  - first:
+      213: 3004266348221912806
+    second: result_players_23
+  - first:
+      213: -4494620103522091242
+    second: result_players_24
+  - first:
+      213: 8461899415846590429
+    second: result_players_25
+  - first:
+      213: -3111955924374938026
+    second: result_players_26
+  - first:
+      213: -5067270327207889313
+    second: result_players_27
+  - first:
+      213: 8846551265481617909
+    second: result_players_28
+  - first:
+      213: -5153256608712610560
+    second: result_players_29
+  - first:
+      213: 2258948175263759916
+    second: result_players_30
+  - first:
+      213: -2781252002455474162
+    second: result_players_31
+  - first:
+      213: 1874503715478552300
+    second: result_players_32
+  - first:
+      213: 5421082315185612807
+    second: result_players_33
+  - first:
+      213: -1821760688645172193
+    second: result_players_34
+  - first:
+      213: 5529727447489219137
+    second: result_players_35
+  - first:
+      213: 2539267912502767308
+    second: result_players_36
+  - first:
+      213: -7460601953196319101
+    second: result_players_37
+  - first:
+      213: -6876991346761760192
+    second: result_players_38
+  - first:
+      213: 1230309998008901184
+    second: result_players_39
+  - first:
+      213: 4633157508207400448
+    second: result_players_40
+  - first:
+      213: 3143990505531085553
+    second: result_players_41
+  - first:
+      213: -2129517431280379694
+    second: result_players_42
+  - first:
+      213: -4927220689327686459
+    second: result_players_43
+  - first:
+      213: -4161287755691075464
+    second: result_players_44
+  - first:
+      213: 5597156255572453277
+    second: result_players_45
+  - first:
+      213: 5274390745482256066
+    second: result_players_46
+  - first:
+      213: -6739617834091337967
+    second: result_players_47
+  - first:
+      213: -3574374427609353465
+    second: result_players_48
+  - first:
+      213: -2186070061033789108
+    second: result_players_49
+  - first:
+      213: 2424714537781364003
+    second: result_players_50
+  - first:
+      213: -2761837945651118772
+    second: result_players_51
+  - first:
+      213: 3452344540061999698
+    second: result_players_52
+  - first:
+      213: -4732075042410740463
+    second: result_players_53
+  - first:
+      213: 4663993137002097664
+    second: result_players_54
+  - first:
+      213: 7300648665417690869
+    second: result_players_55
+  - first:
+      213: 3329990707041669797
+    second: result_players_56
+  - first:
+      213: -8914019441645054952
+    second: result_players_57
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 161.08109
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: boy_victory_1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 900
+        width: 195
+        height: 278
+      alignment: 9
+      pivot: {x: 0.45897436, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bd0f91afce439856485d73104267a2a
+      internalID: 1266438996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_victory_2
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 900
+        width: 189
+        height: 286
+      alignment: 9
+      pivot: {x: 0.47883597, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbe8c7fec70e8fb71f8ecfc313d6ead3
+      internalID: 2079055087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_victory_3
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 944
+        width: 189
+        height: 254
+      alignment: 9
+      pivot: {x: 0.47883597, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c07fc3ff0a337e2babd04127d850618
+      internalID: 742975059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_victory_4
+      rect:
+        serializedVersion: 2
+        x: 996
+        y: 900
+        width: 188
+        height: 263
+      alignment: 9
+      pivot: {x: 0.44148937, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2c35f7e9614aa1f30e41b63f0b77787
+      internalID: -902260954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_defeat_1
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 612
+        width: 188
+        height: 250
+      alignment: 9
+      pivot: {x: 0.34840426, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7b8279c8952670e676b3f2ffa6dd6f5
+      internalID: 1451640966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_defeat_2
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 612
+        width: 179
+        height: 250
+      alignment: 9
+      pivot: {x: 0.4217877, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f580fb8cd9147f51bdb9210f4b0833c8
+      internalID: 961720061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_defeat_3
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 612
+        width: 179
+        height: 254
+      alignment: 9
+      pivot: {x: 0.37709498, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b9478f5a428b1aa63e1d0dc2e94ad39
+      internalID: -2037204196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boy_defeat_4
+      rect:
+        serializedVersion: 2
+        x: 1007
+        y: 611
+        width: 173
+        height: 241
+      alignment: 9
+      pivot: {x: 0.3815029, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdf826f5a15787bac93fa6ea68c9751a
+      internalID: 1129057084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_victory_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 300
+        width: 243
+        height: 267
+      alignment: 9
+      pivot: {x: 0.58230454, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b02bdf7851bdf99179a0146fd04f1fe
+      internalID: 847124806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_victory_2
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 300
+        width: 235
+        height: 273
+      alignment: 9
+      pivot: {x: 0.593617, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e5bdf7835055483be2607ecebbc0240
+      internalID: -2111469191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_victory_3
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 344
+        width: 224
+        height: 247
+      alignment: 9
+      pivot: {x: 0.5401786, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bac00b66630481d16c55c55f62087fcb
+      internalID: 1112960641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_victory_4
+      rect:
+        serializedVersion: 2
+        x: 979
+        y: 301
+        width: 225
+        height: 266
+      alignment: 9
+      pivot: {x: 0.58666664, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41b105bc0e93d5a9876d25828bae43a6
+      internalID: 1830118724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_defeat_1
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 28
+        width: 213
+        height: 248
+      alignment: 9
+      pivot: {x: 0.49061033, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d257e49fa31b4a74df5b90eeee872e4b
+      internalID: -2096064564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_defeat_2
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 28
+        width: 229
+        height: 245
+      alignment: 9
+      pivot: {x: 0.56550217, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd294e41ade2cdd091befef46b7e4876
+      internalID: -1350698227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_defeat_3
+      rect:
+        serializedVersion: 2
+        x: 689
+        y: 28
+        width: 214
+        height: 245
+      alignment: 9
+      pivot: {x: 0.5046729, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd9016fc4c002926bd5aa65ab79e8856
+      internalID: -1970447007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: girl_defeat_4
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 27
+        width: 208
+        height: 242
+      alignment: 9
+      pivot: {x: 0.5264423, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c09fcfdc6ea44ee149f7d5de039f9330
+      internalID: 1693888350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: be83efb540ecaa848a89dc558d0872ed
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      boy_defeat_1: 1451640966
+      boy_defeat_2: 961720061
+      boy_defeat_3: -2037204196
+      boy_defeat_4: 1129057084
+      boy_victory_1: 1266438996
+      boy_victory_2: 2079055087
+      boy_victory_3: 742975059
+      boy_victory_4: -902260954
+      girl_defeat_1: -2096064564
+      girl_defeat_2: -1350698227
+      girl_defeat_3: -1970447007
+      girl_defeat_4: 1693888350
+      girl_victory_1: 847124806
+      girl_victory_2: -2111469191
+      girl_victory_3: 1112960641
+      girl_victory_4: 1830118724
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

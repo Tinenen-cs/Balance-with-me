@@ -16,11 +16,15 @@ namespace BalanceWithMe
         public int CompletedRounds { get; private set; }
         public int RoundNumber { get; private set; } = 1;
         public bool MatchComplete { get; private set; }
-        [Min(1)] public int winsToMatch = 3;
+        public const int RoundsPerMatch = 3;
         [Min(.1f)] public float nextRoundDelay = 3.2f;
+        [Min(.1f)] public float matchResetDelay = 5;
         public Image boyLifeBar, girlLifeBar;
-        public float BoyWinRate => CompletedRounds == 0 ? 0 : 100f * BoyWins / CompletedRounds;
-        public float GirlWinRate => CompletedRounds == 0 ? 0 : 100f * GirlWins / CompletedRounds;
+        public Text boyLifeText, girlLifeText;
+        public Text boyWinsText, girlWinsText;
+        public Image boyPortrait, girlPortrait;
+        public enum MatchResult { None, Boy, Girl, Draw }
+        public MatchResult Result { get; private set; }
         float nextRoundRemaining;
         string roundResult;
         Vector2 boardOrigin;
@@ -74,41 +78,58 @@ namespace BalanceWithMe
                     CompletedRounds++;
                     if (boyLost && !girlLost) GirlWins++;
                     if (girlLost && !boyLost) BoyWins++;
-                    MatchComplete = BoyWins >= Mathf.Max(1, winsToMatch) || GirlWins >= Mathf.Max(1, winsToMatch);
-                    nextRoundRemaining = Mathf.Max(.1f, nextRoundDelay);
+                    MatchComplete = CompletedRounds >= RoundsPerMatch;
+                    nextRoundRemaining = Mathf.Max(.1f, MatchComplete ? matchResetDelay : nextRoundDelay);
                     FreezeRound();
-                    sounds?.PlayResult(boyLost && girlLost);
-                    if (boyLost) boy.effects?.Play(ActionEffects.Kind.Fail);
-                    if (girlLost) girl.effects?.Play(ActionEffects.Kind.Fail);
-                    if (boyLost && !girlLost) girl.CelebrateVictory();
-                    if (girlLost && !boyLost) boy.CelebrateVictory();
+                    bool boyWinner = MatchComplete ? BoyWins > GirlWins : !boyLost && girlLost;
+                    bool girlWinner = MatchComplete ? GirlWins > BoyWins : !girlLost && boyLost;
+                    if (MatchComplete) Result = boyWinner ? MatchResult.Boy : girlWinner ? MatchResult.Girl : MatchResult.Draw;
+                    sounds?.PlayResult(!boyWinner && !girlWinner);
+                    boy.PresentResult(boyWinner, new Vector2(-2.6f, boardOrigin.y + .24f));
+                    girl.PresentResult(girlWinner, new Vector2(2.6f, boardOrigin.y + .24f));
                     statusRemaining = float.PositiveInfinity;
-                    roundResult = boyLost && girlLost ? "DRAW" : (boyLost ? girlName : boyName) + " WINS";
-                    status.text = MatchComplete ? roundResult + " THE MATCH!  -  RESTART" : roundResult;
+                    roundResult = !boyWinner && !girlWinner ? "DRAW" : (boyWinner ? boyName : girlName) + " WINS";
+                    if (MatchComplete) roundResult = Result == MatchResult.Draw ? "MATCH DRAW" : roundResult + " THE MATCH!";
+                    ShowCountdown();
                 }
             }
-            else if (!MatchComplete)
+            else
             {
                 nextRoundRemaining = Mathf.Max(0, nextRoundRemaining - Time.unscaledDeltaTime);
-                status.text = $"{roundResult}  -  ROUND {RoundNumber + 1} IN {Mathf.CeilToInt(nextRoundRemaining)}";
-                if (nextRoundRemaining <= 0) { RoundNumber++; Restart(); }
+                ShowCountdown();
+                if (nextRoundRemaining <= 0)
+                {
+                    Restart();
+                }
             }
             RefreshHud();
         }
         public void RefreshHud()
         {
             health.text = $"BOY  {boy.Health}/3     |     GIRL  {girl.Health}/3";
-            if (boyHud != null) boyHud.text = $"{boyName}\nLIFE {boy.HealthPercent:0}%   WINS {BoyWins}/{winsToMatch}\nWIN RATE {BoyWinRate:0}%";
-            if (girlHud != null) girlHud.text = $"{girlName}\nLIFE {girl.HealthPercent:0}%   WINS {GirlWins}/{winsToMatch}\nWIN RATE {GirlWinRate:0}%";
+            if (boyHud != null) boyHud.text = boyName;
+            if (girlHud != null) girlHud.text = girlName;
+            if (boyWinsText != null) boyWinsText.text = $"ROUND WINS {BoyWins}";
+            if (girlWinsText != null) girlWinsText.text = $"ROUND WINS {GirlWins}";
+            if (boyLifeText != null) boyLifeText.text = $"LIFE {boy.HealthPercent:0}%";
+            if (girlLifeText != null) girlLifeText.text = $"LIFE {girl.HealthPercent:0}%";
+            if (boyPortrait != null) boyPortrait.sprite = boy.CurrentPortrait;
+            if (girlPortrait != null) girlPortrait.sprite = girl.CurrentPortrait;
             UpdateLifeBar(boyLifeBar, boy.HealthPercent);
             UpdateLifeBar(girlLifeBar, girl.HealthPercent);
-            if (timer != null) timer.text = $"ROUND {RoundNumber}\n{(int)elapsed/60:00}:{(int)elapsed%60:00}";
+            if (timer != null) timer.text = $"ROUND {RoundNumber} / {RoundsPerMatch}\n{(int)elapsed/60:00}:{(int)elapsed%60:00}";
+        }
+        void ShowCountdown()
+        {
+            status.text = MatchComplete
+                ? $"{roundResult}\nNEW MATCH IN {Mathf.CeilToInt(nextRoundRemaining)}"
+                : $"{roundResult}\nNEXT ROUND IN {Mathf.CeilToInt(nextRoundRemaining)}";
         }
         static void UpdateLifeBar(Image bar, float percent)
         {
             if (bar == null) return;
             bar.fillAmount = percent / 100f;
-            bar.color = percent > 67 ? new Color(.29f,.52f,.22f) : percent > 34 ? new Color(.76f,.45f,.13f) : new Color(.7f,.22f,.15f);
+            bar.color = percent > 67 ? new Color(.20f,.40f,.16f) : percent > 34 ? new Color(.56f,.29f,.06f) : new Color(.58f,.12f,.09f);
         }
         void FreezeRound()
         {
@@ -122,6 +143,10 @@ namespace BalanceWithMe
             board.linearVelocity = Vector2.zero;
             board.angularVelocity = 0;
             board.simulated = false;
+            board.position = boardOrigin;
+            board.transform.position = boardOrigin;
+            board.rotation = 0;
+            board.transform.rotation = Quaternion.identity;
         }
         void HandlePad(Gamepad pad)
         {
@@ -146,8 +171,10 @@ namespace BalanceWithMe
                 BoyWins = GirlWins = CompletedRounds = 0;
                 RoundNumber = 1;
                 MatchComplete = false;
+                Result = MatchResult.None;
             }
             nextRoundRemaining = 0;
+            RoundNumber = CompletedRounds + 1;
             board.simulated = boy.body.simulated = girl.body.simulated = true;
             board.position = boardOrigin;
             board.transform.position = boardOrigin;

@@ -14,6 +14,8 @@ namespace BalanceWithMe
         public SpriteRenderer visual, fist, palm;
         public Sprite[] idle, walk, jump, hurt;
         public Sprite[] punch, push;
+        public Sprite[] victory, defeat;
+        public Sprite portraitNormal, portraitHurt, portraitVictory, portraitDefeat;
         public PlayerActions opponent;
         public BalanceGame game;
         public ActionEffects effects;
@@ -30,6 +32,9 @@ namespace BalanceWithMe
         float emoteTime, reactionCooldown, stepRemaining, airborneTime;
         bool sadEmote, victoryEmote;
         public bool IsCelebrating => victoryEmote && emoteTime > 0;
+        public bool IsDefeated { get; private set; }
+        public bool HasWonRound { get; private set; }
+        public Sprite CurrentPortrait => IsDefeated ? portraitDefeat : HasWonRound ? portraitVictory : StunRemaining > 0 || flash > 0 ? portraitHurt : portraitNormal;
         string emoteText;
         public float Direction => controller.m_FacingRight ? 1 : -1;
 
@@ -129,7 +134,7 @@ namespace BalanceWithMe
 
         public void CelebrateVictory()
         {
-            if (game == null || game.Running || Health <= 0) return;
+            if (game == null || game.Running) return;
             CurrentAction = ActionType.None;
             StunRemaining = flash = move = 0;
             victoryEmote = true;
@@ -139,15 +144,37 @@ namespace BalanceWithMe
             effects?.Play(ActionEffects.Kind.Victory);
         }
 
+        public void PresentResult(bool winner, Vector2 position)
+        {
+            CancelAction();
+            body.position = position;
+            transform.position = position;
+            controller.m_FacingRight = !isGirl;
+            transform.localScale = new Vector3(isGirl ? -1 : 1, 1, 1);
+            IsDefeated = !winner;
+            HasWonRound = winner;
+            animationTime = StunRemaining = flash = 0;
+            if (winner) CelebrateVictory();
+            else
+            {
+                victoryEmote = false;
+                sadEmote = true;
+                emoteText = "SO CLOSE...";
+                emoteTime = 2.4f;
+                effects?.Play(ActionEffects.Kind.Fail);
+            }
+            Animate(0);
+        }
+
         void LateUpdate()
         {
             if (emoteLabel == null) return;
             emoteLabel.text = emoteTime > 0 ? emoteText : "";
-            emoteLabel.color = IsCelebrating ? new Color(1, .85f, .3f) : new Color(.25f, .14f, .07f);
+            emoteLabel.color = IsCelebrating ? new Color(1, .85f, .3f) : IsDefeated ? new Color(1, .95f, .83f) : new Color(.25f, .14f, .07f);
             var camera = Camera.main;
             if (camera == null) return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)emoteLabel.transform.parent,
-                camera.WorldToScreenPoint(transform.position + new Vector3(0,1.9f,0)), null, out Vector2 point);
+                camera.WorldToScreenPoint(transform.position + new Vector3(0, HasWonRound || IsDefeated ? -.65f : 1.9f, 0)), null, out Vector2 point);
             emoteLabel.rectTransform.anchoredPosition = point;
         }
 
@@ -204,6 +231,7 @@ namespace BalanceWithMe
             jumpQueued = punchConnected = false;
             stepRemaining = .2f; airborneTime = 0;
             emoteTime = reactionCooldown = 0; emoteText = ""; sadEmote = true; victoryEmote = false;
+            IsDefeated = HasWonRound = false;
             controller.m_FacingRight = !isGirl;
             transform.localScale = new Vector3(isGirl ? -1 : 1, 1, 1);
             Animate(0);
@@ -215,7 +243,7 @@ namespace BalanceWithMe
             animationTime += dt;
             bool punching = CurrentAction == ActionType.Punch;
             bool pushing = CurrentAction == ActionType.Push;
-            Sprite[] frames = IsCelebrating ? idle : StunRemaining > 0 ? hurt : punching ? punch : pushing ? push : !Application.isPlaying || !controller.IsGrounded ? jump : Mathf.Abs(body.linearVelocity.x) > .15f ? walk : idle;
+            Sprite[] frames = IsDefeated ? defeat : HasWonRound ? victory : StunRemaining > 0 ? hurt : punching ? punch : pushing ? push : !controller.IsGrounded ? jump : Mathf.Abs(body.linearVelocity.x) > .15f ? walk : idle;
             if (!Application.isPlaying) frames = idle;
             if (frames != null && frames.Length > 0)
             {
@@ -230,8 +258,8 @@ namespace BalanceWithMe
             float reach = punching ? Mathf.Sin(Mathf.Clamp01(actionTime / .28f) * Mathf.PI) : pushing ? .85f : 0;
             fist.transform.localPosition = new Vector3(.25f + reach * .6f, .85f, 0);
             palm.transform.localPosition = new Vector3(.75f, 1.05f, 0);
-            float targetLean = IsCelebrating ? Mathf.Sin(animationTime * 12) * 8 : punching ? -reach * 12 : pushing ? -8 : 0;
-            float targetBob = emoteTime > 0 && !sadEmote ? Mathf.Abs(Mathf.Sin(animationTime * 12)) * (IsCelebrating ? .16f : .07f) : 0;
+            float targetLean = IsDefeated ? Mathf.Sin(animationTime * 18) * 2 : HasWonRound ? Mathf.Sin(animationTime * 12) * 5 : punching ? -reach * 12 : pushing ? -8 : 0;
+            float targetBob = HasWonRound ? Mathf.Abs(Mathf.Sin(animationTime * 8)) * .12f : emoteTime > 0 && !sadEmote ? Mathf.Abs(Mathf.Sin(animationTime * 12)) * .07f : 0;
             if (dt > 0)
             {
                 visualLean = Mathf.SmoothDampAngle(visualLean, targetLean, ref leanVelocity, .06f, Mathf.Infinity, dt);

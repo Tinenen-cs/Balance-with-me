@@ -1,6 +1,18 @@
-# Validation — 16 October 2026
+# Validation — 17 October 2026
 
-## Current playtest state
+## Current HUD and three-round match update
+
+Life labels are independent of the filled portion and centered inside 42-pixel life bars; names and round wins have separate rows. Win rate has been removed from runtime logic and UI. Eight head-only portraits cover calm, hurt, happy and crying states. Sixteen full-body result frames cover victory and sobbing for both characters. Hits select the hurt portrait, and result expressions persist until the next round/match.
+
+Matches play exactly three counted rounds, including draws. A 2–0 score still proceeds to round three. Final victory/crying reactions use the total score, even when the match winner lost the final round. Equal scores produce a match draw. After a five-second result, scores and reactions clear and round one starts without input. Fallen players return to a level stage for the result animation, keeping the crying sprite visible. The existing original fail/win/draw cues accompany results. Manual restart after a counted result advances rather than counting the round twice.
+
+The updated scene is validated in a temporary project copy because desktop automation could not access the already-open Unity window. No app/APK is generated.
+
+**32/32 PlayMode tests passed on Unity 6000.3.24f1.** Evidence is copied to `Logs/HUD-PlayMode-results.xml` (ignored by Git). The suite checks all three rounds at a 2–0 score, a 2–1 total-score winner who lost the last round, automatic score/portrait reset, three-draw matches, manual restart without duplicate counting, hurt portrait switching, 0%-life crying with visible percentage text, and result audio. Existing combat, movement, gamepad, audio and cloud tests remain passing.
+
+The 1920 × 1080 layout, attack, hurt-portrait and result previews were rendered in Unity. The result labels sit below the players to keep the central result banner clear. Updated previews are in `Docs/gameplay_layout.png`, `Docs/action_effects.png`, `Docs/hurt_portrait.png` and `Docs/round_result.png`.
+
+## Previous update: combat and startup
 
 17 October update: the rebuilt scene and new combat sheet pass **30/30 PlayMode tests** on Windows Unity **6000.3.24f1**, recorded in `Logs/Update-PlayMode-results.xml`. Four new tests cover automatic advancement with score/health restoration, first-to-three match completion/new-match reset, draws/win-rate calculation/countdown cancellation, and animation frames synchronized with one-hit punch damage and life-bar updates. Existing combat, movement, gamepad, audio, cloud and effects checks also pass. The legacy hand-box assertions now check full-body sprites and hidden hand renderers instead.
 

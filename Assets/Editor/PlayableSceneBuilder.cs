@@ -17,6 +17,7 @@ namespace BalanceWithMe.Editor
         static Sprite fistSprite;
         static Sprite[] characterFrames;
         static Sprite[] combatFrames;
+        static Sprite[] portraitFrames, resultFrames;
         const string Generated = "Assets/Art/Characters/Generated";
 
         [MenuItem("Balance with me/Rebuild Playable Scene")]
@@ -26,6 +27,8 @@ namespace BalanceWithMe.Editor
             AssetDatabase.Refresh();
             PrepareCharacterSprites();
             PrepareCombatSprites();
+            portraitFrames = PrepareExpressionSheet("Assets/Art/UI/character_portraits.png", 2, true);
+            resultFrames = PrepareExpressionSheet("Assets/Art/Characters/result_players.png", 4, false);
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
             if (shader == null) throw new InvalidOperationException("URP 2D sprite shader missing.");
@@ -161,6 +164,12 @@ namespace BalanceWithMe.Editor
             actions.idle = Frames(girl,0); actions.walk = Frames(girl,1); actions.jump = Frames(girl,2); actions.hurt = Frames(girl,3);
             Sprite[] Combat(string action) => combatFrames.Where(frame => frame.name.StartsWith((girl ? "girl_" : "boy_") + action + "_")).OrderBy(frame => frame.name).ToArray();
             actions.idle = Combat("idle"); actions.punch = Combat("punch"); actions.push = Combat("push");
+            string prefix = girl ? "girl_" : "boy_";
+            actions.victory = resultFrames.Where(frame => frame.name.StartsWith(prefix + "victory_")).OrderBy(frame => frame.name).ToArray();
+            actions.defeat = resultFrames.Where(frame => frame.name.StartsWith(prefix + "defeat_")).OrderBy(frame => frame.name).ToArray();
+            Sprite Portrait(string expression) => portraitFrames.Single(frame => frame.name == prefix + expression);
+            actions.portraitNormal = Portrait("normal"); actions.portraitHurt = Portrait("hurt");
+            actions.portraitVictory = Portrait("victory"); actions.portraitDefeat = Portrait("defeat");
             actions.visual = Render("Character", actions.idle[0], Vector2.zero, 5); actions.visual.transform.SetParent(root.transform,false);
             actions.fist = Render("Punch Fist", fistSprite, Vector2.zero, 8); actions.fist.transform.SetParent(root.transform,false);
             actions.fist.transform.localScale = new Vector3(.28f/fistSprite.bounds.size.x,.28f/fistSprite.bounds.size.y,1); actions.fist.color = new Color(1,.65f,.2f);
@@ -277,6 +286,67 @@ namespace BalanceWithMe.Editor
             combatFrames = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
         }
 
+        static Sprite[] PrepareExpressionSheet(string path, int rowCount, bool portraits)
+        {
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+            if (importer == null) throw new InvalidOperationException("Missing expression sheet: " + path);
+            importer.textureType = TextureImporterType.Sprite; importer.spriteImportMode = SpriteImportMode.Multiple;
+            importer.isReadable = true; importer.alphaIsTransparency = true; importer.npotScale = TextureImporterNPOTScale.None;
+            importer.maxTextureSize = 4096; importer.filterMode = FilterMode.Point;
+            importer.textureCompression = TextureImporterCompression.Uncompressed; importer.mipmapEnabled = false; importer.SaveAndReimport();
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            var pixels = texture.GetPixels32();
+            var occupiedX = new bool[texture.width]; var occupiedY = new bool[texture.height];
+            for (int y = 0; y < texture.height; y++)
+            for (int x = 0; x < texture.width; x++)
+                if (pixels[y * texture.width + x].a > 32) { occupiedX[x] = true; occupiedY[y] = true; }
+            List<Vector2Int> Bands(bool[] occupied)
+            {
+                var result = new List<Vector2Int>(); int start = -1;
+                for (int i = 0; i <= occupied.Length; i++)
+                {
+                    bool filled = i < occupied.Length && occupied[i];
+                    if (filled && start < 0) start = i;
+                    if (!filled && start >= 0) { result.Add(new Vector2Int(start, i)); start = -1; }
+                }
+                return result;
+            }
+            var columns = Bands(occupiedX); var rows = Bands(occupiedY); rows.Reverse();
+            if (columns.Count != 4 || rows.Count != rowCount) throw new InvalidOperationException("Expected separated 4 x " + rowCount + " expression sheet: " + path);
+            importer.spritePixelsPerUnit = portraits ? 100 : (rows[0].y - rows[0].x) / 1.85f;
+            var rects = new List<SpriteRect>();
+            string[] expressions = { "normal", "hurt", "victory", "defeat" };
+            for (int row = 0; row < rowCount; row++)
+            for (int col = 0; col < 4; col++)
+            {
+                int minX = texture.width, minY = texture.height, maxX = 0, maxY = 0;
+                for (int y = rows[row].x; y < rows[row].y; y++)
+                for (int x = columns[col].x; x < columns[col].y; x++)
+                    if (pixels[y * texture.width + x].a > 32) { minX = Math.Min(minX, x); minY = Math.Min(minY, y); maxX = Math.Max(maxX, x); maxY = Math.Max(maxY, y); }
+                if (minX > maxX) throw new InvalidOperationException("Empty expression cell: " + path);
+                float pivotX = .5f;
+                if (!portraits)
+                {
+                    int footMin = maxX, footMax = minX;
+                    for (int y = minY; y < minY + (maxY - minY + 1) / 10; y++)
+                    for (int x = minX; x <= maxX; x++)
+                        if (pixels[y * texture.width + x].a > 32) { footMin = Math.Min(footMin, x); footMax = Math.Max(footMax, x); }
+                    pivotX = ((footMin + footMax) * .5f - minX) / (maxX - minX + 1);
+                }
+                string name = portraits ? (row == 0 ? "boy_" : "girl_") + expressions[col]
+                    : (row < 2 ? "boy_" : "girl_") + (row % 2 == 0 ? "victory_" : "defeat_") + (col + 1);
+                rects.Add(new SpriteRect { name = name, spriteID = new GUID(Hash128.Compute(path + name).ToString()),
+                    rect = new Rect(minX, minY, maxX - minX + 1, maxY - minY + 1), alignment = SpriteAlignment.Custom,
+                    pivot = new Vector2(pivotX, portraits ? .5f : 0) });
+            }
+            var factory = new SpriteDataProviderFactories(); factory.Init();
+            var provider = factory.GetSpriteEditorDataProviderFromObject(importer); provider.InitSpriteEditorDataProvider();
+            provider.SetSpriteRects(rects.ToArray());
+            provider.GetDataProvider<ISpriteNameFileIdDataProvider>().SetNameFileIdPairs(rects.Select(rect => new SpriteNameFileIdPair(rect.name, rect.spriteID)));
+            provider.Apply(); importer.SaveAndReimport();
+            return AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
+        }
+
         static Sprite CreateFist()
         {
             const string path="Assets/Art/UI/pixel_hand.png";
@@ -356,30 +426,36 @@ namespace BalanceWithMe.Editor
             Label("Title","BALANCE WITH ME",48,new Vector2(0,460),new Vector2(600,64));
             Text Scorecard(bool girl) {
                 string player=girl?"Girl":"Boy";
-                var panel=Panel(player+" Farm Scorecard",new Vector2(girl?650:-650,425),new Vector2(410,156));
+                var panel=Panel(player+" Farm Scorecard",new Vector2(girl?650:-650,425),new Vector2(440,166));
                 var badge=(RectTransform)new GameObject(player+" Icon Frame",typeof(RectTransform),typeof(Image)).transform;
-                badge.SetParent(panel,false);badge.anchoredPosition=new Vector2(-151,6);badge.sizeDelta=new Vector2(88,112);
-                badge.GetComponent<Image>().color=new Color(.69f,.43f,.20f);badge.GetComponent<Image>().raycastTarget=false;
+                badge.SetParent(panel,false);badge.anchoredPosition=new Vector2(-155,0);badge.sizeDelta=new Vector2(108,132);
+                badge.GetComponent<Image>().color=girl?new Color(.65f,.30f,.22f):new Color(.23f,.39f,.47f);badge.GetComponent<Image>().raycastTarget=false;
                 var icon=new GameObject(player+" Character Icon",typeof(RectTransform)).AddComponent<Image>();
-                icon.transform.SetParent(badge,false);icon.rectTransform.sizeDelta=new Vector2(76,102);
-                icon.sprite=girl?game.girl.idle[0]:game.boy.idle[0];icon.preserveAspect=true;icon.raycastTarget=false;
+                icon.transform.SetParent(badge,false);icon.rectTransform.sizeDelta=new Vector2(100,116);
+                icon.sprite=girl?game.girl.portraitNormal:game.boy.portraitNormal;icon.preserveAspect=true;icon.raycastTarget=false;
+                if(girl)game.girlPortrait=icon;else game.boyPortrait=icon;
                 var track = new GameObject(player+" Life Track", typeof(RectTransform)).AddComponent<Image>();
-                track.transform.SetParent(panel,false);track.rectTransform.anchoredPosition=new Vector2(46,-53);track.rectTransform.sizeDelta=new Vector2(276,14);
+                track.transform.SetParent(panel,false);track.rectTransform.anchoredPosition=new Vector2(54,0);track.rectTransform.sizeDelta=new Vector2(284,42);
                 track.color=new Color(.32f,.23f,.12f);track.raycastTarget=false;
                 var bar = new GameObject(player+" Life Fill", typeof(RectTransform)).AddComponent<Image>();
                 bar.transform.SetParent(track.transform,false);bar.rectTransform.anchorMin=Vector2.zero;bar.rectTransform.anchorMax=Vector2.one;
                 bar.rectTransform.offsetMin=new Vector2(3,3);bar.rectTransform.offsetMax=new Vector2(-3,-3);
                 bar.sprite=lifeFillSprite;bar.type=Image.Type.Filled;bar.fillMethod=Image.FillMethod.Horizontal;bar.fillAmount=1;bar.raycastTarget=false;
                 if(girl)game.girlLifeBar=bar;else game.boyLifeBar=bar;
-                return PanelLabel(panel,player+" Name Health and Score","",25,new Vector2(46,10),new Vector2(292,102));
+                var life = PanelLabel(track.rectTransform,player+" Life Percentage","LIFE 100%",30,Vector2.zero,new Vector2(278,38));
+                life.color=new Color(1,.98f,.87f);
+                var stroke=life.gameObject.AddComponent<Outline>();stroke.effectColor=new Color(.12f,.08f,.04f);stroke.effectDistance=new Vector2(1,-1);
+                var wins=PanelLabel(panel,player+" Round Wins","ROUND WINS 0",25,new Vector2(54,-48),new Vector2(284,32));
+                if(girl){game.girlLifeText=life;game.girlWinsText=wins;}else{game.boyLifeText=life;game.boyWinsText=wins;}
+                return PanelLabel(panel,player+" Name","",31,new Vector2(54,47),new Vector2(284,38));
             }
             game.boyHud=Scorecard(false);
             game.girlHud=Scorecard(true);
-            Panel("Round Clock",new Vector2(0,365),new Vector2(210,84));
-            game.timer=Label("Timer","ROUND TIME\n00:00",30,new Vector2(0,365),new Vector2(190,78));
-            var notice=Panel("Village Notice",new Vector2(0,260),new Vector2(760,54));
+            Panel("Round Clock",new Vector2(0,365),new Vector2(250,84));
+            game.timer=Label("Timer","ROUND 1 / 3\n00:00",30,new Vector2(0,365),new Vector2(230,78));
+            var notice=Panel("Village Notice",new Vector2(0,245),new Vector2(790,100));
             game.statusPopup=Popup(notice);
-            game.status=PanelLabel(notice,"Status","",26,Vector2.zero,new Vector2(730,44));
+            game.status=PanelLabel(notice,"Status","",32,Vector2.zero,new Vector2(754,84));
             game.health=Label("Health Data","",1,Vector2.zero,Vector2.one);game.health.gameObject.SetActive(false);
             game.boy.emoteLabel=Label("Boy Emote","",28,Vector2.zero,new Vector2(300,50));
             game.girl.emoteLabel=Label("Girl Emote","",28,Vector2.zero,new Vector2(300,50));
