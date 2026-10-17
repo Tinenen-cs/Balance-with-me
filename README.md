@@ -141,7 +141,7 @@ Desktop defaults are a resizable 1920 × 1080 window; browser defaults are 1280 
 ## Unity version and packages
 
 - Target: **Unity 6.3 LTS — 6000.3.24f1**, matching the reference repository.
-- Local compile validation uses installed **6000.3.26f1**; exact-target-version validation is pending.
+- Windows validation on 17 October 2026 uses **6000.3.24f1**: compilation and all 26 PlayMode tests pass. Previous validation used **6000.3.26f1**.
 - URP 2D, 2D Sprite, 2D Animation, Input System, uGUI, and Unity Test Framework package configuration is in `Packages/manifest.json`.
 - VS Code extension recommendations are in `.vscode/extensions.json`.
 
@@ -230,7 +230,7 @@ README section organization follows the supplied [CSEL Tamagotchi reference](htt
    cd Balance-with-me
    ```
    For the existing local copy, use `/Users/imac23/Documents/TWOCHARACTERGAME_CSEL`. Update a clean checkout with `git pull origin main`.
-2. Install **Unity Hub**. The recorded project version is **6000.3.24f1**, matching the reference. This checkout was compiled, tested and visually captured using **6000.3.26f1**; you may select that installed version in Hub and accept the patch upgrade. Exact 6000.3.24f1 testing has not been performed here.
+2. Install **Unity Hub**. The recorded project version is **6000.3.24f1**, matching the reference and now verified on Windows with all 26 PlayMode tests passing. Previous macOS compilation, tests and captures used **6000.3.26f1**; you may select that installed version in Hub and accept the patch upgrade.
 3. In Hub, select **Projects → Add → Add project from disk**. Choose the folder containing `Assets`, `Packages`, and `ProjectSettings`.
 4. Open the project and allow package restoration and asset import to finish.
 5. Open **Assets → Scenes → Main**. To regenerate the playable setup, use **Balance with me → Rebuild Playable Scene**.
@@ -244,7 +244,7 @@ README section organization follows the supplied [CSEL Tamagotchi reference](htt
 1. Clone the repository, or use an existing copy of the source.
 2. Open **Unity Hub** from the Start menu.
 3. Select **Projects → Add → Add project from disk** and choose the root project folder.
-4. Select **6000.3.26f1** for the locally verified editor version, or **6000.3.24f1** to retain the recorded reference patch; the latter has not been tested here. Open the project.
+4. Select **6000.3.24f1**, the recorded project version verified on Windows. Previous validation also used **6000.3.26f1**. Open the project.
 5. Wait for Unity to import assets and restore packages.
 6. In the Project window, open **Assets → Scenes → Main**.
 7. Add a **Desktop 1920 × 1080** Game view resolution; reduce the Scale slider if the preview is too large.
@@ -272,6 +272,17 @@ No iOS build is available. Future device testing requires the Unity **iOS Build 
 Use the Unity Editor to play the game now. Standalone builds are on hold at the user’s request. Do not create or publish an app until the user requests it. Use the instructions above to test the scene in Unity.
 
 ## Troubleshooting
+
+### Unity opens an empty scene
+
+The playable game is saved in `Assets/Scenes/Main.unity`. Adding the project folder in Unity Hub does not necessarily open that scene: the last-opened scene is local editor state and is not included in Git.
+
+1. Add the root folder containing `Assets`, `Packages`, and `ProjectSettings` in Unity Hub, then open it with **6000.3.24f1**.
+2. Wait for imports and script compilation to finish.
+3. In Unity's **Project** window, double-click **Assets > Scenes > Main** (the `Main.unity` file). The Hierarchy should include **GameManager**, **Boy**, **Girl**, and **Balancing Plank**.
+4. Select the **Game** tab and press **Play**. Click inside the Game view to use the keyboard.
+
+An empty **Untitled** scene does not mean the game is missing. Open Main before rebuilding anything; **Rebuild Playable Scene** replaces scene edits. If Main still fails to load, check **Window > General > Console** for red errors.
 
 If Unity Hub on this Mac reports **Code=-600 / procNotFound** when opening the editor, launch the installed Unity executable directly from Terminal:
 

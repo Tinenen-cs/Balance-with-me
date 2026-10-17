@@ -2,7 +2,9 @@
 
 ## Current playtest state
 
-Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1**; that exact patch has not been tested here. The project is ready for a Unity Editor playtest using the verified editor.
+Verified editors: **Unity 6000.3.26f1** (previous validation) and **6000.3.24f1 on Windows** (17 October 2026). The exact recorded reference patch now compiles successfully and passes all 26 PlayMode tests. Local evidence is in `Logs/PlayMode-results.xml` and `Logs/PlayMode-validation.log` (ignored by Git).
+
+The Windows checkout initially had `sceneSetups: []` in `Library/LastSceneManagerSetup.txt`. The saved `Assets/Scenes/Main.unity` contains 72 GameObjects; all 40 distinct external asset GUID references resolve against project/package metadata, and no asset files are Git LFS pointer placeholders. An empty startup scene therefore does not indicate missing game content. Open Main from the Project window; see the README troubleshooting instructions.
 
 - C# compilation and scene generation succeeded.
 - **26 PlayMode tests passed, 0 failed**:
@@ -42,7 +44,7 @@ Verified editor: **Unity 6000.3.26f1**. Recorded reference patch: **6000.3.24f1*
 
 The user explicitly put app and APK creation on hold. The in-progress macOS build was cancelled; no completed app/APK or release was produced or published. Verification continues inside the Unity Editor only.
 
-Headless input tests temporarily adjust and then restore Input System focus settings. Physical USB/Bluetooth controller compatibility, subjective audio mixing, long play sessions and exact-reference-patch behavior still need device testing. Touch input, dedicated punch/push sprite-sheet poses, and packaged platform builds remain future work.
+Headless input tests temporarily adjust and then restore Input System focus settings. Physical USB/Bluetooth controller compatibility, subjective audio mixing and long play sessions still need device testing. Touch input, dedicated punch/push sprite-sheet poses, and packaged platform builds remain future work.
 
 ## Reproduce in Unity
 
