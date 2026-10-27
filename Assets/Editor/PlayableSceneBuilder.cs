@@ -578,6 +578,7 @@ namespace BalanceWithMe.Editor
             game.timeAlert=PanelLabel(warning,"Time Warning Text","",30,Vector2.zero,new Vector2(426,50));
             game.timeAlert.color=new Color(.65f,.08f,.04f);
             new GameObject("EventSystem",typeof(EventSystem),typeof(InputSystemUIInputModule));
+            SubmissionMenuBuilder.Add(game,canvas.GetComponent<Canvas>(),font);
         }
     }
 }

@@ -25,11 +25,11 @@ The expressive portraits, prominent percentage feedback and clear round-result p
 
 ## Download & play
 
-Source: **[Tinenen-cs/Balance-with-me](https://github.com/Tinenen-cs/Balance-with-me)**. The source is published. **App and APK creation are on hold until the user explicitly requests a build.** Test the game in the Unity Editor. The current setup is ready for a local playtest; follow **How to run** below.
+Source: **[Tinenen-cs/Balance-with-me](https://github.com/Tinenen-cs/Balance-with-me)**. The source is published. **Windows submission build is now available locally in `Submission/`.** Run `BalanceWithMe-Portable-Windows-x64.exe` without installing Unity. A complete standard Windows build is also provided as `BalanceWithMe-Windows-x64.zip`. Android, macOS and browser releases remain unbuilt. See `Docs/SUBMISSION.md` for playtesting and Canvas upload instructions.
 
 | Device | Planned file / output | How to run |
 | --- | --- | --- |
-| Windows | `Balance-with-me-Windows.zip` | Pending; inspect the source in Unity for now |
+| Windows | `BalanceWithMe-Windows-x64.zip` | Built; use the portable EXE or extract the complete ZIP and launch BalanceWithMe.exe |
 | Android | `Balance-with-me.apk` | Pending; mobile input is not configured |
 | macOS | `Balance-with-me-macOS.zip` | On hold; test in Unity instead |
 | Browser | WebGL build | Pending; no hosted game link exists |
@@ -72,7 +72,7 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 | 6 | Hinged plank, win detection and restart | Implemented |
 | 7 | Gamepad routing, two music loops, reaction sounds and emotes | Implemented |
 | 8 | PlayMode tests and Unity layout capture | See validation notes |
-| 9 | App/APK builds | On hold until requested |
+| 9 | Windows portable build | Built for Canvas; physical-controller playtest pending |
 | 10 | Touch controls and dedicated combat sprite frames | Future polish |
 
 ## Features
@@ -84,7 +84,7 @@ The plank is a Rigidbody2D hinged at its center with ±16° limits and a gentle 
 - **Distinct attacks:** punch damages and knocks back once; push shoves throughout its active window without damage.
 - **Action effects:** footstep dust, jump/landing puffs, hit sparks and shove particles accompany full-body attack animation. Happy emotes sparkle, sad emotes shed blue droplets, winners burst confetti, and losing/respawning characters get brief puffs/leaves. [See the combat preview](Docs/action_effects.png).
 - **Combat feedback:** dedicated four-frame punch and push sequences, red hit flash and hurt frames.
-- **Farm-themed scorecards** show expressive head portraits, percentages inside wide life bars, and round wins on a separate line. The round timer pauses at the result and resets automatically for the next round.
+- **Farm-themed scorecards** show expressive head portraits, percentages inside wide life bars, and earned round-win stars below each life bar. The round timer pauses at the result and resets automatically for the next round.
 - **Wood-and-parchment UI** keeps names, life, wins, round/time, title, Help and Restart visible. Controls appear for five seconds on demand; round-start and audio notices disappear after 2.5 seconds. Round results count down to the next round; match results count down to a fresh match.
 - **Smooth motion:** interpolated player/plank physics, 0.08-second movement smoothing and eased action/emote poses. The weighted plank uses angular damping and progressive resistance before its ±16° hinge limits. Restart clears stored movement smoothing.
 - **Physics scene:** player Rigidbody2Ds and capsule colliders on a hinged plank.
@@ -154,7 +154,7 @@ Click the Game view to give it keyboard focus. Attack while facing the other pla
 
 ## Screen layout
 
-Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Symmetrical parchment player scorecards, with matching boy/girl character icons beside their names, flank the centered title and round clock. Small Help and Restart signs sit in opposite bottom corners. The controls panel is a five-second popup (H / left bumper / HELP); audio status appears only after M / N or the corresponding gamepad input. Emote and reaction words appear briefly near the players; reaction labels track above their heads. The centered round popup shows a winning face, name and next-round countdown. The final popup waits for Play Again, Enter, or PS4 Cross / Options.
+Desktop **16:9**, with a camera showing 19.2 × 10.8 world units and a **1920 × 1080** UI Canvas reference. The boy and girl begin at opposite ends of the rope-bound plank; its central saddle meets the circular wooden support. Symmetrical parchment player scorecards, with matching boy/girl character icons beside their names, flank the centered title and round clock. Small Menu and Restart signs sit in opposite bottom corners. A persistent startup/pause menu provides controls, device assignments, resume, new match, sound, display and quit (Esc / R3 / MENU); the short help popup remains available with H / left bumper. audio status appears only after M / N or the corresponding gamepad input. Emote and reaction words appear briefly near the players; reaction labels track above their heads. The centered round popup shows a winning face, name and next-round countdown. The final popup waits for Play Again, Enter, or PS4 Cross / Options.
 
 Desktop defaults are a resizable 1920 × 1080 window; browser defaults are 1280 × 720. Select **16:9** or **Desktop 1920 × 1080** manually in Unity's Game view. The farming-village background uses uniform overscan to fill the view, preserve the round wooden fulcrum’s proportions and align its top with the plank.
 
@@ -360,3 +360,10 @@ Connect one or two DualShock 4 controllers before or during play. The first avai
 - Keyboard Enter or numpad Enter: Play Again after the match.
 
 Controller mappings are covered with simulated PlayStation devices in PlayMode tests. Physical DualShock 4 connection and feel still need a hardware playtest on the target computer.
+
+
+### Windows submission audit - 27 October 2026
+
+The release build opens a persistent controls menu in fullscreen landscape, with a 16:9 viewport on other monitor shapes. Esc or either gamepad's right-stick click pauses play and opens the menu. Losing window focus also pauses the game. Keyboard, Xbox-compatible and PlayStation pads can be mixed. Raw USB devices recognized as Joysticks use the Map Boy USB / Map Girl USB buttons to set Jump, Punch, Push, Emote and Menu; bindings are saved per joystick layout. Physical hardware compatibility must still be checked with the actual controller.
+
+Ground checks reuse a collider buffer; HUD strings and result styling update when their values change instead of allocating/rebuilding them every frame. Gamepad gameplay input no longer submits a previously selected HUD button. `Assets/Editor/BuildSubmission.cs` reproduces the Windows x64 release. `Tools/Package-Submission.ps1` wraps the entire Unity build into a single installer-free EXE and also creates a standard ZIP, excluding debug symbols. The EXE extracts its bundled files into a temporary directory, runs the game, and cleans up on exit; game preferences stay in Unity's normal user settings.

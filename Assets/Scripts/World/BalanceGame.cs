@@ -45,11 +45,14 @@ namespace BalanceWithMe
         float nextRoundRemaining;
         string roundResult;
         Vector2 boardOrigin;
-        void Awake() { boardOrigin = board.position; }
+        void Awake() { boardOrigin = board.position; BoardCollider = board.GetComponent<Collider2D>(); }
         public Text audioStatus;
         public LocalInputRouter inputs;
         public GameAudio sounds;
         public bool Running { get; private set; }
+        public bool MenuPaused { get; set; }
+        public bool CanControl => Running && !MenuPaused;
+        public Collider2D BoardCollider { get; private set; }
         public CanvasGroup helpPopup, statusPopup, audioPopup;
         public float PopupDuration = 5;
         [Min(0)] public float centeringTorque = .75f;
@@ -74,6 +77,7 @@ namespace BalanceWithMe
         void Update()
         {
             CaptureSharedInput();
+            if (MenuPaused) return;
             TickPopup(helpPopup, ref helpRemaining);
             TickPopup(statusPopup, ref statusRemaining);
             TickPopup(audioPopup, ref audioRemaining);
@@ -98,9 +102,15 @@ namespace BalanceWithMe
             RefreshHud();
             UpdateWinnerAnnouncement(Time.unscaledDeltaTime);
         }
+        public void NewMatch()
+        {
+            BoyWins = GirlWins = CompletedRounds = 0;
+            MatchComplete = false; Result = MatchResult.None; Restart();
+        }
         public void PlayAgain() { if (MatchComplete) Restart(); }
         public void CaptureSharedInput()
         {
+            if (MenuPaused) return;
             if (MatchComplete && Keyboard.current != null &&
                 (Keyboard.current.enterKey.wasPressedThisFrame || Keyboard.current.numpadEnterKey.wasPressedThisFrame)) PlayAgain();
             if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame) Restart();
@@ -110,11 +120,14 @@ namespace BalanceWithMe
             if (inputs != null)
             {
                 HandlePad(inputs.BoyPad); HandlePad(inputs.GirlPad);
+                if(MatchComplete)
+                    foreach(var stick in new[]{inputs.BoyJoystick,inputs.GirlJoystick})
+                        if(stick!=null && inputs.ButtonsFor(stick)[0]!=null && inputs.ButtonsFor(stick)[0].wasPressedThisFrame)PlayAgain();
             }
         }
         public void AdvanceReadyCountdown(float dt)
         {
-            if (!IsCountingDown) return;
+            if (!IsCountingDown || MenuPaused) return;
             readyElapsed += Mathf.Max(0, dt);
             if (readyElapsed >= countdownStepDuration * 3) { StartPlaying(); return; }
             int phase = Mathf.Min(3, (int)(readyElapsed / countdownStepDuration) + 1);
@@ -139,7 +152,7 @@ namespace BalanceWithMe
         }
         public void AdvanceRoundTime(float dt)
         {
-            if (!Running) return;
+            if (!CanControl) return;
             float before = RemainingSeconds;
             elapsed = Mathf.Min(RoundDuration, elapsed + Mathf.Max(0, dt));
             float remaining = RemainingSeconds;
@@ -200,24 +213,30 @@ namespace BalanceWithMe
             float spacing = 3.5f;
             return new Vector2(isGirl ? spacing : -spacing, boardOrigin.y + .24f);
         }
+        int hudBoyHealth=-1, hudGirlHealth=-1, hudBoyWins=-1, hudGirlWins=-1, hudRound=-1, hudSeconds=-1;
+        int announcementRound=-1, announcementSecond=-1;
         public void RefreshHud()
         {
-            health.text = $"BOY  {boy.Health}/3     |     GIRL  {girl.Health}/3";
-            if (boyHud != null) boyHud.text = boyName;
-            if (girlHud != null) girlHud.text = girlName;
-            UpdateStars(boyWinStars, BoyWins);
-            UpdateStars(girlWinStars, GirlWins);
-            if (boyLifeText != null) boyLifeText.text = $"LIFE {boy.HealthPercent:0}%";
-            if (girlLifeText != null) girlLifeText.text = $"LIFE {girl.HealthPercent:0}%";
-            if (boyPortrait != null) boyPortrait.sprite = boy.CurrentPortrait;
-            if (girlPortrait != null) girlPortrait.sprite = girl.CurrentPortrait;
-            UpdateLifeBar(boyLifeBar, boy.HealthPercent);
-            UpdateLifeBar(girlLifeBar, girl.HealthPercent);
-            if (timer != null)
+            if (boyHud != null && boyHud.text != boyName) boyHud.text = boyName;
+            if (girlHud != null && girlHud.text != girlName) girlHud.text = girlName;
+            if (hudBoyWins != BoyWins) { UpdateStars(boyWinStars,BoyWins); hudBoyWins=BoyWins; }
+            if (hudGirlWins != GirlWins) { UpdateStars(girlWinStars,GirlWins); hudGirlWins=GirlWins; }
+            if (hudBoyHealth != boy.Health || hudGirlHealth != girl.Health)
             {
-                int seconds = Mathf.CeilToInt(RemainingSeconds);
+                health.text = $"BOY {boy.Health}/3 | GIRL {girl.Health}/3";
+                if (boyLifeText != null) boyLifeText.text = $"LIFE {boy.HealthPercent:0}%";
+                if (girlLifeText != null) girlLifeText.text = $"LIFE {girl.HealthPercent:0}%";
+                UpdateLifeBar(boyLifeBar,boy.HealthPercent); UpdateLifeBar(girlLifeBar,girl.HealthPercent);
+                hudBoyHealth=boy.Health;hudGirlHealth=girl.Health;
+            }
+            if (boyPortrait != null && boyPortrait.sprite != boy.CurrentPortrait) boyPortrait.sprite = boy.CurrentPortrait;
+            if (girlPortrait != null && girlPortrait.sprite != girl.CurrentPortrait) girlPortrait.sprite = girl.CurrentPortrait;
+            int seconds = Mathf.CeilToInt(RemainingSeconds);
+            if (timer != null && (hudRound != RoundNumber || hudSeconds != seconds))
+            {
                 timer.text = $"ROUND {RoundNumber} / {RoundsPerMatch}\n{seconds / 60:00}:{seconds % 60:00}";
                 timer.color = RemainingSeconds <= 10 ? new Color(.65f,.08f,.04f) : RemainingSeconds <= 30 ? new Color(.57f,.26f,.02f) : new Color(.25f,.14f,.07f);
+                hudRound=RoundNumber;hudSeconds=seconds;
             }
             if (roundClockPopup != null) roundClockPopup.alpha = !Application.isPlaying || Running || IsCountingDown ? 1 : 0;
 
@@ -234,21 +253,32 @@ namespace BalanceWithMe
             winnerPopup.alpha = eased;
             winnerPopup.transform.localScale = Vector3.one * Mathf.Lerp(.86f, 1, eased);
             ((RectTransform)winnerPopup.transform).anchoredPosition = MatchComplete ? Vector2.zero : new Vector2(0,200);
-            foreach (var backdrop in winnerBackdropImages) backdrop.enabled = MatchComplete;
-            foreach (var label in new[] { winnerHeading, winnerName, nextRoundText })
+            if (announcementRound != CompletedRounds)
             {
-                label.color = MatchComplete ? new Color(.25f,.14f,.07f) : new Color(1,.96f,.79f);
-                foreach (var effect in label.GetComponents<Shadow>()) effect.enabled = !MatchComplete;
+                foreach (var backdrop in winnerBackdropImages) backdrop.enabled = MatchComplete;
+                foreach (var label in new[] { winnerHeading, winnerName, nextRoundText })
+                {
+                    label.color = MatchComplete ? new Color(.25f,.14f,.07f) : new Color(1,.96f,.79f);
+                    foreach (var effect in label.GetComponents<Shadow>()) effect.enabled = !MatchComplete;
+                }
+                winnerHeading.text = announcedResult == MatchResult.Draw ? (MatchComplete ? "MATCH DRAW" : "ROUND DRAW") : MatchComplete ? "MATCH WINNER" : "ROUND WINNER";
+                playAgainButton.gameObject.SetActive(MatchComplete);
+                replayHint.gameObject.SetActive(MatchComplete);
+                nextRoundText.gameObject.SetActive(!MatchComplete);
+
+                winnerHead.gameObject.SetActive(announcedResult != MatchResult.Draw);
+                winnerHead.sprite = announcedResult == MatchResult.Boy ? boy.portraitVictory : girl.portraitVictory;
+                winnerName.text = announcedResult == MatchResult.Draw ? (MatchComplete ? "EQUAL ROUND WINS" : "EQUAL RESULT") : announcedResult == MatchResult.Boy ? boyName : girlName;
+                announcementRound=CompletedRounds;
             }
-            winnerHeading.text = announcedResult == MatchResult.Draw ? (MatchComplete ? "MATCH DRAW" : "ROUND DRAW") : MatchComplete ? "MATCH WINNER" : "ROUND WINNER";
-            playAgainButton.gameObject.SetActive(MatchComplete);
-            replayHint.gameObject.SetActive(MatchComplete);
-            nextRoundText.gameObject.SetActive(!MatchComplete);
-            nextRoundText.text = $"NEXT ROUND IN {Mathf.CeilToInt(nextRoundRemaining)}\nROUND {CompletedRounds + 1} OF {RoundsPerMatch}";
-            winnerHead.gameObject.SetActive(announcedResult != MatchResult.Draw);
-            winnerHead.sprite = announcedResult == MatchResult.Boy ? boy.portraitVictory : girl.portraitVictory;
-            winnerName.text = announcedResult == MatchResult.Draw ? (MatchComplete ? "EQUAL ROUND WINS" : "EQUAL RESULT") : announcedResult == MatchResult.Boy ? boyName : girlName;
+            int nextSecond=Mathf.CeilToInt(nextRoundRemaining);
+            if (announcementSecond != nextSecond)
+            {
+                nextRoundText.text=$"NEXT ROUND IN {nextSecond}\nROUND {CompletedRounds + 1} OF {RoundsPerMatch}";
+                announcementSecond=nextSecond;
+            }
         }
+
         void ShowCountdown()
         {
             status.text = MatchComplete
@@ -311,6 +341,7 @@ namespace BalanceWithMe
                 Result = MatchResult.None;
             }
             nextRoundRemaining = 0;
+            announcementRound=announcementSecond=-1;
             winnerPopupTime = 0;
             if (winnerPopup != null) { winnerPopup.alpha = 0; winnerPopup.blocksRaycasts = winnerPopup.interactable = false; }
             RoundNumber = CompletedRounds + 1;

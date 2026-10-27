@@ -27,3 +27,6 @@ crashlytics-build.properties
 .env.*
 !.env.example
 TestResults/
+
+# Generated Windows submission binaries
+Submission/

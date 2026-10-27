@@ -13,6 +13,7 @@ public class CharacterController2DP2 : MonoBehaviour
 	[SerializeField] public Collider2D m_CrouchDisableCollider;				// A collider that will be disabled when crouching
 
 	const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
+	private readonly Collider2D[] m_GroundHits = new Collider2D[8];
 	private bool m_Grounded;            // Whether or not the player is grounded.
 	const float k_CeilingRadius = .2f; // Radius of the overlap circle to determine if the player can stand up
 	private Rigidbody2D m_Rigidbody2D;
@@ -49,10 +50,12 @@ public class CharacterController2DP2 : MonoBehaviour
 
 		// The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
 		// This can be done using layers instead but Sample Assets will not overwrite your project settings.
-		Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
-		for (int i = 0; i < colliders.Length; i++)
+		var filter = new ContactFilter2D { useTriggers = Physics2D.queriesHitTriggers };
+		filter.SetLayerMask(m_WhatIsGround);
+		int hitCount = Physics2D.OverlapCircle(m_GroundCheck.position, k_GroundedRadius, filter, m_GroundHits);
+		for (int i = 0; i < hitCount; i++)
 		{
-			if (colliders[i].gameObject != gameObject)
+			if (m_GroundHits[i].gameObject != gameObject)
 			{
 				m_Grounded = true;
 				if (!wasGrounded)

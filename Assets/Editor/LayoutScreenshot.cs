@@ -10,7 +10,7 @@ namespace BalanceWithMe.Editor
     {
         static double started, effectStarted;
         static bool actionPreview, staged;
-        static bool hurtPreview, resultPreview, winnerPreview, readyPreview, warningPreview, captureSet;
+        static bool hurtPreview, resultPreview, winnerPreview, readyPreview, warningPreview, menuPreview, captureSet;
         static int captureIndex;
         public static void CaptureAllPreviews()
         {
@@ -34,9 +34,10 @@ namespace BalanceWithMe.Editor
         public static void CaptureWinnerAnnouncement() { BeginCapture(false); winnerPreview = true; }
         public static void CaptureReady() { BeginCapture(false); readyPreview = true; }
         public static void CaptureWarning() { BeginCapture(false); warningPreview = true; }
+        public static void CaptureMenu() { BeginCapture(false); menuPreview=true; }
         static void BeginCapture(bool effects)
         {
-            actionPreview=effects;hurtPreview=resultPreview=winnerPreview=readyPreview=warningPreview=false;staged=false;effectStarted=0;
+            actionPreview=effects;hurtPreview=resultPreview=winnerPreview=readyPreview=warningPreview=menuPreview=false;staged=false;effectStarted=0;
             EditorSceneManager.OpenScene("Assets/Scenes/Main.unity");
             // Disable domain reload for this automated capture, then restore it.
             SessionState.SetBool("BalanceCapture.OptionsEnabled",EditorSettings.enterPlayModeOptionsEnabled);
@@ -52,6 +53,10 @@ namespace BalanceWithMe.Editor
             if(!EditorApplication.isPlaying)return;
             if(started==0)started=EditorApplication.timeSinceStartup;
             if(EditorApplication.timeSinceStartup-started<(readyPreview ? .25 : 6))return;
+            if(menuPreview && !staged)
+            {
+                Object.FindFirstObjectByType<GameMenu>().SetOpen(true);staged=true;
+            }
             if (warningPreview && !staged)
             {
                 var game = Object.FindFirstObjectByType<BalanceGame>();
@@ -112,7 +117,7 @@ namespace BalanceWithMe.Editor
                 var previous=RenderTexture.active;RenderTexture.active=target;
                 var pixels=new Texture2D(1920,1080,TextureFormat.RGB24,false);
                 pixels.ReadPixels(new Rect(0,0,1920,1080),0,0);pixels.Apply();
-                string path=readyPreview?"Docs/round_start.png":warningPreview?"Docs/time_warning.png":winnerPreview?"Docs/winner_announcement.png":resultPreview?"Docs/round_result.png":hurtPreview?"Docs/hurt_portrait.png":actionPreview?"Docs/action_effects.png":"Docs/gameplay_layout.png";
+                string path=menuPreview?"Docs/submission_controls.png":readyPreview?"Docs/round_start.png":warningPreview?"Docs/time_warning.png":winnerPreview?"Docs/winner_announcement.png":resultPreview?"Docs/round_result.png":hurtPreview?"Docs/hurt_portrait.png":actionPreview?"Docs/action_effects.png":"Docs/gameplay_layout.png";
                 System.IO.Directory.CreateDirectory("Docs");System.IO.File.WriteAllBytes(path,pixels.EncodeToPNG());
                 RenderTexture.active=previous;camera.targetTexture=null;target.Release();Object.DestroyImmediate(target);Object.DestroyImmediate(pixels);
                 Debug.Log("Full desktop game layout saved to "+path);
@@ -128,14 +133,15 @@ namespace BalanceWithMe.Editor
             EditorSettings.enterPlayModeOptionsEnabled=SessionState.GetBool("BalanceCapture.OptionsEnabled",false);
             EditorSettings.enterPlayModeOptions=(EnterPlayModeOptions)SessionState.GetInt("BalanceCapture.Options",0);
             bool failed=SessionState.GetBool("BalanceCapture.Failed",false);SessionState.EraseBool("BalanceCapture.Failed");
-            if (captureSet && !failed && ++captureIndex < 7)
+            if (captureSet && !failed && ++captureIndex < 8)
             {
                 if (captureIndex == 1) CaptureActionEffects();
                 else if (captureIndex == 2) CaptureHurtPortrait();
                 else if (captureIndex == 3) CaptureRoundResult();
                 else if (captureIndex == 4) CaptureWinnerAnnouncement();
                 else if (captureIndex == 5) CaptureReady();
-                else CaptureWarning();
+                else if (captureIndex == 6) CaptureWarning();
+                else CaptureMenu();
                 return;
             }
             captureSet = false;

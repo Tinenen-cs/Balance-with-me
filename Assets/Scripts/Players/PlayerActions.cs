@@ -57,7 +57,7 @@ namespace BalanceWithMe
         {
             var keys = Keyboard.current;
             move = 0;
-            if (game == null || !game.Running || StunRemaining > 0) return;
+            if (game == null || !game.CanControl || StunRemaining > 0) return;
             if (keys != null)
             {
                 move = isGirl
@@ -69,7 +69,18 @@ namespace BalanceWithMe
                 if (isGirl ? keys.oKey.wasPressedThisFrame : keys.eKey.wasPressedThisFrame) Emote();
             }
             var pad = game.inputs == null ? null : game.inputs.ForPlayer(isGirl);
-            if (pad == null) return;
+            if (pad == null)
+            {
+                var joystick=game.inputs==null?null:game.inputs.ForJoystick(isGirl);
+                if(joystick==null)return;
+                if(Mathf.Abs(move)<.01f)move=joystick.stick.x.ReadValue();
+                var buttons=game.inputs.ButtonsFor(joystick);
+                jumpQueued |= buttons[0]!=null && buttons[0].wasPressedThisFrame;
+                if(buttons[1]!=null && buttons[1].wasPressedThisFrame)TryAction(ActionType.Punch);
+                if(buttons[2]!=null && buttons[2].wasPressedThisFrame)TryAction(ActionType.Push);
+                if(buttons[3]!=null && buttons[3].wasPressedThisFrame)Emote();
+                return;
+            }
             float stick = pad.leftStick.x.ReadValue();
             float padMove = Mathf.Abs(stick) > .2f ? stick : pad.dpad.x.ReadValue();
             if (Mathf.Abs(move) < .01f) move = padMove;
@@ -81,7 +92,7 @@ namespace BalanceWithMe
 
         void FixedUpdate()
         {
-            if (game == null || !game.Running) { jumpQueued = false; return; }
+            if (game == null || !game.CanControl) { jumpQueued = false; return; }
             float dt = Time.fixedDeltaTime;
             stepRemaining = Mathf.Max(0, stepRemaining - dt);
             if (!controller.IsGrounded) airborneTime += dt;
@@ -110,8 +121,8 @@ namespace BalanceWithMe
         public void AdvanceSlopeDrift(float dt)
         {
             // The lower half loses footing gradually; input still steers faster than the slide.
-            if (game == null || !game.Running || !body.simulated || !controller.IsGrounded ||
-                !body.IsTouching(game.board.GetComponent<Collider2D>()))
+            if (game == null || !game.CanControl || !body.simulated || !controller.IsGrounded ||
+                !body.IsTouching(game.BoardCollider))
             { SlopeDrift = 0; return; }
             float angle = Mathf.DeltaAngle(0, game.board.rotation);
             float localX = game.board.transform.InverseTransformPoint(body.position).x;
@@ -122,7 +133,7 @@ namespace BalanceWithMe
 
         public bool TryAction(ActionType action)
         {
-            if (action == ActionType.None || game == null || !game.Running || Health <= 0 || StunRemaining > 0 || cooldown > 0) return false;
+            if (action == ActionType.None || game == null || !game.CanControl || Health <= 0 || StunRemaining > 0 || cooldown > 0) return false;
             CurrentAction = action;
             actionTime = 0;
             punchConnected = false;
@@ -142,7 +153,7 @@ namespace BalanceWithMe
 
         public void Emote()
         {
-            if (game == null || !game.Running || emoteTime > 0 || StunRemaining > 0) return;
+            if (game == null || !game.CanControl || emoteTime > 0 || StunRemaining > 0) return;
             sadEmote = !sadEmote;
             emoteText = sadEmote ? "OH NO!" : "LET'S GO!";
             emoteTime = 1.2f;
@@ -203,7 +214,7 @@ namespace BalanceWithMe
         public void AdvanceAction(float dt)
         {
             if (CurrentAction == ActionType.None) return;
-            if (game == null || !game.Running) { CancelAction(); return; }
+            if (game == null || !game.CanControl) { CancelAction(); return; }
             actionTime += dt;
             if (StunRemaining > 0) { CurrentAction = ActionType.None; return; }
             float duration = CurrentAction == ActionType.Punch ? .28f : .45f;

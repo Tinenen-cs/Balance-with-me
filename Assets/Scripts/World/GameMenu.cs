@@ -1,0 +1,114 @@
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.UI;
+
+namespace BalanceWithMe
+{
+    public class GameMenu : MonoBehaviour
+    {
+        public BalanceGame game;
+        public CanvasGroup panel;
+        public Button resumeButton;
+        public Text deviceStatus, soundLabel, screenLabel;
+        public bool IsOpen { get; private set; }
+        float nextDeviceRefresh;
+        Joystick mappingStick; int mappingAction; bool waitForRelease;
+        static readonly string[] actionNames={"JUMP","PUNCH","PUSH","EMOTE","MENU"};
+
+        void Start()
+        {
+            if (!Application.isEditor) SetOpen(true);
+            else SetOpen(false);
+        }
+        void Update()
+        {
+            // Face buttons control the farmers during play, not a previously clicked HUD button.
+            if(EventSystem.current!=null)
+            {
+                EventSystem.current.sendNavigationEvents=IsOpen;
+                if(!IsOpen && EventSystem.current.currentSelectedGameObject!=null)EventSystem.current.SetSelectedGameObject(null);
+            }
+            bool toggle = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
+            var boy=game.inputs.BoyPad;var girl=game.inputs.GirlPad;
+            toggle |= boy != null && boy.rightStickButton.wasPressedThisFrame;
+            toggle |= girl != null && girl.rightStickButton.wasPressedThisFrame;
+            foreach(var stick in Joystick.all)
+                if(stick==game.inputs.BoyJoystick || stick==game.inputs.GirlJoystick)
+                {
+                    var menuButton=game.inputs.ButtonsFor(stick)[4];
+                    toggle |= mappingStick==null && menuButton!=null && menuButton.wasPressedThisFrame;
+                }
+            if(toggle && mappingStick!=null) { mappingStick=null; RefreshLabels(); }
+            else if (toggle) Toggle();
+            if(mappingStick!=null)
+            {
+                bool any=false;
+                foreach(var control in mappingStick.allControls)
+                    if(control is ButtonControl button && button.parent==mappingStick && !button.synthetic)
+                    {
+                        any |= button.isPressed;
+                        if(!waitForRelease && button.wasPressedThisFrame)
+                        {
+                            game.inputs.BindJoystick(mappingStick,mappingAction,button);mappingAction++;waitForRelease=true;
+                            if(mappingAction==5) { mappingStick=null;RefreshLabels();break; }
+                            ShowMappingPrompt();break;
+                        }
+                    }
+                if(!any)waitForRelease=false;
+            }
+            if (Keyboard.current != null && Keyboard.current.f11Key.wasPressedThisFrame) ToggleFullscreen();
+            if (IsOpen && Time.unscaledTime >= nextDeviceRefresh)
+            {
+                RefreshLabels(); nextDeviceRefresh = Time.unscaledTime + .5f;
+            }
+        }
+        void OnApplicationFocus(bool focused)
+        {
+            if (!focused && !Application.isEditor && game != null && !IsOpen) SetOpen(true);
+        }
+        public void MapBoyJoystick() => BeginMapping(false);
+        public void MapGirlJoystick() => BeginMapping(true);
+        void BeginMapping(bool girl)
+        {
+            mappingStick=game.inputs.ForJoystick(girl);mappingAction=0;waitForRelease=true;
+            if(mappingStick==null) { deviceStatus.text="NO RAW USB JOYSTICK ASSIGNED TO THIS PLAYER. GAMEPADS USE THE CONTROLS ABOVE.";return; }
+            EventSystem.current.SetSelectedGameObject(null);ShowMappingPrompt();
+        }
+        void ShowMappingPrompt() { deviceStatus.text="USB SETUP: PRESS THE BUTTON FOR "+actionNames[mappingAction]+"  (ESC CANCELS)"; }
+        public void Toggle() => SetOpen(!IsOpen);
+        public void Resume() => SetOpen(false);
+        public void NewMatch() { game.NewMatch(); SetOpen(false); }
+        public void ToggleSound() { game.ToggleAudio(); RefreshLabels(); }
+        public void ToggleFullscreen()
+        {
+            Screen.fullScreenMode = Screen.fullScreen ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow;
+            RefreshLabels();
+        }
+        public void Quit() { Application.Quit(); }
+        public void SetOpen(bool open)
+        {
+            IsOpen = open; game.MenuPaused = open;
+            if(!open)mappingStick=null;
+            panel.alpha = open ? 1 : 0; panel.interactable = panel.blocksRaycasts = open;
+            Time.timeScale = open ? 0 : 1;
+            if (open)
+            {
+                game.boy.CancelAction(); game.girl.CancelAction();
+                RefreshLabels(); resumeButton.Select();
+            }
+            else if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
+        }
+        void RefreshLabels()
+        {
+            if(mappingStick!=null) { ShowMappingPrompt();return; }
+            string boy = game.inputs.BoyPad != null ? game.inputs.BoyPad.displayName : game.inputs.BoyJoystick!=null?game.inputs.BoyJoystick.displayName:"KEYBOARD";
+            string girl = game.inputs.GirlPad != null ? game.inputs.GirlPad.displayName : game.inputs.GirlJoystick!=null?game.inputs.GirlJoystick.displayName:"KEYBOARD";
+            deviceStatus.text = "BOY: " + boy + "    |    GIRL: " + girl;
+            soundLabel.text = game.sounds.Muted ? "SOUND: OFF" : "SOUND: ON";
+            screenLabel.text = Screen.fullScreen ? "DISPLAY: FULLSCREEN" : "DISPLAY: WINDOWED";
+        }
+        void OnDestroy() { Time.timeScale = 1; }
+    }
+}
