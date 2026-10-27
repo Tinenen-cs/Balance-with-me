@@ -220,3 +220,15 @@ Current local upload artifacts (supersede earlier versions):
 - Submission/BalanceWithMe-Windows-x64.zip: 49,746,373 bytes; SHA256 0FC148417C8BDB5F38804823A713133BA1FEF798F73C36C15E6270E098DBB69E.
 
 Updated local readme, playtest checklist, verification and checksums. Prior binaries retained in Builds/Previous-Submission-Quit-20261028. Unrelated ProjectSettings edits preserved. No Canvas upload was performed; the written assignment requires a controls comment only when there is no menu, so PROFESSOR-COMMENT.txt is optional here.
+
+## Final 25-second release - 28 October 2026
+
+**64/64 PlayMode tests passed**, zero failures (Logs/25-second-tests.xml). Rounds start/reset at 25 seconds, and warning text/sound occurs once at 20 and once at 10 seconds remaining. The previous final ten individual ticks were removed. Added coverage for a skipped frame crossing both thresholds without duplicate warnings; retained timeout winners for either player, draws, three rounds, replay, controller routing, UI text fit, red X and quit confirmation checks. Updated saved Main, menu copy, clock defaults, previews, README, submission instructions and local professor comment/playtest files. Eleven previews regenerated; visually inspected the updated warning at 00:20. Integrity checks passed for all 15 PNG assets and 18 WAV files.
+
+Windows x64 release build succeeded with **0 errors and 0 warnings**, 108,519,628 build bytes. The complete ZIP passed CRC across 162 files, with required Unity/data/Mono payload and no debug symbols. The final portable EXE's automated combat run exited with code 0 and cleaned its temporary directory. Measured **1767 frames over 30 seconds after warmup**, 58.9 average FPS, p95 16.70 ms, p99 33.37 ms, maximum 50.07 ms (two sampled frames above 50 ms), 107.4 MB allocated memory, 3 resolved rounds and 1 completed match. **0 runtime errors and 0 missing sprite/material references**; fullscreen landscape 1920 x 1080 (Logs/25-second-player-performance.json). The existing URP disposal warning remains at shutdown. No further desktop automation was attempted after the earlier user Escape stop; physical controller and audible-output checks remain the user's final playtest.
+
+Current final local artifacts, superseding all earlier binaries:
+- Submission/BalanceWithMe-Portable-Windows-x64.exe: 49,753,600 bytes; SHA256 AAE2F18F2B7E0AD4FE8AE948A161B69ACE73013527BD577FF9FEB0CCE0C897F8.
+- Submission/BalanceWithMe-Windows-x64.zip: 49,746,286 bytes; SHA256 255019A41E30F973D63052F644D5AE1E23157CE56180DF9711E2C9EB29994C20.
+
+Previous binaries retained in Builds/Previous-Submission-25Second-20261028. Updated local README, playtest checklist, verification and checksums. Unrelated ProjectSettings edits preserved. Ready for final user playtest, then upload the same portable EXE to Canvas; use the complete ZIP if EXE attachments are blocked. The game includes its controls menu, so a comment is optional; Submission/PROFESSOR-COMMENT.txt is available. No Canvas upload or submission has been performed.

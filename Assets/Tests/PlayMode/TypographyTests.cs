@@ -77,7 +77,7 @@ namespace BalanceWithMe.Tests
             var frame=(RectTransform)timer.transform.parent;
             Assert.That(timer.verticalOverflow,Is.EqualTo(VerticalWrapMode.Truncate));
             foreach(var round in new[]{1,2,3})
-            foreach(var clock in new[]{"01:00","00:30","00:10","00:00"})
+            foreach(var clock in new[]{"00:25","00:20","00:10","00:00"})
             {
                 timer.text=$"ROUND {round} / 3\n{clock}";
                 Assert.That(timer.preferredHeight,Is.LessThanOrEqualTo(timer.rectTransform.rect.height));

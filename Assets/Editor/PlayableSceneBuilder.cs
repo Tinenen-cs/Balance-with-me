@@ -532,7 +532,7 @@ namespace BalanceWithMe.Editor
             game.girlHud=Scorecard(true);
             var clock=Panel("Round Clock",new Vector2(0,365),new Vector2(250,96));
             game.roundClockPopup=clock.gameObject.AddComponent<CanvasGroup>();game.roundClockPopup.blocksRaycasts=false;
-            game.timer=PanelLabel(clock,"Timer","ROUND 1 / 3\n01:00",26,Vector2.zero,new Vector2(222,76));
+            game.timer=PanelLabel(clock,"Timer","ROUND 1 / 3\n00:25",26,Vector2.zero,new Vector2(222,76));
             game.timer.lineSpacing=1.1f;game.timer.verticalOverflow=VerticalWrapMode.Truncate;
             game.timer.resizeTextForBestFit=true;game.timer.resizeTextMinSize=22;game.timer.resizeTextMaxSize=26;
             var notice=Panel("Village Notice",new Vector2(0,245),new Vector2(790,76));

@@ -149,7 +149,7 @@ namespace BalanceWithMe.Tests
             Assert.That(game.girlWinStars[0].color,Is.EqualTo(Color.white));
             game.Restart();yield return null;
             Assert.That(game.GirlWins,Is.EqualTo(1));
-            Assert.That(game.timer.text,Does.Contain("01:00"));
+            Assert.That(game.timer.text,Does.Contain("00:25"));
             Assert.That(game.girl.Health,Is.EqualTo(3));
         }
         [UnityTest] public IEnumerator KeyboardStartsBoyPushAndGirlPunch()

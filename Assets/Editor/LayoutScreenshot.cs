@@ -74,7 +74,7 @@ namespace BalanceWithMe.Editor
             if (warningPreview && !staged)
             {
                 var game = Object.FindFirstObjectByType<BalanceGame>();
-                game.AdvanceRoundTime(game.RemainingSeconds - 30); game.RefreshHud(); staged = true;
+                game.AdvanceRoundTime(game.RemainingSeconds - 20); game.RefreshHud(); staged = true;
             }
             if (winnerPreview)
             {

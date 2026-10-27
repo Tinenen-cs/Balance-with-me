@@ -23,7 +23,7 @@ namespace BalanceWithMe.Tests
             Assert.That(game.boy.body.simulated || game.board.simulated, Is.False);
             Assert.That(game.boy.TryAction(PlayerActions.ActionType.Punch), Is.False);
             game.AdvanceRoundTime(90);
-            Assert.That(game.RemainingSeconds, Is.EqualTo(60));
+            Assert.That(game.RemainingSeconds, Is.EqualTo(25));
             game.AdvanceReadyCountdown(1);
             Assert.That(game.readyNumber.text, Is.EqualTo("2"));
             Assert.That(game.readyCaption.text, Is.EqualTo("SET"));
@@ -34,24 +34,38 @@ namespace BalanceWithMe.Tests
             Assert.That(game.Running, Is.True);
             Assert.That(game.readyPopup.alpha, Is.Zero);
             Assert.That(game.board.simulated && game.boy.body.simulated, Is.True);
-            game.RefreshHud(); Assert.That(game.timer.text, Does.Contain("01:00"));
+            game.RefreshHud(); Assert.That(game.timer.text, Does.Contain("00:25"));
         }
-        [Test] public void WarningsFireAtThirtyAndEveryFinalSecondAndClearOnRestart()
+        [Test] public void WarningsFireOnceAtTwentyAndTenOnlyAndClearOnRestart()
         {
             game.AdvanceReadyCountdown(3);
-            int warnings = 0, ticks = 0;
-            game.sounds.CuePlayed += cue => { if (cue == "time_warning") warnings++; if (cue == "time_tick") ticks++; };
-            game.AdvanceRoundTime(30);
-            Assert.That(warnings, Is.EqualTo(1));
-            Assert.That(game.timeAlert.text, Is.EqualTo("30 SECONDS LEFT!"));
-            game.AdvanceRoundTime(.1f); Assert.That(warnings, Is.EqualTo(1));
-            game.AdvanceRoundTime(19.9f);
-            for (int i = 9; i >= 1; i--) game.AdvanceRoundTime(1);
-            Assert.That(ticks, Is.EqualTo(10));
-            Assert.That(game.timeAlert.text, Is.EqualTo("1 SECOND LEFT!"));
+            int warnings=0,ticks=0;
+            game.sounds.CuePlayed+=cue=>{if(cue=="time_warning")warnings++;if(cue=="time_tick")ticks++;};
+            game.AdvanceRoundTime(4);
+            Assert.That(warnings+ticks,Is.Zero);
+            game.AdvanceRoundTime(1);
+            Assert.That(warnings,Is.EqualTo(1));
+            Assert.That(game.timeAlert.text,Is.EqualTo("20 SECONDS LEFT!"));
+            game.AdvanceRoundTime(.1f);Assert.That(warnings,Is.EqualTo(1));
+            game.AdvanceRoundTime(game.RemainingSeconds-10);
+            Assert.That(ticks,Is.EqualTo(1));
+            Assert.That(game.timeAlert.text,Is.EqualTo("10 SECONDS LEFT!"));
+            for(int i=9;i>=0;i--)game.AdvanceRoundTime(1);
+            Assert.That(warnings,Is.EqualTo(1));Assert.That(ticks,Is.EqualTo(1));
+            Assert.That(game.CompletedRounds,Is.EqualTo(1));
             game.Restart();
-            Assert.That(game.timeAlertPopup.alpha, Is.Zero);
-            Assert.That(game.RemainingSeconds, Is.EqualTo(60));
+            Assert.That(game.timeAlertPopup.alpha,Is.Zero);
+            Assert.That(game.RemainingSeconds,Is.EqualTo(25));
+        }
+        [Test] public void SkippedFrameCrossesBothWarningThresholdsWithoutRepeating()
+        {
+            game.AdvanceReadyCountdown(3);
+            int warnings=0;
+            game.sounds.CuePlayed+=cue=>{if(cue=="time_warning"||cue=="time_tick")warnings++;};
+            game.AdvanceRoundTime(16);
+            Assert.That(game.RemainingSeconds,Is.EqualTo(9));
+            Assert.That(warnings,Is.EqualTo(2));
+            game.AdvanceRoundTime(.1f);Assert.That(warnings,Is.EqualTo(2));
         }
         [Test] public void TimeoutWithEqualLifeIsDrawAndCannotScoreTwice()
         {
@@ -103,7 +117,7 @@ namespace BalanceWithMe.Tests
             Assert.That(game.CompletedRounds + game.BoyWins + game.GirlWins, Is.Zero);
             Assert.That(game.IsCountingDown, Is.True);
             Assert.That(game.readyCaption.text, Is.EqualTo("READY"));
-            Assert.That(game.RemainingSeconds, Is.EqualTo(60));
+            Assert.That(game.RemainingSeconds, Is.EqualTo(25));
         }
         [UnityTest] public IEnumerator FallenLoserStaysOnGrassUntilNextRoundReadyPopup()
         {

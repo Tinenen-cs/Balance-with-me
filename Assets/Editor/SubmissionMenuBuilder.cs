@@ -32,7 +32,7 @@ namespace BalanceWithMe.Editor
             menu.menuContent=rim.gameObject.AddComponent<CanvasGroup>();
             Box("Parchment",rim,Vector2.zero,new Vector2(1464,924),new Color(1,.91f,.70f));
             var title=Label(rim,"Menu Title","BALANCE WITH ME",52,new Vector2(0,402),new Vector2(1300,70),false,TextAnchor.MiddleCenter);title.font=titleFont;
-            Label(rim,"Rules","Two players  /  Three rounds  /  60 seconds each",26,new Vector2(0,350),new Vector2(1300,40),false,TextAnchor.MiddleCenter).color=muted;
+            Label(rim,"Rules","Two players  /  Three rounds  /  25 seconds each",26,new Vector2(0,350),new Vector2(1300,40),false,TextAnchor.MiddleCenter).color=muted;
             var objective=Box("How to Play",rim,new Vector2(0,268),new Vector2(1360,128),new Color(1,.96f,.83f));
             Label(objective,"Objective Heading","How to win",24,new Vector2(0,38),new Vector2(1300,32),true);
             Label(objective,"Objective Line 1","Knock your rival off the plank or land three punches.",26,new Vector2(0,1),new Vector2(1300,38));

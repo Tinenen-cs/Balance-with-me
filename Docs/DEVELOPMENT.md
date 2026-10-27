@@ -136,3 +136,7 @@ Applied ui-ux-pro-max interaction guidance to the existing Unity UI. Farm-sign b
 ## Red close hover and quit confirmation - 28 October 2026
 
 Changed the menu X's hover/selection to red with a darker red pressed state. Quit opens a centered Yes, quit / No, stay dialog; No receives initial keyboard/controller focus. The game stays paused, and the controls behind the dialog cannot be clicked or selected. No and Esc cancel back to the menu. Application.wantsToQuit also routes window-close requests through the dialog until Yes is chosen. The opt-in diagnostic -qa-exit path explicitly approves shutdown after writing its report. Added automated checks for red hover and confirmation/cancel behavior; previews include close_hover.png and quit_confirmation.png.
+
+## Twenty-five-second rounds - 28 October 2026
+
+Reduced each round to 25 seconds. The HUD starts at 00:25 and the menu states 25 seconds per round. Warning text and sound now fire once at 20 and once at 10 seconds remaining; the previous final-second tick sequence was removed. A frame crossing both thresholds emits each warning once. Ready/Set/Start, the three-round match, health-based timeout decisions, draw handling and replay behavior remain. Updated timer/reset tests, controller timing assertions, warning previews and current submission instructions.

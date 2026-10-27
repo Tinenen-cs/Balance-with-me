@@ -19,7 +19,7 @@ namespace BalanceWithMe
         public const int RoundsPerMatch = 3;
         [Min(.1f)] public float nextRoundDelay = 3.2f;
         [Min(0)] public float countdownStepDuration = 1;
-        public const float RoundDuration = 60;
+        public const float RoundDuration = 25;
         public float RemainingSeconds => Mathf.Max(0, RoundDuration - elapsed);
         public bool IsCountingDown { get; private set; }
         public int CountdownPhase { get; private set; }
@@ -164,14 +164,15 @@ namespace BalanceWithMe
                     tie || girl.Health < boy.Health ? DefeatCause.Timeout : DefeatCause.None);
                 return;
             }
-            int seconds = Mathf.CeilToInt(remaining);
-            if (before > 30 && remaining <= 30) ShowTimeAlert(30, "time_warning");
-            if (seconds <= 10 && seconds < Mathf.CeilToInt(before)) ShowTimeAlert(seconds, "time_tick");
+            // Warn once when each ten-second threshold is crossed, including a skipped frame.
+            for(int threshold=20;threshold>=10;threshold-=10)
+                if(before>threshold && remaining<=threshold)
+                    ShowTimeAlert(threshold,threshold==10?"time_tick":"time_warning");
         }
         void ShowTimeAlert(int seconds, string cue)
         {
             timeAlert.text = seconds == 1 ? "1 SECOND LEFT!" : $"{seconds} SECONDS LEFT!";
-            timeAlertRemaining = seconds <= 10 ? 1.2f : 2.5f;
+            timeAlertRemaining = 2.5f;
             timeAlertPopup.alpha = 1;
             sounds?.Play(cue);
         }
@@ -235,7 +236,7 @@ namespace BalanceWithMe
             if (timer != null && (hudRound != RoundNumber || hudSeconds != seconds))
             {
                 timer.text = $"ROUND {RoundNumber} / {RoundsPerMatch}\n{seconds / 60:00}:{seconds % 60:00}";
-                timer.color = RemainingSeconds <= 10 ? new Color(.65f,.08f,.04f) : RemainingSeconds <= 30 ? new Color(.57f,.26f,.02f) : new Color(.25f,.14f,.07f);
+                timer.color = RemainingSeconds <= 10 ? new Color(.65f,.08f,.04f) : RemainingSeconds <= 20 ? new Color(.57f,.26f,.02f) : new Color(.25f,.14f,.07f);
                 hudRound=RoundNumber;hudSeconds=seconds;
             }
             if (roundClockPopup != null) roundClockPopup.alpha = !Application.isPlaying || Running || IsCountingDown ? 1 : 0;

@@ -83,7 +83,7 @@ namespace BalanceWithMe.Tests
                 yield return null;
                 InputSystem.QueueStateEvent(pad,new GamepadState().WithButton(GamepadButton.South));InputSystem.Update();
                 game.boy.CaptureKeyboardInput();yield return new WaitForSeconds(.1f);
-                Assert.That(game.RemainingSeconds,Is.LessThan(55));
+                Assert.That(game.RemainingSeconds,Is.LessThan(BalanceGame.RoundDuration-5));
                 Assert.That(UnityEngine.EventSystems.EventSystem.current.sendNavigationEvents,Is.False);
                 menu.SetOpen(true);yield return null;
                 Assert.That(UnityEngine.EventSystems.EventSystem.current.sendNavigationEvents,Is.True);

@@ -52,7 +52,7 @@ namespace BalanceWithMe.Tests
                     Assert.That(game.IsCountingDown, Is.True);
                     game.AdvanceReadyCountdown(3); game.AdvanceRoundTime(5);
                     game.CaptureSharedInput();
-                    Assert.That(game.RemainingSeconds, Is.EqualTo(55), "Enter cannot restart active gameplay.");
+                    Assert.That(game.RemainingSeconds, Is.EqualTo(BalanceGame.RoundDuration-5), "Enter cannot restart active gameplay.");
                     InputSystem.QueueStateEvent(keyboard, new KeyboardState()); InputSystem.Update();
                     game.countdownStepDuration = 0;
                 }
