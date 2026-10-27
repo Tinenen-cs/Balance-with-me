@@ -232,3 +232,7 @@ Current final local artifacts, superseding all earlier binaries:
 - Submission/BalanceWithMe-Windows-x64.zip: 49,746,286 bytes; SHA256 255019A41E30F973D63052F644D5AE1E23157CE56180DF9711E2C9EB29994C20.
 
 Previous binaries retained in Builds/Previous-Submission-25Second-20261028. Updated local README, playtest checklist, verification and checksums. Unrelated ProjectSettings edits preserved. Ready for final user playtest, then upload the same portable EXE to Canvas; use the complete ZIP if EXE attachments are blocked. The game includes its controls menu, so a comment is optional; Submission/PROFESSOR-COMMENT.txt is available. No Canvas upload or submission has been performed.
+
+## User acceptance - 28 October 2026
+
+The user confirmed completion of the final personal playtest of the 25-second release. All game implementation changes are on GitHub main, including the 25-second timer and 20/10-second alerts, red menu X, quit confirmation, readable menu typography, controller support and portable Windows build tooling. The tested local submission remains Submission/BalanceWithMe-Portable-Windows-x64.exe (SHA256 AAE2F18F2B7E0AD4FE8AE948A161B69ACE73013527BD577FF9FEB0CCE0C897F8). Upload that file to Canvas; if EXE attachments are disallowed, upload Submission/BalanceWithMe-Windows-x64.zip. The controls comment is optional because the game includes its controls menu. This confirmation records the user's personal playtest report; it does not add a new independently measured hardware-controller result. No Canvas upload has been performed by the assistant.
