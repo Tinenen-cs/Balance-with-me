@@ -453,12 +453,14 @@ namespace BalanceWithMe.Editor
             canvas.GetComponent<Canvas>().sortingOrder=100;
             var scaler=canvas.GetComponent<CanvasScaler>(); scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution=new Vector2(1920,1080);scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;
-            var font=AssetDatabase.LoadAssetAtPath<Font>("Assets/Art/Fonts/Tiny5.ttf");
-            if(font==null)throw new InvalidOperationException("Tiny5 pixel font is missing.");
+            var pixelFont=AssetDatabase.LoadAssetAtPath<Font>("Assets/Art/Fonts/Tiny5.ttf");
+            var font=ReadableFonts.Regular;
+            var boldFont=ReadableFonts.Bold;
+            if(pixelFont==null)throw new InvalidOperationException("Tiny5 pixel font is missing.");
             Text Label(string name,string content,int fontSize,Vector2 position,Vector2 size) {
                 var text=new GameObject(name,typeof(RectTransform)).AddComponent<Text>();text.transform.SetParent(canvas.transform,false);
                 var rect=(RectTransform)text.transform;rect.anchoredPosition=position;rect.sizeDelta=size;
-                text.font=font;text.fontSize=fontSize;text.alignment=TextAnchor.MiddleCenter;
+                text.font=font;text.fontSize=fontSize;text.lineSpacing=1.25f;text.alignment=TextAnchor.MiddleCenter;
                 text.color=new Color(.25f,.14f,.07f);text.text=content;text.raycastTarget=false;
                 text.horizontalOverflow=HorizontalWrapMode.Wrap;text.verticalOverflow=VerticalWrapMode.Overflow;return text;
             }
@@ -488,7 +490,7 @@ namespace BalanceWithMe.Editor
                 return button;
             }
             Panel("Village Title Sign",new Vector2(0,460),new Vector2(620,72));
-            Label("Title","BALANCE WITH ME",48,new Vector2(0,460),new Vector2(600,64));
+            Label("Title","BALANCE WITH ME",48,new Vector2(0,460),new Vector2(600,64)).font=pixelFont;
             Text Scorecard(bool girl) {
                 string player=girl?"Girl":"Boy";
                 var panel=Panel(player+" Farm Scorecard",new Vector2(girl?650:-650,425),new Vector2(440,166));
@@ -535,12 +537,12 @@ namespace BalanceWithMe.Editor
                 var outline=label.gameObject.AddComponent<Outline>();outline.effectColor=new Color(1,.94f,.77f,.95f);outline.effectDistance=new Vector2(1,-1);
             }
             var help=Panel("Farm Controls Popup",new Vector2(0,-300),new Vector2(1260,220));game.helpPopup=Popup(help);
-            PanelLabel(help,"Boy Controls","BOY: A/D MOVE - W JUMP - F PUNCH - G PUSH - E EMOTE",25,new Vector2(0,75),new Vector2(1220,40));
-            PanelLabel(help,"Girl Controls","GIRL: ARROWS MOVE - UP JUMP - K PUNCH - L PUSH - O EMOTE",25,new Vector2(0,30),new Vector2(1220,40));
-            PanelLabel(help,"Gamepad Controls","PS4: STICK / D-PAD MOVE - CROSS JUMP - SQUARE PUNCH - CIRCLE PUSH - TRIANGLE EMOTE",23,new Vector2(0,-15),new Vector2(1220,40));
-            PanelLabel(help,"Shared Controls","M MUTE - N MUSIC - PS4: OPTIONS RESTART / SHARE MUTE / R1 MUSIC / L1 HELP",23,new Vector2(0,-65),new Vector2(1220,40));
-            SignButton("Help Farm Sign","HELP [H]",new Vector2(-780,-460),game.ShowHelp);
-            SignButton("Restart Farm Sign","RESTART [R]",new Vector2(780,-460),game.Restart);
+            PanelLabel(help,"Boy Controls","Boy: A/D move   W jump   F punch   G push   E emote",25,new Vector2(0,75),new Vector2(1220,40));
+            PanelLabel(help,"Girl Controls","Girl: Left/Right move   Up jump   K punch   L push   O emote",25,new Vector2(0,30),new Vector2(1220,40));
+            PanelLabel(help,"Gamepad Controls","PS4: Stick/D-pad move   Cross jump   Square punch   Circle push   Triangle emote",23,new Vector2(0,-15),new Vector2(1220,40));
+            PanelLabel(help,"Shared Controls","M: Mute   N: Music   PS4: Options restart   Share mute   R1 music   L1 help",23,new Vector2(0,-65),new Vector2(1220,40));
+            SignButton("Help Farm Sign","Help [H]",new Vector2(-780,-460),game.ShowHelp);
+            SignButton("Restart Farm Sign","Restart [R]",new Vector2(780,-460),game.Restart);
             var audio=Panel("Audio Notice",new Vector2(0,-465),new Vector2(520,48));game.audioPopup=Popup(audio);
             game.audioStatus=PanelLabel(audio,"Audio Status","",24,Vector2.zero,new Vector2(500,40));
             var announcement=Panel("Match Winner Announcement",Vector2.zero,new Vector2(500,340));
@@ -556,16 +558,21 @@ namespace BalanceWithMe.Editor
             var headShadow=game.winnerHead.gameObject.AddComponent<Shadow>();headShadow.effectColor=new Color(.18f,.08f,.03f,1);headShadow.effectDistance=new Vector2(1,-2);
             game.winnerName=PanelLabel(announcement,"Winning Player Name","",38,new Vector2(0,-25),new Vector2(454,46));
             game.winnerName.resizeTextForBestFit=true;game.winnerName.resizeTextMinSize=24;game.winnerName.resizeTextMaxSize=38;
-            game.playAgainButton=SignButton("Play Again", "PLAY AGAIN", Vector2.zero, game.PlayAgain);
+            game.playAgainButton=SignButton("Play Again", "Play again", Vector2.zero, game.PlayAgain);
             var replay=(RectTransform)game.playAgainButton.transform;replay.SetParent(announcement,false);
             replay.anchoredPosition=new Vector2(0,-85);replay.sizeDelta=new Vector2(260,52);
             game.nextRoundText=PanelLabel(announcement,"Next Round Indicator","",28,new Vector2(0,-100),new Vector2(450,74));
-            game.replayHint=PanelLabel(announcement,"Replay Shortcuts","ENTER / PS4 CROSS OR OPTIONS",23,new Vector2(0,-137),new Vector2(470,32));
+            game.replayHint=PanelLabel(announcement,"Replay Shortcuts","Enter / PS4 Cross or Options",23,new Vector2(0,-137),new Vector2(470,32));
             var ready=(RectTransform)new GameObject("Round Start Countdown",typeof(RectTransform)).transform;
             ready.SetParent(canvas.transform,false);ready.anchoredPosition=new Vector2(0,150);ready.sizeDelta=new Vector2(420,260);
             game.readyPopup=Popup(ready);
             game.readyNumber=PanelLabel(ready,"Countdown Number","1",112,new Vector2(0,40),new Vector2(360,130));
             game.readyCaption=PanelLabel(ready,"Countdown Caption","READY",42,new Vector2(0,-65),new Vector2(360,60));
+            game.readyNumber.font=game.readyCaption.font=pixelFont;
+            game.winnerHeading.font=pixelFont;
+            game.winnerName.font=boldFont;game.winnerName.fontStyle=FontStyle.Bold;
+            game.winnerName.fontSize=32;game.winnerName.resizeTextMaxSize=32;game.winnerName.lineSpacing=1;
+            game.nextRoundText.fontSize=24;game.nextRoundText.lineSpacing=1.25f;
             foreach (var text in new[] { game.readyNumber, game.readyCaption, game.winnerHeading, game.winnerName, game.nextRoundText })
             {
                 text.color=new Color(1,.96f,.79f);
@@ -578,7 +585,7 @@ namespace BalanceWithMe.Editor
             game.timeAlert=PanelLabel(warning,"Time Warning Text","",30,Vector2.zero,new Vector2(426,50));
             game.timeAlert.color=new Color(.65f,.08f,.04f);
             new GameObject("EventSystem",typeof(EventSystem),typeof(InputSystemUIInputModule));
-            SubmissionMenuBuilder.Add(game,canvas.GetComponent<Canvas>(),font);
+            SubmissionMenuBuilder.Add(game,canvas.GetComponent<Canvas>(),pixelFont);
         }
     }
 }

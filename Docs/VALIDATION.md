@@ -174,3 +174,17 @@ Final local artifacts:
 - Submission/READ-ME-FIRST.txt, PLAYTEST-CHECKLIST.txt, PROFESSOR-COMMENT.txt and SHA256SUMS.txt.
 
 **No Canvas upload or submission was performed.** The user chose to test the final file afterward.
+
+## Readable typography and menu - 28 October 2026
+
+Applied the requested ui-ux-pro-max guidance to the existing Unity menu: Atkinson Hyperlegible Regular/Bold for instructions, buttons, controls and gameplay details; Tiny5 only for selected game/menu titles, countdown and winner headings. Fonts and SIL OFL license are bundled locally. Keyboard controls have aligned action/Boy/Girl columns; controller actions have separate rows. Short instructions, separate connection/USB setup strip, larger action buttons and sentence-case captions replace the crowded all-pixel block.
+
+**58/58 PlayMode tests passed**, zero failures (Logs/readable-menu-tests.xml). New checks verify font roles, menu text fit without clipping/wrapping and button dimensions. All eight 1920 x 1080 previews were regenerated. Visually inspected the controls menu, gameplay and round-result text. Capture now regenerates text at the render target's scale instead of retaining the low-resolution batch Game View font atlas. The existing Editor SearchDatabase indexing exception occurred during capture; previews completed.
+
+The updated Windows x64 release succeeded with **0 errors and 0 warnings**, 108,517,316 build bytes. The newly packaged portable EXE launched, completed its automated combat run and exited with code 0; its temporary game folder was cleaned up. ZIP CRC passed across 162 files; Unity engine/data/Mono payload present and debug files excluded. New actual portable-player sample: 1769 frames over 30 seconds after warmup, **58.9 average FPS**, p95 16.68 ms, p99 33.37 ms, max 50.05 ms (one frame above 50 ms), 107.5 MB allocated memory. Three rounds and one match completed. **0 runtime errors and 0 missing sprite/material references**; fullscreen landscape 1920 x 1080. Logs/readable-menu-player-performance.json records the measurement. Physical controller and speaker-output limits from the earlier audit still apply; user confirmed physical Esc closes the menu. The known URP buffer-disposal warning remains at shutdown.
+
+Current local submission files (replace the earlier artifacts listed above):
+- Submission/BalanceWithMe-Portable-Windows-x64.exe: 49,752,064 bytes; SHA256 CE097B4A082B4E60C9AED85B02F4D31B9F49AE4FFDEA245458E16EC94D77507C.
+- Submission/BalanceWithMe-Windows-x64.zip: 49,744,681 bytes; SHA256 E5369179F1F4E332BB2C7ECCD0D3795ED1A17CC43142B6EF042F7F39BFB8252D.
+
+Previous working binaries are retained in Builds/Previous-Submission-20261027. User ProjectSettings changes remain untouched. No Canvas upload was performed; final user playtest remains pending.

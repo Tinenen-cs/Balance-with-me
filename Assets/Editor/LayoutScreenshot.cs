@@ -55,8 +55,9 @@ namespace BalanceWithMe.Editor
             if(EditorApplication.timeSinceStartup-started<(readyPreview ? .25 : 6))return;
             if(menuPreview && !staged)
             {
-                Object.FindFirstObjectByType<GameMenu>().SetOpen(true);staged=true;
+                Object.FindFirstObjectByType<GameMenu>().SetOpen(true);staged=true;effectStarted=EditorApplication.timeSinceStartup;return;
             }
+            if(menuPreview && EditorApplication.timeSinceStartup-effectStarted<.5)return;
             if (warningPreview && !staged)
             {
                 var game = Object.FindFirstObjectByType<BalanceGame>();
@@ -103,12 +104,15 @@ namespace BalanceWithMe.Editor
                 var target=new RenderTexture(1920,1080,24,RenderTextureFormat.ARGB32);
                 target.Create();camera.targetTexture=target;camera.aspect=16f/9;
                 canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=5;
+                // The render target uses reference resolution; discard the batch Game View scale.
+                canvas.GetComponent<UnityEngine.UI.CanvasScaler>().enabled=false;canvas.scaleFactor=1;
                 Canvas.ForceUpdateCanvases();
                 foreach (var player in Object.FindObjectsByType<PlayerActions>(FindObjectsSortMode.None)) player.RefreshEmoteLabel();
                 foreach(var label in Object.FindObjectsByType<UnityEngine.UI.Text>(FindObjectsSortMode.None))
                 {
+                    label.SetAllDirty();
                     label.font.RequestCharactersInTexture(label.text,label.fontSize,label.fontStyle);
-                    label.font.material.mainTexture.filterMode=FilterMode.Point;
+                    label.font.material.mainTexture.filterMode=label.font.name=="Tiny5"?FilterMode.Point:FilterMode.Bilinear;
                 }
                 Canvas.ForceUpdateCanvases();
                 RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination=target });

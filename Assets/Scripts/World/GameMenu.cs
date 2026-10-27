@@ -15,7 +15,7 @@ namespace BalanceWithMe
         public bool IsOpen { get; private set; }
         float nextDeviceRefresh;
         Joystick mappingStick; int mappingAction; bool waitForRelease;
-        static readonly string[] actionNames={"JUMP","PUNCH","PUSH","EMOTE","MENU"};
+        static readonly string[] actionNames={"Jump","Punch","Push","Emote","Menu"};
 
         void Start()
         {
@@ -73,10 +73,10 @@ namespace BalanceWithMe
         void BeginMapping(bool girl)
         {
             mappingStick=game.inputs.ForJoystick(girl);mappingAction=0;waitForRelease=true;
-            if(mappingStick==null) { deviceStatus.text="NO RAW USB JOYSTICK ASSIGNED TO THIS PLAYER. GAMEPADS USE THE CONTROLS ABOVE.";return; }
+            if(mappingStick==null) { deviceStatus.text="No USB joystick found for this player.\nGamepads use the controls above.";nextDeviceRefresh=Time.unscaledTime+3;return; }
             EventSystem.current.SetSelectedGameObject(null);ShowMappingPrompt();
         }
-        void ShowMappingPrompt() { deviceStatus.text="USB SETUP: PRESS THE BUTTON FOR "+actionNames[mappingAction]+"  (ESC CANCELS)"; }
+        void ShowMappingPrompt() { deviceStatus.text=$"USB setup ({mappingAction+1}/5): press a button for {actionNames[mappingAction]}.\nPress Esc to cancel."; }
         public void Toggle() => SetOpen(!IsOpen);
         public void Resume() => SetOpen(false);
         public void NewMatch() { game.NewMatch(); SetOpen(false); }
@@ -103,11 +103,11 @@ namespace BalanceWithMe
         void RefreshLabels()
         {
             if(mappingStick!=null) { ShowMappingPrompt();return; }
-            string boy = game.inputs.BoyPad != null ? game.inputs.BoyPad.displayName : game.inputs.BoyJoystick!=null?game.inputs.BoyJoystick.displayName:"KEYBOARD";
-            string girl = game.inputs.GirlPad != null ? game.inputs.GirlPad.displayName : game.inputs.GirlJoystick!=null?game.inputs.GirlJoystick.displayName:"KEYBOARD";
-            deviceStatus.text = "BOY: " + boy + "    |    GIRL: " + girl;
-            soundLabel.text = game.sounds.Muted ? "SOUND: OFF" : "SOUND: ON";
-            screenLabel.text = Screen.fullScreen ? "DISPLAY: FULLSCREEN" : "DISPLAY: WINDOWED";
+            string boy = game.inputs.BoyPad != null ? game.inputs.BoyPad.displayName : game.inputs.BoyJoystick!=null?game.inputs.BoyJoystick.displayName:"Keyboard";
+            string girl = game.inputs.GirlPad != null ? game.inputs.GirlPad.displayName : game.inputs.GirlJoystick!=null?game.inputs.GirlJoystick.displayName:"Keyboard";
+            deviceStatus.text = "Boy: " + boy + "\nGirl: " + girl;
+            soundLabel.text = game.sounds.Muted ? "Sound: Off" : "Sound: On";
+            screenLabel.text = Screen.fullScreen ? "Display: Fullscreen" : "Display: Windowed";
         }
         void OnDestroy() { Time.timeScale = 1; }
     }
