@@ -29,6 +29,7 @@ namespace BalanceWithMe.Editor
             shade.anchorMin=Vector2.zero;shade.anchorMax=Vector2.one;shade.offsetMin=shade.offsetMax=Vector2.zero;
             menu.panel=shade.gameObject.AddComponent<CanvasGroup>();menu.panel.alpha=0;menu.panel.blocksRaycasts=menu.panel.interactable=false;
             var rim=Box("Controls Menu",shade,Vector2.zero,new Vector2(1480,940),new Color(.30f,.16f,.08f));
+            menu.menuContent=rim.gameObject.AddComponent<CanvasGroup>();
             Box("Parchment",rim,Vector2.zero,new Vector2(1464,924),new Color(1,.91f,.70f));
             var title=Label(rim,"Menu Title","BALANCE WITH ME",52,new Vector2(0,402),new Vector2(1300,70),false,TextAnchor.MiddleCenter);title.font=titleFont;
             Label(rim,"Rules","Two players  /  Three rounds  /  60 seconds each",26,new Vector2(0,350),new Vector2(1300,40),false,TextAnchor.MiddleCenter).color=muted;
@@ -73,15 +74,35 @@ namespace BalanceWithMe.Editor
                 if(primary)label.color=new Color(1,.98f,.91f);
                 UnityEventTools.AddPersistentListener(button.onClick,action);return button;
             }
-            Button("Close Menu","X",rim,new Vector2(674,402),new Vector2(60,60),menu.Resume,out _,false,28);
+            var close=Button("Close Menu","X",rim,new Vector2(674,402),new Vector2(60,60),menu.Resume,out _,false,28);
+            close.targetGraphic.color=Color.white;
+            var closeColors=close.colors;closeColors.normalColor=new Color(.98f,.85f,.60f);
+            closeColors.highlightedColor=closeColors.selectedColor=new Color(1,.45f,.40f);
+            closeColors.pressedColor=new Color(.90f,.30f,.25f);closeColors.fadeDuration=.12f;close.colors=closeColors;
             Button("Map Boy USB","Set up Boy USB",connection,new Vector2(300,-17),new Vector2(216,48),menu.MapBoyJoystick,out _,false,22);
             Button("Map Girl USB","Set up Girl USB",connection,new Vector2(538,-17),new Vector2(216,48),menu.MapGirlJoystick,out _,false,22);
             menu.resumeButton=Button("Play or Resume","Play / Resume",rim,new Vector2(-205,-315),new Vector2(450,72),menu.Resume,out _,true,28);
             Button("New Match","New match",rim,new Vector2(260,-315),new Vector2(330,72),menu.NewMatch,out _);
             Button("Sound","Sound: On",rim,new Vector2(-480,-400),new Vector2(285,56),menu.ToggleSound,out menu.soundLabel);
             Button("Display","Display: Fullscreen",rim,new Vector2(0,-400),new Vector2(470,56),menu.ToggleFullscreen,out menu.screenLabel);
-            Button("Quit","Quit game",rim,new Vector2(480,-400),new Vector2(285,56),menu.Quit,out _);
+            menu.quitButton=Button("Quit","Quit game",rim,new Vector2(480,-400),new Vector2(285,56),menu.Quit,out _);
             Label(rim,"Menu Shortcuts","Esc / R3: Menu    |    Enter / A / Cross: Select    |    F11: Display    |    R: Restart    |    M: Mute",20,new Vector2(0,-448),new Vector2(1360,30),false,TextAnchor.MiddleCenter).color=muted;
+            // Modal sits above the menu and blocks its controls until Yes or No is chosen.
+            var quitShade=Box("Quit Confirmation",shade,Vector2.zero,Vector2.zero,new Color(.08f,.05f,.03f,.70f),true);
+            quitShade.anchorMin=Vector2.zero;quitShade.anchorMax=Vector2.one;quitShade.offsetMin=quitShade.offsetMax=Vector2.zero;
+            menu.quitDialog=quitShade.gameObject.AddComponent<CanvasGroup>();
+            menu.quitDialog.alpha=0;menu.quitDialog.interactable=menu.quitDialog.blocksRaycasts=false;
+            var dialog=Box("Quit Dialog",quitShade,Vector2.zero,new Vector2(740,330),new Color(.30f,.16f,.08f));
+            Box("Parchment",dialog,Vector2.zero,new Vector2(728,318),new Color(1,.91f,.70f));
+            Label(dialog,"Quit Heading","Quit game?",34,new Vector2(0,111),new Vector2(660,48),true,TextAnchor.MiddleCenter);
+            Label(dialog,"Quit Question","Do you really want to quit the game?",28,new Vector2(0,48),new Vector2(680,44),false,TextAnchor.MiddleCenter);
+            Label(dialog,"Quit Hint","Choose No to return to the menu.",24,new Vector2(0,1),new Vector2(660,38),false,TextAnchor.MiddleCenter).color=muted;
+            var yes=Button("Confirm Quit","Yes, quit",dialog,new Vector2(-160,-94),new Vector2(270,64),menu.ConfirmQuit,out var yesText);
+            yesText.color=new Color(1,.98f,.91f);yes.targetGraphic.color=Color.white;
+            var yesColors=yes.colors;yesColors.normalColor=new Color(.66f,.16f,.12f);
+            yesColors.highlightedColor=yesColors.selectedColor=new Color(.76f,.19f,.14f);
+            yesColors.pressedColor=new Color(.50f,.10f,.08f);yesColors.fadeDuration=.12f;yes.colors=yesColors;
+            menu.cancelQuitButton=Button("Cancel Quit","No, stay",dialog,new Vector2(160,-94),new Vector2(270,64),menu.CancelQuit,out _,true);
             var help=GameObject.Find("Help Farm Sign").GetComponent<Button>();
             help.onClick=new Button.ButtonClickedEvent();UnityEventTools.AddPersistentListener(help.onClick,menu.Toggle);
             help.GetComponentInChildren<Text>().text="Menu [Esc]";

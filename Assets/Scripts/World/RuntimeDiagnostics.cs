@@ -98,7 +98,13 @@ namespace BalanceWithMe
                 maxFrameMs=frames.Count==0?0:frames[frames.Count-1],gameplayFrames=gameplayFrames,resolvedRounds=resolvedRounds,completedMatches=completedMatches,allocatedMemoryMB=Profiler.GetTotalAllocatedMemoryLong()/1048576.0 };
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
             File.WriteAllText(path,JsonUtility.ToJson(report,true));enabled=false;
-            if(exit) Application.Quit();
+            if(exit)
+            {
+                // -qa-exit explicitly requests unattended shutdown after the report.
+                var menu=GetComponent<GameMenu>();
+                if(menu!=null) { menu.Quit();menu.ConfirmQuit(); }
+                else Application.Quit();
+            }
         }
         void OnDestroy()
         {

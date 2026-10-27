@@ -40,6 +40,37 @@ namespace BalanceWithMe.Tests
             Assert.That(game.MenuPaused,Is.False);
             Assert.That(game.RemainingSeconds,Is.EqualTo(remaining));
         }
+        [UnityTest] public IEnumerator CloseButtonHighlightsRed()
+        {
+            var close=menu.panel.transform.Find("Controls Menu/Close Menu").GetComponent<Button>();
+            EventSystem.current.SetSelectedGameObject(null);
+            ExecuteEvents.Execute(close.gameObject,new PointerEventData(EventSystem.current),ExecuteEvents.pointerEnterHandler);
+            yield return new WaitForSecondsRealtime(.2f);
+            var tint=close.targetGraphic.canvasRenderer.GetColor();
+            Assert.That(tint.r,Is.GreaterThan(tint.g*1.5f));
+            Assert.That(tint.r,Is.GreaterThan(tint.b*1.5f));
+        }
+        [Test] public void QuitRequiresConfirmationAndNoOrEscapeReturnsToPausedMenu()
+        {
+            float remaining=menu.game.RemainingSeconds;
+            menu.quitButton.onClick.Invoke();
+            Assert.That(menu.IsConfirmingQuit,Is.True);
+            Assert.That(menu.quitDialog.alpha,Is.EqualTo(1));
+            Assert.That(menu.quitDialog.blocksRaycasts,Is.True);
+            Assert.That(menu.resumeButton.IsInteractable(),Is.False);
+            Assert.That(menu.cancelQuitButton.IsInteractable(),Is.True);
+            Assert.That(EventSystem.current.currentSelectedGameObject,Is.SameAs(menu.cancelQuitButton.gameObject));
+            menu.cancelQuitButton.onClick.Invoke();
+            Assert.That(menu.IsConfirmingQuit,Is.False);
+            Assert.That(menu.quitDialog.alpha,Is.Zero);
+            Assert.That(menu.IsOpen,Is.True);
+            Assert.That(menu.game.MenuPaused,Is.True);
+            Assert.That(menu.resumeButton.IsInteractable(),Is.True);
+            Assert.That(menu.game.RemainingSeconds,Is.EqualTo(remaining));
+            menu.Quit();menu.Toggle();
+            Assert.That(menu.IsConfirmingQuit,Is.False);
+            Assert.That(menu.IsOpen,Is.True);
+        }
         [Test] public void EveryRoundClockFitsInsideItsFrameWithPadding()
         {
             var timer=menu.game.timer;

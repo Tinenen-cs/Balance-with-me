@@ -9,7 +9,10 @@ namespace BalanceWithMe
     public class GameMenu : MonoBehaviour
     {
         public BalanceGame game;
-        public CanvasGroup panel;
+        public CanvasGroup panel, menuContent, quitDialog;
+        public Button cancelQuitButton, quitButton;
+        public bool IsConfirmingQuit { get; private set; }
+        bool quitConfirmed;
         public Button resumeButton;
         public Text deviceStatus, soundLabel, screenLabel;
         public bool IsOpen { get; private set; }
@@ -17,6 +20,13 @@ namespace BalanceWithMe
         Joystick mappingStick; int mappingAction; bool waitForRelease;
         static readonly string[] actionNames={"Jump","Punch","Push","Emote","Menu"};
 
+        void OnEnable() { Application.wantsToQuit+=HandleQuitRequest; }
+        void OnDisable() { Application.wantsToQuit-=HandleQuitRequest; }
+        bool HandleQuitRequest()
+        {
+            if(quitConfirmed)return true;
+            Quit();return false;
+        }
         void Start()
         {
             if (!Application.isEditor) SetOpen(true);
@@ -77,7 +87,7 @@ namespace BalanceWithMe
             EventSystem.current.SetSelectedGameObject(null);ShowMappingPrompt();
         }
         void ShowMappingPrompt() { deviceStatus.text=$"USB setup ({mappingAction+1}/5): press a button for {actionNames[mappingAction]}.\nPress Esc to cancel."; }
-        public void Toggle() => SetOpen(!IsOpen);
+        public void Toggle() { if(IsConfirmingQuit)CancelQuit();else SetOpen(!IsOpen); }
         public void Resume() => SetOpen(false);
         public void NewMatch() { game.NewMatch(); SetOpen(false); }
         public void ToggleSound() { game.ToggleAudio(); RefreshLabels(); }
@@ -86,9 +96,31 @@ namespace BalanceWithMe
             Screen.fullScreenMode = Screen.fullScreen ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow;
             RefreshLabels();
         }
-        public void Quit() { Application.Quit(); }
+        public void Quit()
+        {
+            if(IsConfirmingQuit)return;
+            if(!IsOpen)SetOpen(true);
+            mappingStick=null;IsConfirmingQuit=true;
+            quitDialog.alpha=1;quitDialog.blocksRaycasts=quitDialog.interactable=true;
+            menuContent.interactable=menuContent.blocksRaycasts=false;
+            cancelQuitButton.Select();
+        }
+        public void CancelQuit()
+        {
+            IsConfirmingQuit=false;quitDialog.alpha=0;
+            quitDialog.interactable=quitDialog.blocksRaycasts=false;
+            menuContent.interactable=menuContent.blocksRaycasts=true;
+            if(IsOpen)quitButton.Select();
+        }
+        public void ConfirmQuit()
+        {
+            if(!IsConfirmingQuit)return;
+            quitConfirmed=true;Application.Quit();
+        }
         public void SetOpen(bool open)
         {
+            // Esc/menu-close while confirming cancels the dialog and keeps the paused menu.
+            if(IsConfirmingQuit) { CancelQuit();if(!open)return; }
             IsOpen = open; game.MenuPaused = open;
             if(!open)mappingStick=null;
             panel.alpha = open ? 1 : 0; panel.interactable = panel.blocksRaycasts = open;

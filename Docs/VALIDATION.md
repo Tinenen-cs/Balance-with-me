@@ -204,3 +204,19 @@ Current local upload artifacts (supersede earlier versions):
 - Submission/BalanceWithMe-Windows-x64.zip: 49,744,868 bytes; SHA256 936259017742AF704688EEDAEFCCAA1844A4612B47C7734CFF3E551D57AF75C5.
 
 Previous binaries retained in Builds/Previous-Submission-UI-Polish-20261028. ProjectSettings changes preserved. No Canvas upload was performed. Because the game includes an in-game controls menu, the written assignment does not require a controls comment; Submission/PROFESSOR-COMMENT.txt remains an optional ready-to-paste note.
+
+## Red X hover and quit confirmation - 28 October 2026
+
+**63/63 PlayMode tests passed**, zero failures (Logs/quit-confirmation-tests.xml). New checks verify the actual close-face tint becomes red on pointer hover and that Quit opens the confirmation, selects No, blocks the background controls, and preserves the paused round when cancelled by No or the menu/Esc route. Existing text-fit checks include the dialog. Eleven Unity-rendered previews were generated and the red close hover and confirmation layout visually inspected (Docs/close_hover.png and Docs/quit_confirmation.png).
+
+Quit now asks Do you really want to quit the game? with Yes, quit / No, stay. No is initially selected for keyboard/controller navigation. The paused menu remains behind a blocking modal; No and Escape dismiss it back to the menu. Application.wantsToQuit also requires confirmation for window-close requests until Yes is chosen. The opt-in -qa-exit diagnostic flow explicitly confirms shutdown after recording its report; regular launches retain the dialog.
+
+Windows x64 release build succeeded with **0 errors and 0 warnings**, 108,519,572 build bytes. The final portable EXE completed automated combat and exited with code 0, cleaning its temporary extraction directory. ZIP CRC passed across 162 files with all required Unity/data/Mono payload and no debug symbols. The 30-second sample recorded **1759 frames, 58.6 average FPS**, p95 16.70 ms, p99 33.37 ms, maximum 50.05 ms (one frame over 50 ms), 107.4 MB allocated memory, 3 resolved rounds and 1 completed match. **0 runtime errors and 0 missing sprite/material references**; fullscreen landscape 1920 x 1080 (Logs/quit-confirmation-player-performance.json). The existing URP disposal warning remains at shutdown.
+
+Launched the final portable EXE for a desktop mouse check. Computer Use first detected user input; the user then stopped Computer Use with physical Escape. No further Computer Use actions were issued. Final mouse testing of Yes/No was therefore not completed; user playtest is required. Automated confirmation/cancellation checks and approved diagnostic shutdown did complete. Physical controller and audible-output checks remain user playtest items.
+
+Current local upload artifacts (supersede earlier versions):
+- Submission/BalanceWithMe-Portable-Windows-x64.exe: 49,753,600 bytes; SHA256 8D21947C46BA04DD91562F90E0B89738001C2E8F10840427143695125447D5D2.
+- Submission/BalanceWithMe-Windows-x64.zip: 49,746,373 bytes; SHA256 0FC148417C8BDB5F38804823A713133BA1FEF798F73C36C15E6270E098DBB69E.
+
+Updated local readme, playtest checklist, verification and checksums. Prior binaries retained in Builds/Previous-Submission-Quit-20261028. Unrelated ProjectSettings edits preserved. No Canvas upload was performed; the written assignment requires a controls comment only when there is no menu, so PROFESSOR-COMMENT.txt is optional here.

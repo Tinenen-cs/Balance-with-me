@@ -17,7 +17,7 @@ Canvas's assignment-specific file extension allowlist could not be inspected bec
 3. Plug in the actual controller(s). The menu shows device assignments. First available device controls Boy; second controls Girl. Xbox / PlayStation: left stick or D-pad moves, **A/Cross** jumps, **X/Square** punches, **B/Circle** pushes, **Y/Triangle** emotes. **R3** opens the menu. For raw USB joysticks, choose **Map Boy USB / Map Girl USB** and press a button for each requested action (Jump, Punch, Push, Emote, Menu).
 4. Test unplugging/reconnecting a controller and mixed keyboard/controller play. Verify the other player keeps their controller. Hardware testing is required: simulated-device tests cannot establish compatibility with a specific physical controller or driver.
 5. Play three rounds. Check the 30-second and final 10-second sound warnings, fall/stamina defeats, earned stars and automatic next rounds. At match end, **Enter / A / Cross** plays again. **Start / Options** restarts. A timed draw awards no star.
-6. Press **Esc / R3** to pause. Try Resume, New Match, sound, display and Quit. Alt-tab should pause the game. Relaunch to confirm fullscreen startup. Only upload after you are satisfied.
+6. Press **Esc / R3** to pause. Try Resume, New Match, sound and display. Hover over X to confirm its red highlight; click it to resume. Quit should ask Yes, quit / No, stay: No returns to the paused menu, Yes exits. Alt-tab should pause the game. Relaunch to confirm fullscreen startup. Only upload after you are satisfied.
 
 ## Suggested Canvas comment
 
@@ -31,4 +31,4 @@ Run `Tools/Package-Submission.ps1 -BuildDirectory <build folder> -OutputDirector
 
 ## Evidence and limits
 
-See `Docs/VALIDATION.md` and `Docs/submission_controls.png`. Automated tests cover gameplay, pause/resume, score reset, assets, keyboard input, simulated Xbox-compatible/PlayStation/USB devices and controller hotplug. Physical controllers were not attached during the recorded initial player sample. The desktop UI playtest and live Canvas format check were stopped by Computer Use's URL-verification policy; subsequent checks use Unity's test/rendering APIs and the compiled player's own opt-in diagnostics, not browser or Windows UI automation.
+See `Docs/VALIDATION.md` and `Docs/submission_controls.png`. Automated tests cover gameplay, pause/resume, score reset, assets, keyboard input, simulated Xbox-compatible/PlayStation/USB devices and controller hotplug. Physical controllers were not attached during the recorded initial player sample. The initial Canvas format inspection stopped under Computer Use URL-verification policy, so the assignment-specific extension allowlist remains unverified. Later desktop mouse checks verified the packaged menu; Unity tests/rendered previews and opt-in player diagnostics cover the other recorded checks. See Docs/VALIDATION.md for each run and its limits.
