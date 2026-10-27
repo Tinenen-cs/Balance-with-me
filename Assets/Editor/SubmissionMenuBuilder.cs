@@ -73,6 +73,7 @@ namespace BalanceWithMe.Editor
                 if(primary)label.color=new Color(1,.98f,.91f);
                 UnityEventTools.AddPersistentListener(button.onClick,action);return button;
             }
+            Button("Close Menu","X",rim,new Vector2(674,402),new Vector2(60,60),menu.Resume,out _,false,28);
             Button("Map Boy USB","Set up Boy USB",connection,new Vector2(300,-17),new Vector2(216,48),menu.MapBoyJoystick,out _,false,22);
             Button("Map Girl USB","Set up Girl USB",connection,new Vector2(538,-17),new Vector2(216,48),menu.MapGirlJoystick,out _,false,22);
             menu.resumeButton=Button("Play or Resume","Play / Resume",rim,new Vector2(-205,-315),new Vector2(450,72),menu.Resume,out _,true,28);

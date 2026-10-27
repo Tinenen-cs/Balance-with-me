@@ -188,3 +188,19 @@ Current local submission files (replace the earlier artifacts listed above):
 - Submission/BalanceWithMe-Windows-x64.zip: 49,744,681 bytes; SHA256 E5369179F1F4E332BB2C7ECCD0D3795ED1A17CC43142B6EF042F7F39BFB8252D.
 
 Previous working binaries are retained in Builds/Previous-Submission-20261027. User ProjectSettings changes remain untouched. No Canvas upload was performed; final user playtest remains pending.
+
+## Replay interaction, mouse close and timer fit - 28 October 2026
+
+**61/61 PlayMode tests passed** with zero failures (Logs/ui-polish-tests.xml). Added real Unity pointer-event coverage for the visible replay face changing on hover/press and clicking it to start a new match; menu X resuming without resetting the round; and round-clock text fitting with padding at all three round numbers and 01:00/00:30/00:10/00:00. Theme-font role checks now include character name headings. These checks supplement the existing keyboard/controller and gameplay regression suite.
+
+Applied ui-ux-pro-max active/hover feedback guidance to the existing Unity buttons. Farm-sign buttons tint the visible face with separate hover/selection and pressed colors and a 120 ms fade; their layout bounds remain stable. Added a 60 x 60 X at the menu's upper-right. Character names use Tiny5's chunky display lettering; instructions/buttons remain Atkinson Hyperlegible. The 250 x 96 clock frame uses 26px maximum text, 1.1 line spacing and a padded 222 x 76 text region with best-fit limits and truncation safeguards. Nine Unity-rendered previews were regenerated; menu, timer and replay-hover previews were visually inspected.
+
+Windows x64 release build succeeded with **0 errors and 0 warnings**, 108,517,597 build bytes. Complete-build ZIP CRC passed across 162 files, required Unity/data/Mono payload present and no debug symbols. Native release-player automated combat sample: **1763 frames over 30 seconds after warmup**, 58.7 average FPS, p95 16.70 ms, p99 33.37 ms, max 33.40 ms, 0 sampled frames over 50 ms, 107.5 MB allocated memory. Three rounds and one match resolved; **0 errors and 0 missing sprite/material references**; fullscreen landscape 1920 x 1080; exit code 0 (Logs/ui-polish-player-performance.json). The existing URP disposal warning remains at shutdown.
+
+Computer Use initially cancelled clicks because user input was detected. The user closed the older build, allowing replacement. Launched the updated portable EXE through Computer Use and visually confirmed its fullscreen controls screen, clicked the new X to resume, then clicked Menu to reopen it. Left that updated game paused at its menu for the user's playtest. Replay hover/press/click is covered by Unity pointer-event tests and rendered preview; it was not manually played through a full match. Physical controller and speaker-output checks still require the user.
+
+Current local upload artifacts (supersede earlier versions):
+- Submission/BalanceWithMe-Portable-Windows-x64.exe: 49,752,064 bytes; SHA256 146DB4177158AC30B2B8F90B1BF67C7C4F8AC68D99037294B73C6050E6B83B8B.
+- Submission/BalanceWithMe-Windows-x64.zip: 49,744,868 bytes; SHA256 936259017742AF704688EEDAEFCCAA1844A4612B47C7734CFF3E551D57AF75C5.
+
+Previous binaries retained in Builds/Previous-Submission-UI-Polish-20261028. ProjectSettings changes preserved. No Canvas upload was performed. Because the game includes an in-game controls menu, the written assignment does not require a controls comment; Submission/PROFESSOR-COMMENT.txt remains an optional ready-to-paste note.

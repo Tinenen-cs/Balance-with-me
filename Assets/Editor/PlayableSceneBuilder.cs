@@ -455,7 +455,6 @@ namespace BalanceWithMe.Editor
             scaler.referenceResolution=new Vector2(1920,1080);scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;
             var pixelFont=AssetDatabase.LoadAssetAtPath<Font>("Assets/Art/Fonts/Tiny5.ttf");
             var font=ReadableFonts.Regular;
-            var boldFont=ReadableFonts.Bold;
             if(pixelFont==null)throw new InvalidOperationException("Tiny5 pixel font is missing.");
             Text Label(string name,string content,int fontSize,Vector2 position,Vector2 size) {
                 var text=new GameObject(name,typeof(RectTransform)).AddComponent<Text>();text.transform.SetParent(canvas.transform,false);
@@ -483,8 +482,13 @@ namespace BalanceWithMe.Editor
             }
             Button SignButton(string name,string caption,Vector2 position,UnityEngine.Events.UnityAction action) {
                 var panel=Panel(name,position,new Vector2(260,70));panel.GetComponent<Image>().raycastTarget=true;
-                var button=panel.gameObject.AddComponent<Button>();button.targetGraphic=panel.GetComponent<Image>();
-                var colors=button.colors;colors.highlightedColor=new Color(1,.9f,.72f);colors.pressedColor=new Color(.8f,.65f,.4f);button.colors=colors;
+                var button=panel.gameObject.AddComponent<Button>();
+                // Tint the visible face, rather than only the thin outer border.
+                var face=panel.Find("Golden Timber Rim/Parchment").GetComponent<Image>();
+                face.color=Color.white;button.targetGraphic=face;
+                var colors=button.colors;colors.normalColor=new Color(1,.91f,.70f);
+                colors.highlightedColor=new Color(1,.78f,.37f);colors.selectedColor=colors.highlightedColor;
+                colors.pressedColor=new Color(.84f,.60f,.28f);colors.fadeDuration=.12f;button.colors=colors;
                 UnityEditor.Events.UnityEventTools.AddPersistentListener(button.onClick,action);
                 PanelLabel(panel,name+" Label",caption,30,Vector2.zero,new Vector2(240,58));
                 return button;
@@ -520,13 +524,17 @@ namespace BalanceWithMe.Editor
                     stars[i]=star;
                 }
                 if(girl){game.girlLifeText=life;game.girlWinStars=stars;}else{game.boyLifeText=life;game.boyWinStars=stars;}
-                return PanelLabel(panel,player+" Name","",31,new Vector2(54,47),new Vector2(284,38));
+                var name=PanelLabel(panel,player+" Name","",36,new Vector2(54,47),new Vector2(284,44));
+                name.font=pixelFont;name.lineSpacing=1;name.verticalOverflow=VerticalWrapMode.Truncate;
+                return name;
             }
             game.boyHud=Scorecard(false);
             game.girlHud=Scorecard(true);
-            var clock=Panel("Round Clock",new Vector2(0,365),new Vector2(250,84));
+            var clock=Panel("Round Clock",new Vector2(0,365),new Vector2(250,96));
             game.roundClockPopup=clock.gameObject.AddComponent<CanvasGroup>();game.roundClockPopup.blocksRaycasts=false;
-            game.timer=PanelLabel(clock,"Timer","ROUND 1 / 3\n01:00",30,Vector2.zero,new Vector2(230,78));
+            game.timer=PanelLabel(clock,"Timer","ROUND 1 / 3\n01:00",26,Vector2.zero,new Vector2(222,76));
+            game.timer.lineSpacing=1.1f;game.timer.verticalOverflow=VerticalWrapMode.Truncate;
+            game.timer.resizeTextForBestFit=true;game.timer.resizeTextMinSize=22;game.timer.resizeTextMaxSize=26;
             var notice=Panel("Village Notice",new Vector2(0,245),new Vector2(790,76));
             game.statusPopup=Popup(notice);
             game.status=PanelLabel(notice,"Status","",28,Vector2.zero,new Vector2(754,68));
@@ -570,8 +578,8 @@ namespace BalanceWithMe.Editor
             game.readyCaption=PanelLabel(ready,"Countdown Caption","READY",42,new Vector2(0,-65),new Vector2(360,60));
             game.readyNumber.font=game.readyCaption.font=pixelFont;
             game.winnerHeading.font=pixelFont;
-            game.winnerName.font=boldFont;game.winnerName.fontStyle=FontStyle.Bold;
-            game.winnerName.fontSize=32;game.winnerName.resizeTextMaxSize=32;game.winnerName.lineSpacing=1;
+            game.winnerName.font=pixelFont;game.winnerName.fontStyle=FontStyle.Normal;
+            game.winnerName.fontSize=38;game.winnerName.resizeTextMaxSize=38;game.winnerName.lineSpacing=1;
             game.nextRoundText.fontSize=24;game.nextRoundText.lineSpacing=1.25f;
             foreach (var text in new[] { game.readyNumber, game.readyCaption, game.winnerHeading, game.winnerName, game.nextRoundText })
             {
